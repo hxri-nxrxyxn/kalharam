@@ -29,7 +29,7 @@
 					stagger: 0.03,
 					ease: 'power2.out',
 					force3D: true,
-					clearProps: 'all'
+					clearProps: 'transform, opacity, visibility'
 				}
 			);
 		}
