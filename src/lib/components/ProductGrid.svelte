@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+	import gsap from 'gsap';
+	import { ScrollTrigger } from 'gsap/ScrollTrigger';
 	import type { Product } from '$lib/types';
 	import ProductCard from './ProductCard.svelte';
 
@@ -7,6 +10,32 @@
 	}
 
 	let { products }: Props = $props();
+	let gridEl = $state<HTMLDivElement>();
+
+	onMount(() => {
+		gsap.registerPlugin(ScrollTrigger);
+	});
+
+	$effect(() => {
+		if (gridEl && products.length > 0) {
+			const cards = gridEl.querySelectorAll('.listing');
+			gsap.fromTo(
+				cards,
+				{ y: 35, autoAlpha: 0 },
+				{
+					y: 0,
+					autoAlpha: 1,
+					duration: 0.6,
+					stagger: 0.07,
+					ease: 'power3.out',
+					scrollTrigger: {
+						trigger: gridEl,
+						start: 'top 85%'
+					}
+				}
+			);
+		}
+	});
 </script>
 
 {#if products.length === 0}
@@ -15,7 +44,7 @@
 	</div>
 {:else}
 	<div class="shop__listings">
-		<div class="grid">
+		<div class="grid" bind:this={gridEl}>
 			{#each products as product (product.id)}
 				<ProductCard {product} />
 			{/each}
