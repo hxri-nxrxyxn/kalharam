@@ -30,30 +30,30 @@
 	function handleLinkEnter(e: MouseEvent) {
 		const target = e.currentTarget as HTMLElement;
 		const img = target.querySelector('img');
-		gsap.to(target, { y: -3, duration: 0.25, ease: 'power2.out' });
+		gsap.to(target, { y: -2, duration: 0.2, ease: 'power2.out', force3D: true });
 		if (img) {
-			gsap.to(img, { scale: 1.15, rotation: 5, duration: 0.3, ease: 'back.out(1.7)' });
+			gsap.to(img, { scale: 1.1, rotation: 3, duration: 0.2, ease: 'power2.out', force3D: true });
 		}
 	}
 
 	function handleLinkLeave(e: MouseEvent) {
 		const target = e.currentTarget as HTMLElement;
 		const img = target.querySelector('img');
-		gsap.to(target, { y: 0, duration: 0.25, ease: 'power2.out' });
+		gsap.to(target, { y: 0, duration: 0.2, ease: 'power2.out', force3D: true });
 		if (img) {
-			gsap.to(img, { scale: 1, rotation: 0, duration: 0.3, ease: 'power2.out' });
+			gsap.to(img, { scale: 1, rotation: 0, duration: 0.2, ease: 'power2.out', force3D: true });
 		}
 	}
 
 	function handleLogoEnter() {
 		if (navLogo) {
-			gsap.to(navLogo, { scale: 1.04, duration: 0.3, ease: 'back.out(1.5)' });
+			gsap.to(navLogo, { scale: 1.03, duration: 0.2, ease: 'power2.out', force3D: true });
 		}
 	}
 
 	function handleLogoLeave() {
 		if (navLogo) {
-			gsap.to(navLogo, { scale: 1, duration: 0.3, ease: 'power2.out' });
+			gsap.to(navLogo, { scale: 1, duration: 0.2, ease: 'power2.out', force3D: true });
 		}
 	}
 </script>

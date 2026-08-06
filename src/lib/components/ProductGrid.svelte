@@ -21,17 +21,15 @@
 			const cards = gridEl.querySelectorAll('.listing');
 			gsap.fromTo(
 				cards,
-				{ y: 35, autoAlpha: 0 },
+				{ y: 15, autoAlpha: 0 },
 				{
 					y: 0,
 					autoAlpha: 1,
-					duration: 0.6,
-					stagger: 0.07,
-					ease: 'power3.out',
-					scrollTrigger: {
-						trigger: gridEl,
-						start: 'top 85%'
-					}
+					duration: 0.35,
+					stagger: 0.03,
+					ease: 'power2.out',
+					force3D: true,
+					clearProps: 'all'
 				}
 			);
 		}

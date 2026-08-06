@@ -15,11 +15,13 @@
 	onMount(() => {
 		if (tilesContainer) {
 			gsap.from(tilesContainer.querySelectorAll('.tile'), {
-				y: 20,
+				y: 15,
 				autoAlpha: 0,
-				duration: 0.6,
-				stagger: 0.08,
-				ease: 'power3.out'
+				duration: 0.35,
+				stagger: 0.04,
+				ease: 'power2.out',
+				force3D: true,
+				clearProps: 'all'
 			});
 		}
 	});
@@ -27,18 +29,18 @@
 	function handleTileEnter(e: MouseEvent) {
 		const target = e.currentTarget as HTMLElement;
 		const text = target.querySelector('.tile-text');
-		gsap.to(target, { y: -4, scale: 1.02, duration: 0.3, ease: 'power2.out' });
+		gsap.to(target, { y: -2, scale: 1.01, duration: 0.2, ease: 'power2.out', force3D: true });
 		if (text) {
-			gsap.to(text, { scale: 1.05, duration: 0.3, ease: 'back.out(1.5)' });
+			gsap.to(text, { scale: 1.02, duration: 0.2, ease: 'power2.out', force3D: true });
 		}
 	}
 
 	function handleTileLeave(e: MouseEvent) {
 		const target = e.currentTarget as HTMLElement;
 		const text = target.querySelector('.tile-text');
-		gsap.to(target, { y: 0, scale: 1, duration: 0.3, ease: 'power2.out' });
+		gsap.to(target, { y: 0, scale: 1, duration: 0.2, ease: 'power2.out', force3D: true });
 		if (text) {
-			gsap.to(text, { scale: 1, duration: 0.3, ease: 'power2.out' });
+			gsap.to(text, { scale: 1, duration: 0.2, ease: 'power2.out', force3D: true });
 		}
 	}
 </script>

@@ -28,7 +28,7 @@
 		if (!filterBlock) return;
 		const img = filterBlock.querySelector('.filter__text img');
 		if (img) {
-			gsap.to(img, { scale: 1.25, rotation: 12, duration: 0.35, ease: 'back.out(1.7)' });
+			gsap.to(img, { scale: 1.1, rotation: 3, duration: 0.2, ease: 'power2.out', force3D: true });
 		}
 	}
 
@@ -37,7 +37,7 @@
 		if (!filterBlock) return;
 		const img = filterBlock.querySelector('.filter__text img');
 		if (img) {
-			gsap.to(img, { scale: 1, rotation: 0, duration: 0.3, ease: 'power2.out' });
+			gsap.to(img, { scale: 1, rotation: 0, duration: 0.2, ease: 'power2.out', force3D: true });
 		}
 	}
 </script>

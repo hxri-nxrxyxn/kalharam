@@ -15,12 +15,12 @@
 		const starIcon = cardEl.querySelector('.listing__info-count img');
 		const priceIcon = cardEl.querySelector('.listing__info-saleprice img');
 
-		gsap.to(img, { scale: 1.06, duration: 0.5, ease: 'power2.out' });
+		gsap.to(img, { scale: 1.04, duration: 0.25, ease: 'power2.out', force3D: true });
 		if (starIcon) {
-			gsap.to(starIcon, { rotation: 72, scale: 1.2, duration: 0.4, ease: 'back.out(1.7)' });
+			gsap.to(starIcon, { rotation: 5, scale: 1.1, duration: 0.25, ease: 'power2.out', force3D: true });
 		}
 		if (priceIcon) {
-			gsap.to(priceIcon, { y: -2, scale: 1.15, duration: 0.3, ease: 'power2.out' });
+			gsap.to(priceIcon, { y: -2, scale: 1.1, duration: 0.25, ease: 'power2.out', force3D: true });
 		}
 	}
 
@@ -30,12 +30,12 @@
 		const starIcon = cardEl.querySelector('.listing__info-count img');
 		const priceIcon = cardEl.querySelector('.listing__info-saleprice img');
 
-		gsap.to(img, { scale: 1, duration: 0.5, ease: 'power2.out' });
+		gsap.to(img, { scale: 1, duration: 0.25, ease: 'power2.out', force3D: true });
 		if (starIcon) {
-			gsap.to(starIcon, { rotation: 0, scale: 1, duration: 0.4, ease: 'power2.out' });
+			gsap.to(starIcon, { rotation: 0, scale: 1, duration: 0.25, ease: 'power2.out', force3D: true });
 		}
 		if (priceIcon) {
-			gsap.to(priceIcon, { y: 0, scale: 1, duration: 0.3, ease: 'power2.out' });
+			gsap.to(priceIcon, { y: 0, scale: 1, duration: 0.25, ease: 'power2.out', force3D: true });
 		}
 	}
 </script>
