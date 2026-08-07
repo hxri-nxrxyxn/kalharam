@@ -13,8 +13,7 @@
 		<img src={product.image} alt={product.title} />
 	</div>
 	<div class="listing__title">
-		<h3>{product.title}</h3>
-		<span>{product.subtitle}</span>
+		<h3>{product.title} <br /> <span>{product.subtitle}</span></h3>
 	</div>
 	<div class="listing__info">
 		<div class="listing__info-count">
