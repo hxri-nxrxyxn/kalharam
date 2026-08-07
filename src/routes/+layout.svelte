@@ -10,13 +10,19 @@
 
 	onMount(() => {
 		const lenis = new Lenis({
-			autoRaf: true,
 			duration: 1.2,
 			easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
 			smoothWheel: true,
 			wheelMultiplier: 1.0,
 			touchMultiplier: 1.5
 		});
+
+		let rafId: number;
+		function raf(time: number) {
+			lenis.raf(time);
+			rafId = requestAnimationFrame(raf);
+		}
+		rafId = requestAnimationFrame(raf);
 
 		let isSnapping = false;
 
@@ -26,32 +32,34 @@
 			const shoppingEl = document.querySelector('.shopping') as HTMLElement;
 			if (!shoppingEl) return;
 
-			const currentScroll = e.scroll;
+			const scrollY = e.scroll;
 			const isScrollingDown = e.direction > 0;
-			const shoppingTop = shoppingEl.getBoundingClientRect().top;
+			const shoppingRect = shoppingEl.getBoundingClientRect();
 
-			// When scrolling down from the top header, smoothly glide to the shopping section
+			const navOffset = 120;
+
+			// When scrolling down near the top header, auto-snap glide to shopping section
 			if (
 				isScrollingDown &&
-				currentScroll > 40 &&
-				currentScroll < 350 &&
-				shoppingTop > 50 &&
-				shoppingTop < window.innerHeight
+				scrollY > 20 &&
+				scrollY < 300 &&
+				shoppingRect.top > navOffset + 20
 			) {
 				isSnapping = true;
 				lenis.scrollTo(shoppingEl, {
-					offset: -100,
-					duration: 1.0,
+					offset: -navOffset,
+					duration: 1.2,
 					onComplete: () => {
 						setTimeout(() => {
 							isSnapping = false;
-						}, 200);
+						}, 100);
 					}
 				});
 			}
 		});
 
 		return () => {
+			cancelAnimationFrame(rafId);
 			lenis.destroy();
 		};
 	});
