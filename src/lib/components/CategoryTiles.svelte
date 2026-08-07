@@ -18,12 +18,10 @@
 			onclick={() => onSelectCategory?.(category.id)}
 		>
 			<div class="tile-inner">
-				<div class="tile-front">
-					<div
-						class="tile-blur-bg"
-						style="background-image: url('{category.image}')"
-					></div>
-					<div class="tile-overlay"></div>
+				<div
+					class="tile-front"
+					style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.3)), url('{category.image}')"
+				>
 					<span class="tile-text">
 						{#each category.name.split(' ') as word, idx (idx)}
 							{word}{#if idx < category.name.split(' ').length - 1}<br />{/if}
@@ -31,7 +29,12 @@
 					</span>
 				</div>
 				<div class="tile-back">
-					<span class="tile-text tile-text--back">
+					<div
+						class="tile-blur-bg"
+						style="background-image: url('{category.image}')"
+					></div>
+					<div class="tile-overlay"></div>
+					<span class="tile-text">
 						{#each category.name.split(' ') as word, idx (idx)}
 							{word}{#if idx < category.name.split(' ').length - 1}<br />{/if}
 						{/each}
@@ -89,34 +92,39 @@
 		-webkit-backface-visibility: hidden;
 	}
 
+	.tile-front {
+		background-size: cover;
+		background-position: center;
+		background-repeat: no-repeat;
+	}
+
+	.tile-back {
+		transform: rotateY(180deg);
+		border: var(--border) solid var(--color-primary);
+	}
+
 	.tile-blur-bg {
 		position: absolute;
 		inset: -25px;
 		background-size: cover;
 		background-position: center;
 		background-repeat: no-repeat;
-		filter: blur(24px) saturate(220%) brightness(0.72) contrast(105%);
+		filter: blur(22px) saturate(220%) brightness(0.75) contrast(105%);
 		transform: scale(1.15);
 		transition: filter 0.5s ease, transform 0.5s ease;
 		will-change: filter, transform;
 	}
 
 	.tile:hover .tile-blur-bg {
-		filter: blur(16px) saturate(250%) brightness(0.82) contrast(110%);
+		filter: blur(14px) saturate(250%) brightness(0.85) contrast(110%);
 		transform: scale(1.22);
 	}
 
 	.tile-overlay {
 		position: absolute;
 		inset: 0;
-		background: radial-gradient(circle at center, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.4) 100%);
+		background: radial-gradient(circle at center, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.45) 100%);
 		z-index: 1;
-	}
-
-	.tile-back {
-		background-color: var(--color-surface);
-		transform: rotateY(180deg);
-		border: var(--border) solid var(--color-primary);
 	}
 
 	.tile-text {
@@ -128,11 +136,6 @@
 		text-align: center;
 		line-height: 120%;
 		text-transform: uppercase;
-		text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-	}
-
-	.tile-text--back {
-		color: var(--color-primary);
-		text-shadow: none;
+		text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 	}
 </style>
