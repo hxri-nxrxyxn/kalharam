@@ -66,9 +66,12 @@
 	}
 
 	.tile:hover .tile-inner,
-	.tile:focus .tile-inner,
-	.tile--selected .tile-inner {
+	.tile:focus-visible .tile-inner {
 		transform: rotateY(180deg);
+	}
+
+	.tile--selected .tile-front {
+		border: var(--border) solid var(--color-primary);
 	}
 
 	.tile-front,
