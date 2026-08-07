@@ -53,17 +53,6 @@
 
 html {
     font-size: 16px;
-    scroll-snap-type: y proximity;
-}
-
-header {
-    scroll-snap-align: start;
-    scroll-margin-top: var(--nav-offset);
-}
-
-.shopping {
-    scroll-snap-align: start;
-    scroll-margin-top: var(--nav-offset);
 }
 
 body {

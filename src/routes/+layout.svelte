@@ -18,6 +18,39 @@
 			touchMultiplier: 1.5
 		});
 
+		let isSnapping = false;
+
+		lenis.on('scroll', (e: { scroll: number; direction: number }) => {
+			if (isSnapping) return;
+
+			const shoppingEl = document.querySelector('.shopping') as HTMLElement;
+			if (!shoppingEl) return;
+
+			const currentScroll = e.scroll;
+			const isScrollingDown = e.direction > 0;
+			const shoppingTop = shoppingEl.getBoundingClientRect().top;
+
+			// When scrolling down from the top header, smoothly glide to the shopping section
+			if (
+				isScrollingDown &&
+				currentScroll > 40 &&
+				currentScroll < 350 &&
+				shoppingTop > 50 &&
+				shoppingTop < window.innerHeight
+			) {
+				isSnapping = true;
+				lenis.scrollTo(shoppingEl, {
+					offset: -100,
+					duration: 1.0,
+					onComplete: () => {
+						setTimeout(() => {
+							isSnapping = false;
+						}, 200);
+					}
+				});
+			}
+		});
+
 		return () => {
 			lenis.destroy();
 		};
