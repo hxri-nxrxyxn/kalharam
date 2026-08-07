@@ -7,11 +7,11 @@
 		<img src="/assets/filled-shapes/branding.svg" alt="branding" />
 	</a>
 	<div class="nav__links">
-		<a href="#signin" class="nav__link">
+		<a href="#signin" class="nav__link nav__link--desktop">
 			<img src="/assets/stroke-4px-32px/signin.svg" alt="signin" />
 			Sign In
 		</a>
-		<a href="#support" class="nav__link">
+		<a href="#support" class="nav__link nav__link--desktop">
 			<img src="/assets/stroke-4px-32px/support.svg" alt="support" />
 			Support
 		</a>
@@ -67,19 +67,19 @@
 
 	@media (max-width: 768px) {
 		.nav {
-			padding: var(--spacing-sm) var(--spacing-md);
+			padding: var(--spacing-md) var(--spacing-lg);
+		}
+
+		.nav__link--desktop {
+			display: none;
 		}
 
 		.nav__logo {
 			gap: var(--spacing-sm);
 		}
 
-		.nav__links {
-			gap: var(--spacing-md);
-		}
-
 		.nav__link {
-			font-size: 0.75rem;
+			font-size: var(--font-sm);
 			gap: 0.25rem;
 		}
 	}
