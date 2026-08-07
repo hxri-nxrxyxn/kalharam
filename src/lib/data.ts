@@ -58,8 +58,21 @@ const productNames = [
 	'Gayathri'
 ];
 
+function toTitleCase(str: string): string {
+	return str
+		.toLowerCase()
+		.split(' ')
+		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+		.join(' ');
+}
+
 export function getProductsForCategory(categoryId: string): Product[] {
 	const category = categories.find((c) => c.id === categoryId) || categories[0];
+
+	const formattedCategoryName = toTitleCase(category.name);
+	const subtitle = formattedCategoryName.toLowerCase().includes('saree') || formattedCategoryName.toLowerCase().includes('collections') || formattedCategoryName.toLowerCase().includes('more')
+		? formattedCategoryName
+		: `${formattedCategoryName} Saree`;
 
 	return Array.from({ length: 12 }, (_, i) => {
 		const index = i + 1;
@@ -71,7 +84,7 @@ export function getProductsForCategory(categoryId: string): Product[] {
 		return {
 			id: `${category.id}-${index}`,
 			title: name,
-			subtitle: `${category.name.charAt(0) + category.name.slice(1).toLowerCase()} Saree`,
+			subtitle,
 			categoryId: category.id,
 			rating,
 			mrp,
