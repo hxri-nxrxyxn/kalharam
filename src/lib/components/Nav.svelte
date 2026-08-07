@@ -7,15 +7,15 @@
 		<img src="/assets/filled-shapes/branding.svg" alt="branding" />
 	</a>
 	<div class="nav__links">
-		<a href="#signin" class="nav__link nav__link--desktop">
+		<a href="/signin" class="nav__link nav__link--desktop">
 			<img src="/assets/stroke-4px-32px/signin.svg" alt="signin" />
 			Sign In
 		</a>
-		<a href="#support" class="nav__link nav__link--desktop">
+		<a href="/support" class="nav__link nav__link--desktop">
 			<img src="/assets/stroke-4px-32px/support.svg" alt="support" />
 			Support
 		</a>
-		<a href="#cart" class="nav__link">
+		<a href="/cart" class="nav__link">
 			<img src="/assets/stroke-4px-32px/cart.svg" alt="cart" />
 			My Cart
 		</a>

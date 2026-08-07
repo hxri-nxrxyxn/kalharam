@@ -14,6 +14,9 @@ const config = {
 			handleMissingId: 'ignore',
 			entries: [
 				'*',
+				'/signin',
+				'/support',
+				'/cart',
 				'/category/mul-cotton',
 				'/category/kanchi-cotton',
 				'/category/set-saree-set-mundu',
