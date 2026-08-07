@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Banner from '$lib/components/Banner.svelte';
+	import Footer from '$lib/components/Footer.svelte';
 	import CategoryTiles from '$lib/components/CategoryTiles.svelte';
 	import Filters from '$lib/components/Filters.svelte';
 	import ProductGrid from '$lib/components/ProductGrid.svelte';
@@ -88,6 +89,9 @@
 		</div>
 	</div>
 </section>
+
+<Footer/>
+
 
 <style>
 	.shopping {

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import gsap from 'gsap';
 	import type { Product } from '$lib/types';
 
 	interface Props {
@@ -7,46 +6,9 @@
 	}
 
 	let { product }: Props = $props();
-	let cardEl: HTMLDivElement;
-
-	function handleMouseEnter() {
-		if (!cardEl) return;
-		const img = cardEl.querySelector('.listing__image img');
-		const starIcon = cardEl.querySelector('.listing__info-count img');
-		const priceIcon = cardEl.querySelector('.listing__info-saleprice img');
-
-		gsap.to(img, { scale: 1.04, duration: 0.25, ease: 'power2.out', force3D: true });
-		if (starIcon) {
-			gsap.to(starIcon, { rotation: 5, scale: 1.1, duration: 0.25, ease: 'power2.out', force3D: true });
-		}
-		if (priceIcon) {
-			gsap.to(priceIcon, { y: -2, scale: 1.1, duration: 0.25, ease: 'power2.out', force3D: true });
-		}
-	}
-
-	function handleMouseLeave() {
-		if (!cardEl) return;
-		const img = cardEl.querySelector('.listing__image img');
-		const starIcon = cardEl.querySelector('.listing__info-count img');
-		const priceIcon = cardEl.querySelector('.listing__info-saleprice img');
-
-		gsap.to(img, { scale: 1, duration: 0.25, ease: 'power2.out', force3D: true });
-		if (starIcon) {
-			gsap.to(starIcon, { rotation: 0, scale: 1, duration: 0.25, ease: 'power2.out', force3D: true });
-		}
-		if (priceIcon) {
-			gsap.to(priceIcon, { y: 0, scale: 1, duration: 0.25, ease: 'power2.out', force3D: true });
-		}
-	}
 </script>
 
-<div
-	class="listing"
-	role="article"
-	bind:this={cardEl}
-	onmouseenter={handleMouseEnter}
-	onmouseleave={handleMouseLeave}
->
+<div class="listing">
 	<div class="listing__image">
 		<img src={product.image} alt={product.title} />
 	</div>

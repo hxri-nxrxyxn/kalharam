@@ -1,6 +1,4 @@
 <script lang="ts">
-	import gsap from 'gsap';
-
 	interface Props {
 		searchQuery: string;
 		sortBy: string;
@@ -22,24 +20,6 @@
 		onMinPriceChange,
 		onMaxPriceChange
 	}: Props = $props();
-
-	function handleInputFocus(e: FocusEvent) {
-		const filterBlock = (e.currentTarget as HTMLElement).closest('.filter');
-		if (!filterBlock) return;
-		const img = filterBlock.querySelector('.filter__text img');
-		if (img) {
-			gsap.to(img, { scale: 1.1, rotation: 3, duration: 0.2, ease: 'power2.out', force3D: true });
-		}
-	}
-
-	function handleInputBlur(e: FocusEvent) {
-		const filterBlock = (e.currentTarget as HTMLElement).closest('.filter');
-		if (!filterBlock) return;
-		const img = filterBlock.querySelector('.filter__text img');
-		if (img) {
-			gsap.to(img, { scale: 1, rotation: 0, duration: 0.2, ease: 'power2.out', force3D: true });
-		}
-	}
 </script>
 
 <div class="shop__filters">
@@ -54,8 +34,6 @@
 				placeholder="Charulatha"
 				value={searchQuery}
 				oninput={(e) => onSearchChange((e.target as HTMLInputElement).value)}
-				onfocus={handleInputFocus}
-				onblur={handleInputBlur}
 			/>
 		</div>
 	</div>
@@ -69,8 +47,6 @@
 			<select
 				value={sortBy}
 				onchange={(e) => onSortChange((e.target as HTMLSelectElement).value)}
-				onfocus={handleInputFocus}
-				onblur={handleInputBlur}
 			>
 				<option value="featured">Featured</option>
 				<option value="price-low">Price: Low to High</option>
@@ -92,8 +68,6 @@
 				placeholder="Min"
 				value={minPrice}
 				oninput={(e) => onMinPriceChange((e.target as HTMLInputElement).value)}
-				onfocus={handleInputFocus}
-				onblur={handleInputBlur}
 			/>
 			<p>TO</p>
 			<input
@@ -101,8 +75,6 @@
 				placeholder="Max"
 				value={maxPrice}
 				oninput={(e) => onMaxPriceChange((e.target as HTMLInputElement).value)}
-				onfocus={handleInputFocus}
-				onblur={handleInputBlur}
 			/>
 		</div>
 	</div>

@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import gsap from 'gsap';
 	import type { Category } from '$lib/types';
 
 	interface Props {
@@ -10,50 +8,15 @@
 	}
 
 	let { categories, selectedCategoryId, onSelectCategory }: Props = $props();
-	let tilesContainer: HTMLDivElement;
-
-	onMount(() => {
-		if (tilesContainer) {
-			gsap.from(tilesContainer.querySelectorAll('.tile'), {
-				y: 15,
-				autoAlpha: 0,
-				duration: 0.35,
-				stagger: 0.04,
-				ease: 'power2.out',
-				force3D: true,
-				clearProps: 'transform, opacity, visibility'
-			});
-		}
-	});
-
-	function handleTileEnter(e: MouseEvent) {
-		const target = e.currentTarget as HTMLElement;
-		const text = target.querySelector('.tile-text');
-		gsap.to(target, { y: -2, scale: 1.01, duration: 0.2, ease: 'power2.out', force3D: true });
-		if (text) {
-			gsap.to(text, { scale: 1.02, duration: 0.2, ease: 'power2.out', force3D: true });
-		}
-	}
-
-	function handleTileLeave(e: MouseEvent) {
-		const target = e.currentTarget as HTMLElement;
-		const text = target.querySelector('.tile-text');
-		gsap.to(target, { y: 0, scale: 1, duration: 0.2, ease: 'power2.out', force3D: true });
-		if (text) {
-			gsap.to(text, { scale: 1, duration: 0.2, ease: 'power2.out', force3D: true });
-		}
-	}
 </script>
 
-<div class="tiles" bind:this={tilesContainer}>
+<div class="tiles">
 	{#each categories as category (category.id)}
 		<div
 			class="tile {selectedCategoryId === category.id ? 'tile--selected' : ''}"
 			style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.3)), url('{category.image}')"
 			onclick={() => onSelectCategory(category.id)}
 			onkeydown={(e) => (e.key === 'Enter' || e.key === ' ') && onSelectCategory(category.id)}
-			onmouseenter={handleTileEnter}
-			onmouseleave={handleTileLeave}
 			role="button"
 			tabindex="0"
 		>

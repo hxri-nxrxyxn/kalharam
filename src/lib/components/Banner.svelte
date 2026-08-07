@@ -8,11 +8,10 @@
 <style>
 	.banner {
 		height: 70vh;
-		background-image: url('/assets/types/banner.jpg'), linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5));
+		background-image: url('/assets/types/banner.png');
 		background-size: cover;
-		background-position: center;
 		background-repeat: no-repeat;
-		background-attachment: fixed;
+		background-position: center;
 		display: flex;
 		align-items: center;
 		justify-content: center;
