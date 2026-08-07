@@ -39,7 +39,7 @@
 <style>
 	footer {
 		display: flex;
-		padding: var(--spacing-lg) var(--spacing-xl);
+		padding: var(--spacing-xl);
 		background-color: var(--color-surface);
 		justify-content: space-between;
 	}
