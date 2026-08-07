@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { goto } from '$app/navigation';
 	import Banner from '$lib/components/Banner.svelte';
 	import CategoryTiles from '$lib/components/CategoryTiles.svelte';
 	import Filters from '$lib/components/Filters.svelte';
@@ -51,6 +52,10 @@
 
 		return list;
 	});
+
+	function handleSelectCategory(id: string) {
+		goto(`/category/${id}`, { keepFocus: true, noScroll: true });
+	}
 </script>
 
 <svelte:head>
@@ -64,7 +69,11 @@
 <main>
 	<header>
 		<Banner />
-		<CategoryTiles {categories} selectedCategoryId={currentCategory.id} />
+		<CategoryTiles
+			{categories}
+			selectedCategoryId={currentCategory.id}
+			onSelectCategory={handleSelectCategory}
+		/>
 	</header>
 
 	<section class="shopping">

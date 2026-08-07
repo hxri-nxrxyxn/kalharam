@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import type { Category } from '$lib/types';
 
 	interface Props {
@@ -8,6 +9,14 @@
 	}
 
 	let { categories, selectedCategoryId, onSelectCategory }: Props = $props();
+
+	function handleTileClick(e: MouseEvent, categoryId: string) {
+		if (onSelectCategory) {
+			e.preventDefault();
+			onSelectCategory(categoryId);
+			goto(`/category/${categoryId}`, { keepFocus: true, noScroll: true, replaceState: false });
+		}
+	}
 </script>
 
 <div class="tiles">
@@ -15,7 +24,7 @@
 		<a
 			href="/category/{category.id}"
 			class="tile {selectedCategoryId === category.id ? 'tile--selected' : ''}"
-			onclick={() => onSelectCategory?.(category.id)}
+			onclick={(e) => handleTileClick(e, category.id)}
 		>
 			<div class="tile-inner">
 				<div
