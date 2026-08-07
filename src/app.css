@@ -11,7 +11,7 @@
 :root {
     --font-family: 'Inter', sans-serif;
 
-    /* --- Previous Palette (Commented out) ---
+    /* --- Original Neutral Palette (Commented out) ---
     --color-primary: #777;
     --color-secondary: #ccc;
     --color-tile: white;
@@ -21,18 +21,18 @@
 
     --filter-primary: brightness(0) saturate(100%) invert(50%) sepia(0%) saturate(71%) hue-rotate(229deg) brightness(91%) contrast(82%);
     --filter-secondary: brightness(0) saturate(100%) invert(91%) sepia(4%) saturate(28%) hue-rotate(51deg) brightness(93%) contrast(85%);
-    ------------------------------------------- */
+    -------------------------------------------------- */
 
-    /* --- Premium Black & Gold Luxury Palette --- */
-    --color-primary: #d4af37;
-    --color-secondary: #c5a059;
+    /* --- Refined Premium Light Theme (Warm Ivory & Gold Accents) --- */
+    --color-primary: #2a2723;
+    --color-secondary: #a89278;
     --color-tile: #ffffff;
-    --color-input: #1a1a1a;
-    --color-background: #0d0d0d;
-    --color-surface: #141414;
+    --color-input: #f2f0ec;
+    --color-background: #faf9f6;
+    --color-surface: #ffffff;
 
-    --filter-primary: brightness(0) saturate(100%) invert(73%) sepia(45%) saturate(850%) hue-rotate(359deg) brightness(92%) contrast(88%);
-    --filter-secondary: brightness(0) saturate(100%) invert(68%) sepia(35%) saturate(650%) hue-rotate(3deg) brightness(90%) contrast(85%);
+    --filter-primary: brightness(0) saturate(100%) invert(14%) sepia(8%) saturate(500%) hue-rotate(345deg) brightness(95%) contrast(90%);
+    --filter-secondary: brightness(0) saturate(100%) invert(60%) sepia(20%) saturate(550%) hue-rotate(5deg) brightness(92%) contrast(85%);
 
     --height-logo: 3.5rem;
     --height-icon: 1.1rem;
