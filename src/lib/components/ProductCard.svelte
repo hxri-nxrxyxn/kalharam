@@ -10,14 +10,14 @@
 
 <div class="listing">
 	<div class="listing__image">
-		<img src={product.image} alt={product.title} />
+		<img src={product.image} alt="{product.title} - {product.subtitle}" loading="lazy" width="300" height="400" />
 	</div>
 	<div class="listing__title">
 		<h3>{product.title} <br> <span>{product.subtitle}</span></h3>
 	</div>
 	<div class="listing__info">
 		<div class="listing__info-count">
-			<img src="/assets/stroke-2px-24px/star.svg" alt="rating" />
+			<img src="/assets/stroke-2px-24px/star.svg" alt="rating" width="18" height="18" />
 			<h3>{product.rating}</h3>
 		</div>
 		<div class="listing__info-maxprice">
@@ -25,7 +25,7 @@
 			<h3>{product.mrp}</h3>
 		</div>
 		<div class="listing__info-saleprice">
-			<img src="/assets/stroke-2px-24px/rupee.svg" alt="rupee" />
+			<img src="/assets/stroke-2px-24px/rupee.svg" alt="rupee" width="18" height="18" />
 			<h3>{product.salePrice}</h3>
 		</div>
 	</div>

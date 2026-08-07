@@ -8,6 +8,16 @@
 
 	let { children } = $props();
 
+	const jsonLd = JSON.stringify({
+		'@context': 'https://schema.org',
+		'@type': 'Organization',
+		name: 'Kalharam',
+		url: 'https://kalharam.com',
+		logo: 'https://kalharam.com/assets/filled-shapes/logo.svg',
+		description:
+			'Exclusive handloom saree collections including Mul Cotton, Kanchi Cotton, Set Saree, Davani Half Saree, Onam Collections, Kalyani Cotton, and Narayan Peth.'
+	});
+
 	onMount(() => {
 		const lenis = new Lenis({
 			duration: 1.2,
@@ -33,6 +43,12 @@
 
 <svelte:head>
 	<link rel="icon" href="/assets/filled-shapes/logo.svg" />
+	<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+	<meta property="og:site_name" content="Kalharam" />
+	<meta property="og:type" content="website" />
+	<meta name="twitter:card" content="summary_large_image" />
+
+	{@html `<script type="application/ld+json">${jsonLd}</script>`}
 </svelte:head>
 
 <Nav />
