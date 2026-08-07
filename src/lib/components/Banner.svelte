@@ -36,7 +36,7 @@
 
 	@media (max-width: 768px) {
 		.banner-slider {
-			height: 40vh;
+			height: 60vh;
 		}
 	}
 

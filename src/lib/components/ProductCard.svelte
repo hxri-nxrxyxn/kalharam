@@ -95,12 +95,12 @@
 
 	@media (max-width: 768px) {
 		.listing__image {
-			height: 28vh;
+			height: 35vh;
 		}
 
 		.listing__title,
 		.listing__info {
-			padding: var(--spacing-sm);
+			padding: var(--spacing-sm) 0;
 		}
 	}
 </style>

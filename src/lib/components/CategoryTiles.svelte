@@ -154,17 +154,20 @@
 			overflow-x: auto;
 			scroll-snap-type: x mandatory;
 			-webkit-overflow-scrolling: touch;
-			padding-bottom: 0.5rem;
+			padding: var(--spacing-sm) var(--spacing-lg);
+			margin-left: calc(-1 * var(--spacing-lg));
+			margin-right: calc(-1 * var(--spacing-lg));
+			width: calc(100% + 2 * var(--spacing-lg));
 		}
 
 		.tile {
-			flex: 0 0 125px;
-			height: 110px;
+			flex: 0 0 150px;
+			height: 130px;
 			scroll-snap-align: start;
 		}
 
 		.tile-text {
-			font-size: 0.75rem;
+			font-size: var(--font-sm);
 		}
 	}
 </style>

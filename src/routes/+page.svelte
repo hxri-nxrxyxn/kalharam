@@ -102,7 +102,7 @@
 
 <style>
 	.shopping {
-		margin-top: var(--spacing-xl);
+		margin: var(--spacing-xl);
 	}
 
 	.shopping h1 {
@@ -136,6 +136,7 @@
 		.shop__filters-wrapper {
 			width: 100%;
 			position: static;
+			margin-bottom: var(--spacing-xl);
 		}
 
 		.shop__listings-wrapper {

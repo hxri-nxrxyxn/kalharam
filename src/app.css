@@ -53,35 +53,45 @@
 
 @media (max-width: 768px) {
     :root {
-        --height-logo: 2.2rem;
-        --height-icon: 0.95rem;
+        --height-logo: 2.8rem;
+        --height-icon: 1.0rem;
 
-        --spacing-xl: 2.5rem;
-        --spacing-lg: 1.25rem;
-        --spacing-md: 0.75rem;
-        --spacing-sm: 0.5rem;
+        --spacing-xl: 3.5rem;
+        --spacing-lg: 2rem;
+        --spacing-md: 1.25rem;
+        --spacing-sm: 0.75rem;
 
-        --font-xl: 2.25rem;
-        --font-lg: 1.5rem;
-        --font-md: 0.95rem;
-        --font-sm: 0.9rem;
+        --font-xl: 2.75rem;
+        --font-lg: 1.75rem;
+        --font-md: 1.1rem;
+        --font-sm: 1.0rem;
+    }
+
+    main {
+        margin: var(--spacing-md) var(--spacing-lg);
+        margin-top: calc(1.8 * var(--spacing-xl));
     }
 }
 
 @media (max-width: 480px) {
     :root {
-        --height-logo: 1.8rem;
-        --height-icon: 0.85rem;
+        --height-logo: 2.4rem;
+        --height-icon: 0.95rem;
 
-        --spacing-xl: 1.75rem;
-        --spacing-lg: 1rem;
-        --spacing-md: 0.5rem;
-        --spacing-sm: 0.35rem;
+        --spacing-xl: 2.5rem;
+        --spacing-lg: 1.5rem;
+        --spacing-md: 1rem;
+        --spacing-sm: 0.6rem;
 
-        --font-xl: 1.75rem;
-        --font-lg: 1.25rem;
-        --font-md: 0.85rem;
-        --font-sm: 0.8rem;
+        --font-xl: 2.25rem;
+        --font-lg: 1.4rem;
+        --font-md: 1.0rem;
+        --font-sm: 0.95rem;
+    }
+
+    main {
+        margin: var(--spacing-sm) var(--spacing-md);
+        margin-top: calc(2.0 * var(--spacing-xl));
     }
 }
 
