@@ -43,17 +43,15 @@
 
 	@media (max-width: 768px) {
 		.grid {
-			grid-template-columns: repeat(2, 1fr);
-			gap: var(--spacing-md);
-			row-gap: var(--spacing-xl);
+			grid-template-columns: 1fr;
+			gap: var(--spacing-xl);
 		}
 	}
 
 	@media (max-width: 480px) {
 		.grid {
-			grid-template-columns: repeat(2, 1fr);
-			gap: var(--spacing-md);
-			row-gap: var(--spacing-xl);
+			grid-template-columns: 1fr;
+			gap: var(--spacing-xl);
 		}
 	}
 
