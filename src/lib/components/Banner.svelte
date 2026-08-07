@@ -11,7 +11,7 @@
 	onMount(() => {
 		const interval = setInterval(() => {
 			currentIndex = (currentIndex + 1) % banners.length;
-		}, 2000);
+		}, 5000);
 
 		return () => clearInterval(interval);
 	});
