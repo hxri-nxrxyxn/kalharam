@@ -51,6 +51,11 @@
 		display: flex;
 		gap: var(--spacing-xl);
 	}
+	.footer__box {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-md);
+    }
 	.footer__media {
 		justify-content: flex-end;
 		align-items: flex-end;
@@ -59,16 +64,11 @@
 	}
 	.footer__media-icon {
 		display: flex;
-		flex-direction: column;
 		align-items: center;
 		gap: var(--spacing-sm);
 	}
 	.footer__media-icon img {
 		height: var(--height-icon);
 		filter: var(--filter-secondary);
-	}
-	.footer__box {
-		display: flex;
-		gap: var(--spacing-md);
 	}
 </style>
