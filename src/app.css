@@ -36,6 +36,7 @@
 
     --height-logo: 3.5rem;
     --height-icon: 1.1rem;
+    --nav-offset: calc(2.5 * var(--spacing-xl));
 
     --spacing-xl: 5rem;
     --spacing-lg: 2rem;
@@ -57,12 +58,12 @@ html {
 
 header {
     scroll-snap-align: start;
-    scroll-margin-top: calc(1.5 * var(--spacing-xl));
+    scroll-margin-top: var(--nav-offset);
 }
 
 .shopping {
     scroll-snap-align: start;
-    scroll-margin-top: calc(1.5 * var(--spacing-xl));
+    scroll-margin-top: var(--nav-offset);
 }
 
 body {
@@ -72,7 +73,7 @@ body {
 
 main {
     margin: var(--spacing-lg) var(--spacing-xl);
-    margin-top: calc(1.5 * var(--spacing-xl));
+    margin-top: var(--nav-offset);
 }
 
 h1, h2, h3 {
