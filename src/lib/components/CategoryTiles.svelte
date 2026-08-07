@@ -4,7 +4,7 @@
 	interface Props {
 		categories: Category[];
 		selectedCategoryId: string;
-		onSelectCategory: (id: string) => void;
+		onSelectCategory?: (id: string) => void;
 	}
 
 	let { categories, selectedCategoryId, onSelectCategory }: Props = $props();
@@ -12,12 +12,10 @@
 
 <div class="tiles">
 	{#each categories as category (category.id)}
-		<div
+		<a
+			href="/category/{category.id}"
 			class="tile {selectedCategoryId === category.id ? 'tile--selected' : ''}"
-			onclick={() => onSelectCategory(category.id)}
-			onkeydown={(e) => (e.key === 'Enter' || e.key === ' ') && onSelectCategory(category.id)}
-			role="button"
-			tabindex="0"
+			onclick={() => onSelectCategory?.(category.id)}
 		>
 			<div class="tile-inner">
 				<div
@@ -38,7 +36,7 @@
 					</span>
 				</div>
 			</div>
-		</div>
+		</a>
 	{/each}
 </div>
 
@@ -55,6 +53,8 @@
 		flex: 1;
 		perspective: 1000px;
 		cursor: url('/assets/filled-shapes/cursor.svg') 0 0, pointer;
+		text-decoration: none;
+		display: block;
 	}
 
 	.tile-inner {

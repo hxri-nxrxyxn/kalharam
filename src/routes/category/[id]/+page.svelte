@@ -1,26 +1,27 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import Banner from '$lib/components/Banner.svelte';
 	import CategoryTiles from '$lib/components/CategoryTiles.svelte';
 	import Filters from '$lib/components/Filters.svelte';
 	import ProductGrid from '$lib/components/ProductGrid.svelte';
 	import { categories, getProductsForCategory } from '$lib/data';
 
-	let selectedCategoryId = $state('mul-cotton');
+	let categoryId = $derived(page.params.id);
+
 	let searchQuery = $state('');
 	let sortBy = $state('featured');
 	let minPrice = $state('');
 	let maxPrice = $state('');
 
 	let currentCategory = $derived(
-		categories.find((c) => c.id === selectedCategoryId) || categories[0]
+		categories.find((c) => c.id === categoryId) || categories[0]
 	);
 
-	let rawProducts = $derived(getProductsForCategory(selectedCategoryId));
+	let rawProducts = $derived(getProductsForCategory(currentCategory.id));
 
 	let filteredProducts = $derived.by(() => {
 		let list = [...rawProducts];
 
-		// Search filter
 		if (searchQuery.trim() !== '') {
 			const query = searchQuery.toLowerCase().trim();
 			list = list.filter(
@@ -30,17 +31,14 @@
 			);
 		}
 
-		// Min price filter
 		if (minPrice !== '' && !isNaN(Number(minPrice))) {
 			list = list.filter((p) => p.salePrice >= Number(minPrice));
 		}
 
-		// Max price filter
 		if (maxPrice !== '' && !isNaN(Number(maxPrice))) {
 			list = list.filter((p) => p.salePrice <= Number(maxPrice));
 		}
 
-		// Sorting
 		if (sortBy === 'price-low') {
 			list.sort((a, b) => a.salePrice - b.salePrice);
 		} else if (sortBy === 'price-high') {
@@ -53,28 +51,20 @@
 
 		return list;
 	});
-
-	function handleSelectCategory(id: string) {
-		selectedCategoryId = id;
-	}
 </script>
 
 <svelte:head>
-	<title>Kalharam - Premium Sarees & Handloom Collections</title>
+	<title>Kalharam - {currentCategory.name} Collection</title>
 	<meta
 		name="description"
-		content="Discover Kalharam's exclusive handloom saree collections including Mul Cotton, Kanchi Cotton, Set Saree, Davani Half Saree, Onam Collections, Kalyani Cotton, and Narayan Peth."
+		content="Explore the finest {currentCategory.name} sarees and traditional handloom wear at Kalharam."
 	/>
 </svelte:head>
 
 <main>
 	<header>
 		<Banner />
-		<CategoryTiles
-			{categories}
-			{selectedCategoryId}
-			onSelectCategory={handleSelectCategory}
-		/>
+		<CategoryTiles {categories} selectedCategoryId={currentCategory.id} />
 	</header>
 
 	<section class="shopping">
@@ -98,7 +88,6 @@
 		</div>
 	</section>
 </main>
-
 
 <style>
 	.shopping {
