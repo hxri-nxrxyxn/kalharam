@@ -18,10 +18,12 @@
 			onclick={() => onSelectCategory?.(category.id)}
 		>
 			<div class="tile-inner">
-				<div
-					class="tile-front"
-					style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.3)), url('{category.image}')"
-				>
+				<div class="tile-front">
+					<div
+						class="tile-blur-bg"
+						style="background-image: url('{category.image}')"
+					></div>
+					<div class="tile-overlay"></div>
 					<span class="tile-text">
 						{#each category.name.split(' ') as word, idx (idx)}
 							{word}{#if idx < category.name.split(' ').length - 1}<br />{/if}
@@ -78,6 +80,7 @@
 	.tile-back {
 		position: absolute;
 		inset: 0;
+		overflow: hidden;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -86,10 +89,28 @@
 		-webkit-backface-visibility: hidden;
 	}
 
-	.tile-front {
+	.tile-blur-bg {
+		position: absolute;
+		inset: -25px;
 		background-size: cover;
 		background-position: center;
 		background-repeat: no-repeat;
+		filter: blur(24px) saturate(220%) brightness(0.72) contrast(105%);
+		transform: scale(1.15);
+		transition: filter 0.5s ease, transform 0.5s ease;
+		will-change: filter, transform;
+	}
+
+	.tile:hover .tile-blur-bg {
+		filter: blur(16px) saturate(250%) brightness(0.82) contrast(110%);
+		transform: scale(1.22);
+	}
+
+	.tile-overlay {
+		position: absolute;
+		inset: 0;
+		background: radial-gradient(circle at center, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.4) 100%);
+		z-index: 1;
 	}
 
 	.tile-back {
@@ -99,15 +120,19 @@
 	}
 
 	.tile-text {
+		position: relative;
+		z-index: 2;
 		color: var(--color-tile);
 		font-weight: 700;
 		font-size: var(--font-sm);
 		text-align: center;
 		line-height: 120%;
 		text-transform: uppercase;
+		text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 	}
 
 	.tile-text--back {
 		color: var(--color-primary);
+		text-shadow: none;
 	}
 </style>
