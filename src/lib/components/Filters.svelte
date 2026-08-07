@@ -83,6 +83,8 @@
 <style>
 	.shop__filters {
 		width: 100%;
+		padding: var(--spacing-lg);
+		background-color: var(--color-surface);
 	}
 
 	.filter {

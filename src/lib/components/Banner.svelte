@@ -34,6 +34,12 @@
 		overflow: hidden;
 	}
 
+	@media (max-width: 768px) {
+		.banner-slider {
+			height: 40vh;
+		}
+	}
+
 	.slide {
 		position: absolute;
 		inset: 0;

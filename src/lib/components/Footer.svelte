@@ -21,6 +21,10 @@
 		</div>
 	</div>
 	<div class="footer__media">
+        <div class="footer__media-icon">
+			<img src="/assets/filled-shapes/instagram.svg" alt="instagram" />
+			<a href="#instagram">Instagram</a>
+		</div>
 		<div class="footer__media-icon">
 			<img src="/assets/filled-shapes/youtube.svg" alt="youtube" />
 			<a href="#youtube">YouTube</a>
@@ -28,10 +32,6 @@
 		<div class="footer__media-icon">
 			<img src="/assets/filled-shapes/facebook.svg" alt="facebook" />
 			<a href="#facebook">Facebook</a>
-		</div>
-		<div class="footer__media-icon">
-			<img src="/assets/filled-shapes/instagram.svg" alt="instagram" />
-			<a href="#instagram">Instagram</a>
 		</div>
 	</div>
 </footer>
@@ -70,5 +70,23 @@
 	.footer__media-icon img {
 		height: var(--height-icon);
 		filter: var(--filter-secondary);
+	}
+
+	@media (max-width: 768px) {
+		footer {
+			flex-direction: column;
+			gap: var(--spacing-xl);
+		}
+
+		.footer__boxes {
+			flex-direction: column;
+			gap: var(--spacing-lg);
+		}
+
+		.footer__media {
+			justify-content: flex-start;
+			align-items: flex-start;
+			flex-wrap: wrap;
+		}
 	}
 </style>

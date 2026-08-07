@@ -147,4 +147,24 @@
 		text-transform: uppercase;
 		text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 	}
+
+	@media (max-width: 900px) {
+		.tiles {
+			height: auto;
+			overflow-x: auto;
+			scroll-snap-type: x mandatory;
+			-webkit-overflow-scrolling: touch;
+			padding-bottom: 0.5rem;
+		}
+
+		.tile {
+			flex: 0 0 125px;
+			height: 110px;
+			scroll-snap-align: start;
+		}
+
+		.tile-text {
+			font-size: 0.75rem;
+		}
+	}
 </style>

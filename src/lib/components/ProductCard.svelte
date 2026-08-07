@@ -92,4 +92,15 @@
 		height: var(--height-icon);
 		filter: var(--filter-primary);
 	}
+
+	@media (max-width: 768px) {
+		.listing__image {
+			height: 28vh;
+		}
+
+		.listing__title,
+		.listing__info {
+			padding: var(--spacing-sm);
+		}
+	}
 </style>

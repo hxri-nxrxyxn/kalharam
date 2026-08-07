@@ -64,4 +64,23 @@
 		height: var(--spacing-lg);
 		filter: var(--filter-secondary);
 	}
+
+	@media (max-width: 768px) {
+		.nav {
+			padding: var(--spacing-sm) var(--spacing-md);
+		}
+
+		.nav__logo {
+			gap: var(--spacing-sm);
+		}
+
+		.nav__links {
+			gap: var(--spacing-md);
+		}
+
+		.nav__link {
+			font-size: 0.75rem;
+			gap: 0.25rem;
+		}
+	}
 </style>

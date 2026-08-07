@@ -44,12 +44,16 @@
 	@media (max-width: 768px) {
 		.grid {
 			grid-template-columns: repeat(2, 1fr);
+			gap: var(--spacing-sm);
+			row-gap: var(--spacing-lg);
 		}
 	}
 
 	@media (max-width: 480px) {
 		.grid {
-			grid-template-columns: 1fr;
+			grid-template-columns: repeat(2, 1fr);
+			gap: var(--spacing-sm);
+			row-gap: var(--spacing-md);
 		}
 	}
 
