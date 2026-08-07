@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Banner from '$lib/components/Banner.svelte';
-	import Footer from '$lib/components/Footer.svelte';
 	import CategoryTiles from '$lib/components/CategoryTiles.svelte';
 	import Filters from '$lib/components/Filters.svelte';
 	import ProductGrid from '$lib/components/ProductGrid.svelte';
@@ -60,37 +59,37 @@
 	}
 </script>
 
-<header>
-	<Banner />
-	<CategoryTiles
-		{categories}
-		{selectedCategoryId}
-		onSelectCategory={handleSelectCategory}
-	/>
-</header>
+<main>
+	<header>
+		<Banner />
+		<CategoryTiles
+			{categories}
+			{selectedCategoryId}
+			onSelectCategory={handleSelectCategory}
+		/>
+	</header>
 
-<section class="shopping">
-	<h1>{currentCategory.name}</h1>
-	<div class="shop">
-		<div class="shop__filters-wrapper">
-			<Filters
-				{searchQuery}
-				{sortBy}
-				{minPrice}
-				{maxPrice}
-				onSearchChange={(val) => (searchQuery = val)}
-				onSortChange={(val) => (sortBy = val)}
-				onMinPriceChange={(val) => (minPrice = val)}
-				onMaxPriceChange={(val) => (maxPrice = val)}
-			/>
+	<section class="shopping">
+		<h1>{currentCategory.name}</h1>
+		<div class="shop">
+			<div class="shop__filters-wrapper">
+				<Filters
+					{searchQuery}
+					{sortBy}
+					{minPrice}
+					{maxPrice}
+					onSearchChange={(val) => (searchQuery = val)}
+					onSortChange={(val) => (sortBy = val)}
+					onMinPriceChange={(val) => (minPrice = val)}
+					onMaxPriceChange={(val) => (maxPrice = val)}
+				/>
+			</div>
+			<div class="shop__listings-wrapper">
+				<ProductGrid products={filteredProducts} />
+			</div>
 		</div>
-		<div class="shop__listings-wrapper">
-			<ProductGrid products={filteredProducts} />
-		</div>
-	</div>
-</section>
-
-<Footer/>
+	</section>
+</main>
 
 
 <style>

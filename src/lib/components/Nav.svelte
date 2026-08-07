@@ -43,7 +43,7 @@
 
 	.nav__logo img {
 		height: var(--height-logo);
-		filter: var(--filter-primary);
+		filter: var(--filter-secondary);
 	}
 
 	.nav__links {

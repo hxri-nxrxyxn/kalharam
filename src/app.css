@@ -31,8 +31,8 @@
     --color-background: #faf9f6;
     --color-surface: #ffffff;
 
-    --filter-primary: brightness(0) saturate(100%) invert(52%) sepia(28%) saturate(700%) hue-rotate(5deg) brightness(92%) contrast(88%);
-    --filter-secondary: brightness(0) saturate(100%) invert(60%) sepia(20%) saturate(550%) hue-rotate(5deg) brightness(92%) contrast(85%);
+    --fiter-primary: brightness(0) saturate(100%) invert(26%) sepia(32%) saturate(507%) hue-rotate(356deg) brightness(92%) contrast(85%);
+    --filter-secondary: brightness(0) saturate(100%) invert(75%) sepia(2%) saturate(3669%) hue-rotate(351deg) brightness(77%) contrast(99%); 
 
     --height-logo: 3.5rem;
     --height-icon: 1.1rem;
@@ -57,6 +57,11 @@ html {
 body {
     font-family: var(--font-family);
     background-color: var(--color-background);
+}
+
+main {
+    margin: var(--spacing-lg) var(--spacing-xl);
+    margin-top: calc(1.5 * var(--spacing-xl));
 }
 
 h1, h2, h3 {

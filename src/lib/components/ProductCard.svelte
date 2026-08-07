@@ -36,6 +36,7 @@
 		width: 100%;
 		display: flex;
 		flex-direction: column;
+		background-color: var(--color-surface);
 	}
 
 	.listing span {
@@ -60,14 +61,14 @@
 
 	.listing__title {
 		color: var(--color-primary);
-		padding: var(--spacing-sm);
+		padding: var(--spacing-md);
 	}
 
 	.listing__info {
 		color: var(--color-secondary);
 		display: flex;
 		justify-content: space-between;
-		padding: var(--spacing-sm);
+		padding: var(--spacing-md);
 	}
 
 	.listing__info-count,

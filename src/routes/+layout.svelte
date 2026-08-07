@@ -3,6 +3,7 @@
 	import Lenis from 'lenis';
 	import 'lenis/dist/lenis.css';
 	import Nav from '$lib/components/Nav.svelte';
+	import Footer from '$lib/components/Footer.svelte';
 	import '../app.css';
 
 	let { children } = $props();
@@ -29,13 +30,6 @@
 
 <Nav />
 
-<main>
-	{@render children()}
-</main>
+{@render children()}
 
-<style>
-	main {
-		margin: var(--spacing-lg) var(--spacing-xl);
-		margin-top: calc(1.5 * var(--spacing-xl));
-	}
-</style>
+<Footer />

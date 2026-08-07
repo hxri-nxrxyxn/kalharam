@@ -37,5 +37,14 @@
 </footer>
 
 <style>
-
+    .footer__boxes {
+        padding-top: var(--spacing-xl);
+        display: flex;
+        background-color: var(--color-surface);
+    }
+    .footer__box {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
 </style>
