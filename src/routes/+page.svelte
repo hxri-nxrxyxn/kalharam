@@ -130,7 +130,7 @@
 
 <style>
 	.shopping {
-		margin: var(--spacing-xl);
+		margin-top: var(--spacing-xl);
 	}
 
 	.shopping h1 {

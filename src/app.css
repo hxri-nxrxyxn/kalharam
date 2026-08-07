@@ -68,7 +68,7 @@
     }
 
     main {
-        margin: var(--spacing-md) var(--spacing-lg);
+        margin: 0 var(--spacing-lg);
         margin-top: calc(1.8 * var(--spacing-xl));
     }
 }
@@ -90,7 +90,7 @@
     }
 
     main {
-        margin: var(--spacing-sm) var(--spacing-md);
+        margin: 0 var(--spacing-md);
         margin-top: calc(2.0 * var(--spacing-xl));
     }
 }
@@ -125,7 +125,7 @@ body {
 }
 
 main {
-    margin: var(--spacing-lg) var(--spacing-xl);
+    margin: 0 var(--spacing-xl);
     margin-top: var(--nav-offset);
 }
 

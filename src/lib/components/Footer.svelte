@@ -39,13 +39,16 @@
 <style>
 	footer {
 		display: flex;
-		padding: var(--spacing-xl);
+		padding: var(--spacing-lg) var(--spacing-xl);
 		background-color: var(--color-surface);
 		justify-content: space-between;
 	}
 	footer a {
 		color: var(--color-secondary);
 		font-weight: 500;
+	}
+	footer h3 {
+		color: var(--color-primary);
 	}
 	.footer__boxes {
 		display: flex;
