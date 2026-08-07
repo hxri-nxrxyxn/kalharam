@@ -23,16 +23,16 @@
     --filter-secondary: brightness(0) saturate(100%) invert(91%) sepia(4%) saturate(28%) hue-rotate(51deg) brightness(93%) contrast(85%);
     -------------------------------------------------- */
 
-    /* --- Refined Premium Light Theme (Warm Ivory & Gold Accents) --- */
-    --color-primary: #2a2723;
-    --color-secondary: #a89278;
+    /* --- Blue (#1997d5) & Soft Slate Theme --- */
+    --color-primary: #1997d5;
+    --color-secondary: #81a3b5;
     --color-tile: #ffffff;
-    --color-input: #f2f0ec;
-    --color-background: #faf9f6;
+    --color-input: #f4f8fa;
+    --color-background: #fcfdfe;
     --color-surface: #ffffff;
 
-    --filter-primary: brightness(0) saturate(100%) invert(14%) sepia(8%) saturate(500%) hue-rotate(345deg) brightness(95%) contrast(90%);
-    --filter-secondary: brightness(0) saturate(100%) invert(60%) sepia(20%) saturate(550%) hue-rotate(5deg) brightness(92%) contrast(85%);
+    --filter-primary: brightness(0) saturate(100%) invert(48%) sepia(85%) saturate(1400%) hue-rotate(170deg) brightness(95%) contrast(90%);
+    --filter-secondary: brightness(0) saturate(100%) invert(64%) sepia(20%) saturate(600%) hue-rotate(160deg) brightness(92%) contrast(85%);
 
     --height-logo: 3.5rem;
     --height-icon: 1.1rem;
