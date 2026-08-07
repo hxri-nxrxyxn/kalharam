@@ -24,40 +24,6 @@
 		}
 		rafId = requestAnimationFrame(raf);
 
-		let isSnapping = false;
-
-		lenis.on('scroll', (e: { scroll: number; direction: number }) => {
-			if (isSnapping) return;
-
-			const shoppingEl = document.querySelector('.shopping') as HTMLElement;
-			if (!shoppingEl) return;
-
-			const scrollY = e.scroll;
-			const isScrollingDown = e.direction > 0;
-			const shoppingRect = shoppingEl.getBoundingClientRect();
-
-			const navOffset = 120;
-
-			// When scrolling down near the top header, auto-snap glide to shopping section
-			if (
-				isScrollingDown &&
-				scrollY > 20 &&
-				scrollY < 300 &&
-				shoppingRect.top > navOffset + 20
-			) {
-				isSnapping = true;
-				lenis.scrollTo(shoppingEl, {
-					offset: -navOffset,
-					duration: 1.2,
-					onComplete: () => {
-						setTimeout(() => {
-							isSnapping = false;
-						}, 100);
-					}
-				});
-			}
-		});
-
 		return () => {
 			cancelAnimationFrame(rafId);
 			lenis.destroy();
