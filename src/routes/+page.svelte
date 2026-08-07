@@ -113,10 +113,15 @@
 	.shop {
 		display: flex;
 		justify-content: space-between;
+		align-items: flex-start;
 	}
 
 	.shop__filters-wrapper {
 		width: 20%;
+		position: sticky;
+		top: var(--nav-offset);
+		align-self: flex-start;
+		z-index: 10;
 	}
 
 	.shop__listings-wrapper {
@@ -130,6 +135,7 @@
 
 		.shop__filters-wrapper {
 			width: 100%;
+			position: static;
 		}
 
 		.shop__listings-wrapper {
