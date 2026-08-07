@@ -23,15 +23,15 @@
     --filter-secondary: brightness(0) saturate(100%) invert(91%) sepia(4%) saturate(28%) hue-rotate(51deg) brightness(93%) contrast(85%);
     -------------------------------------------------- */
 
-    /* --- Refined Premium Light Theme (Warm Ivory & Gold Accents) --- */
-    --color-primary: #2a2723;
+    /* --- Refined Premium Light Theme (#997d58 Primary Gold/Bronze) --- */
+    --color-primary: #997d58;
     --color-secondary: #a89278;
     --color-tile: #ffffff;
     --color-input: #f2f0ec;
     --color-background: #faf9f6;
     --color-surface: #ffffff;
 
-    --filter-primary: brightness(0) saturate(100%) invert(14%) sepia(8%) saturate(500%) hue-rotate(345deg) brightness(95%) contrast(90%);
+    --filter-primary: brightness(0) saturate(100%) invert(52%) sepia(28%) saturate(700%) hue-rotate(5deg) brightness(92%) contrast(88%);
     --filter-secondary: brightness(0) saturate(100%) invert(60%) sepia(20%) saturate(550%) hue-rotate(5deg) brightness(92%) contrast(85%);
 
     --height-logo: 3.5rem;
