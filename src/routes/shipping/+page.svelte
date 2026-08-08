@@ -6,80 +6,75 @@
 	<meta name="description" content="Learn about our domestic and international shipping policies, delivery times, and rates." />
 </svelte:head>
 
-<main class="page-container">
-	<div class="page-content">
-		<h1>Shipping Policy</h1>
+<main class="shipping">
+	<div class="shipping__content">
+		<h1 class="shipping__title">Shipping Policy</h1>
+		
+		<p class="shipping__lead">Bringing heritage to your doorstep, securely and swiftly.</p>
 
-		<p class="lead">Bringing heritage to your doorstep, securely and swiftly.</p>
+		<h2 class="shipping__subtitle">Order Processing</h2>
+		<p class="shipping__paragraph">Every piece at Kalharam Kalyani is thoroughly inspected and lovingly packaged before it begins its journey to your wardrobe. Orders are typically processed and dispatched within 1-2 business days.</p>
 
-		<h2>Order Processing</h2>
-		<p>Every piece at Kalharam Kalyani is thoroughly inspected and lovingly packaged before it begins its journey to your wardrobe. Orders are typically processed and dispatched within 1-2 business days.</p>
+		<h2 class="shipping__subtitle">Domestic Shipping (India)</h2>
+		<p class="shipping__paragraph">We offer complimentary shipping on all prepaid orders across India. For domestic deliveries, please allow 5-7 business days for your handloom treasures to arrive. Expedited shipping is available at checkout for an additional fee.</p>
 
-		<h2>Domestic Shipping (India)</h2>
-		<p>We offer complimentary shipping on all prepaid orders across India. For domestic deliveries, please allow 5-7 business days for your handloom treasures to arrive. Expedited shipping is available at checkout for an additional fee.</p>
+		<h2 class="shipping__subtitle">International Shipping</h2>
+		<p class="shipping__paragraph">We ship worldwide! International shipping rates are calculated at checkout based on the destination and parcel weight. International deliveries typically take 10-15 business days. Please note that customs duties or local taxes are the responsibility of the recipient.</p>
 
-		<h2>International Shipping</h2>
-		<p>We ship worldwide! International shipping rates are calculated at checkout based on the destination and parcel weight. International deliveries typically take 10-15 business days. Please note that customs duties or local taxes are the responsibility of the recipient.</p>
-
-		<h2>Tracking Your Order</h2>
-		<p>Once your order is dispatched, you will receive a tracking link via email and SMS, allowing you to monitor your saree's journey every step of the way.</p>
+		<h2 class="shipping__subtitle">Tracking Your Order</h2>
+		<p class="shipping__paragraph">Once your order is dispatched, you will receive a tracking link via email and SMS, allowing you to monitor your saree's journey every step of the way.</p>
 		
 	</div>
 </main>
 
-
 <style>
-	.page-container {
+	.shipping {
 		display: flex;
 		padding-bottom: var(--spacing-xl);
 	}
 
-	.page-content {
+	.shipping__content {
 		width: 40%;
 	}
 
-	.page-content h1 {
+	.shipping__title {
 		color: var(--color-primary);
 		margin-bottom: var(--spacing-lg);
 	}
 
-	.page-content p {
+	.shipping__paragraph {
 		color: var(--color-secondary);
 		line-height: 1.6;
 		margin-bottom: var(--spacing-md);
 	}
 	
-	.page-content h2 {
+	.shipping__subtitle {
 		color: var(--color-primary);
 		margin-top: var(--spacing-lg);
 		margin-bottom: var(--spacing-sm);
 	}
 
-	.page-content .lead {
+	.shipping__lead {
 		font-weight: 500;
 		font-size: 1.1rem;
 		color: var(--color-primary);
-	}
-
-	.page-content ul {
-		color: var(--color-secondary);
-		line-height: 1.6;
 		margin-bottom: var(--spacing-md);
-		padding-left: var(--spacing-lg);
 	}
 
-	.page-content li {
-		margin-bottom: calc(var(--spacing-sm) / 2);
-	}
+	
+	
+	
+	
+	
 
 	@media (max-width: 900px) {
-		.page-content {
+		.shipping__content {
 			width: 60%;
 		}
 	}
 
 	@media (max-width: 768px) {
-		.page-content {
+		.shipping__content {
 			width: 100%;
 		}
 	}

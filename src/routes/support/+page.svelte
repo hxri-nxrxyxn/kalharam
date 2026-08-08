@@ -28,6 +28,7 @@
 	</div>	
 	<div class="support__text">
 		<h1>Contact Us</h1>
+		<p class="support__lead">We are here to help you weave your perfect story.</p>
 		<p>Whether you need assistance finding the perfect drape, have a question about the care of our handwoven collections, or wish to inquire about a recent order, our dedicated support team is at your service. Let us bring your saree vision to life.</p>
 		
 		<div class="support__rows">
@@ -35,12 +36,12 @@
 				<div class="support__column">
 					<h3>WhatsApp</h3>
 					<p>+91 81570 75657</p>
-					<p class="small-text">Mon - Sat, 10 AM to 7 PM</p>
+					<p class="support__small-text">Mon - Sat, 10 AM to 7 PM</p>
 				</div>
 				<div class="support__column">
 					<h3>Customer Support</h3>
 					<p>support@kalharam.com</p>
-					<p class="small-text">Expect a reply within 24 hours</p>
+					<p class="support__small-text">Expect a reply within 24 hours</p>
 				</div>
 			</div>
 			<div class="support__row">
@@ -91,7 +92,7 @@
 	.support__image img {
 		width: 100%;
 		height: 100%;
-		object-fit: cover;
+		object-fit: contain;
 	}
 
 	.support__text {
@@ -102,7 +103,7 @@
 		color: var(--color-primary);
 	}
 	
-	.lead {
+	.support__lead {
 		font-weight: 500;
 		font-size: 1.1rem;
 		color: var(--color-primary);
@@ -110,7 +111,7 @@
 	}
 
 	.support__text > p {
-		margin: var(--spacing-lg) 0;
+		margin: var(--spacing-md) 0;
 		color: var(--color-secondary);
 		line-height: 1.6;
 	}
@@ -136,7 +137,7 @@
 		color: var(--color-secondary);
 	}
 	
-	.small-text {
+	.support__small-text {
 		font-size: var(--font-sm);
 		opacity: 0.7;
 		margin-top: 4px;
@@ -150,5 +151,4 @@
 		color: var(--color-primary);
 		margin-bottom: var(--spacing-lg);
 	}
-
 </style>

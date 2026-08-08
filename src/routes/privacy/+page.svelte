@@ -6,77 +6,72 @@
 	<meta name="description" content="Understand how we collect, use, and protect your personal information." />
 </svelte:head>
 
-<main class="page-container">
-	<div class="page-content">
-		<h1>Privacy Policy</h1>
+<main class="privacy">
+	<div class="privacy__content">
+		<h1 class="privacy__title">Privacy Policy</h1>
+		
+		<p class="privacy__lead">Your privacy is as important to us as the quality of our weaves.</p>
 
-		<p class="lead">Your privacy is as important to us as the quality of our weaves.</p>
+		<h2 class="privacy__subtitle">Data Collection</h2>
+		<p class="privacy__paragraph">When you purchase something from Kalharam Kalyani, we collect the personal information you give us, such as your name, address, and email address, to fulfill your order and provide customer support.</p>
 
-		<h2>Data Collection</h2>
-		<p>When you purchase something from Kalharam Kalyani, we collect the personal information you give us, such as your name, address, and email address, to fulfill your order and provide customer support.</p>
+		<h2 class="privacy__subtitle">Payment Security</h2>
+		<p class="privacy__paragraph">We use encrypted, industry-standard payment gateways. We do not store your credit card details or payment information on our servers. Your transactions are 100% secure.</p>
 
-		<h2>Payment Security</h2>
-		<p>We use encrypted, industry-standard payment gateways. We do not store your credit card details or payment information on our servers. Your transactions are 100% secure.</p>
-
-		<h2>Data Usage</h2>
-		<p>We will never sell, rent, or distribute your personal information to third parties. With your permission, we may send you emails about our boutique, new collections, and exclusive sales.</p>
+		<h2 class="privacy__subtitle">Data Usage</h2>
+		<p class="privacy__paragraph">We will never sell, rent, or distribute your personal information to third parties. With your permission, we may send you emails about our boutique, new collections, and exclusive sales.</p>
 		
 	</div>
 </main>
 
-
 <style>
-	.page-container {
+	.privacy {
 		display: flex;
 		padding-bottom: var(--spacing-xl);
 	}
 
-	.page-content {
+	.privacy__content {
 		width: 40%;
 	}
 
-	.page-content h1 {
+	.privacy__title {
 		color: var(--color-primary);
 		margin-bottom: var(--spacing-lg);
 	}
 
-	.page-content p {
+	.privacy__paragraph {
 		color: var(--color-secondary);
 		line-height: 1.6;
 		margin-bottom: var(--spacing-md);
 	}
 	
-	.page-content h2 {
+	.privacy__subtitle {
 		color: var(--color-primary);
 		margin-top: var(--spacing-lg);
 		margin-bottom: var(--spacing-sm);
 	}
 
-	.page-content .lead {
+	.privacy__lead {
 		font-weight: 500;
 		font-size: 1.1rem;
 		color: var(--color-primary);
-	}
-
-	.page-content ul {
-		color: var(--color-secondary);
-		line-height: 1.6;
 		margin-bottom: var(--spacing-md);
-		padding-left: var(--spacing-lg);
 	}
 
-	.page-content li {
-		margin-bottom: calc(var(--spacing-sm) / 2);
-	}
+	
+	
+	
+	
+	
 
 	@media (max-width: 900px) {
-		.page-content {
+		.privacy__content {
 			width: 60%;
 		}
 	}
 
 	@media (max-width: 768px) {
-		.page-content {
+		.privacy__content {
 			width: 100%;
 		}
 	}

@@ -41,7 +41,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		padding: var(--spacing-xl);
+		padding: var(--spacing-md);
 	}
 	
 	.success-content {
@@ -83,7 +83,7 @@
 	.details {
 		width: 100%;
 		background-color: var(--color-surface);
-		padding: var(--spacing-xl);
+		padding: var(--spacing-md);
 		margin-bottom: var(--spacing-lg);
 	}
 	

@@ -6,76 +6,71 @@
 	<meta name="description" content="Discover the story behind Kalharam Kalyani and our commitment to authentic handlooms." />
 </svelte:head>
 
-<main class="page-container">
-	<div class="page-content">
-		<h1>About Us</h1>
-
-		<p class="lead">Woven with heritage, crafted with soul.</p>
+<main class="about">
+	<div class="about__content">
+		<h1 class="about__title">About Us</h1>
 		
-		<p>Kalharam Kalyani was born from a deep reverence for India's rich handloom heritage. We are more than just a boutique; we are a celebration of the artisans, the weavers, and the generations of tradition that breathe life into every thread.</p>
+		<p class="about__lead">Woven with heritage, crafted with soul.</p>
 		
-		<h2>Our Philosophy</h2>
-		<p>In a world of fast fashion, we choose the slow, intentional rhythm of the loom. Every drape in our collection—from the breezy elegance of Mul Cotton to the regal weight of Kanchi Cotton—is meticulously curated to ensure unparalleled quality. We believe that a saree is not just a garment, but a canvas of cultural storytelling.</p>
+		<p class="about__paragraph">Kalharam Kalyani was born from a deep reverence for India's rich handloom heritage. We are more than just a boutique; we are a celebration of the artisans, the weavers, and the generations of tradition that breathe life into every thread.</p>
 		
-		<h2>Empowering Artisans</h2>
-		<p>We work directly with weaving communities across the country, ensuring fair trade practices and sustainable livelihoods. By choosing Kalharam Kalyani, you are directly contributing to the preservation of ancient weaving techniques and the prosperity of the hands that craft them.</p>
+		<h2 class="about__subtitle">Our Philosophy</h2>
+		<p class="about__paragraph">In a world of fast fashion, we choose the slow, intentional rhythm of the loom. Every drape in our collection—from the breezy elegance of Mul Cotton to the regal weight of Kanchi Cotton—is meticulously curated to ensure unparalleled quality. We believe that a saree is not just a garment, but a canvas of cultural storytelling.</p>
+		
+		<h2 class="about__subtitle">Empowering Artisans</h2>
+		<p class="about__paragraph">We work directly with weaving communities across the country, ensuring fair trade practices and sustainable livelihoods. By choosing Kalharam Kalyani, you are directly contributing to the preservation of ancient weaving techniques and the prosperity of the hands that craft them.</p>
 		
 	</div>
 </main>
 
-
 <style>
-	.page-container {
+	.about {
 		display: flex;
 		padding-bottom: var(--spacing-xl);
 	}
 
-	.page-content {
+	.about__content {
 		width: 40%;
 	}
 
-	.page-content h1 {
+	.about__title {
 		color: var(--color-primary);
 		margin-bottom: var(--spacing-lg);
 	}
 
-	.page-content p {
+	.about__paragraph {
 		color: var(--color-secondary);
 		line-height: 1.6;
 		margin-bottom: var(--spacing-md);
 	}
 	
-	.page-content h2 {
+	.about__subtitle {
 		color: var(--color-primary);
 		margin-top: var(--spacing-lg);
 		margin-bottom: var(--spacing-sm);
 	}
 
-	.page-content .lead {
+	.about__lead {
 		font-weight: 500;
 		font-size: 1.1rem;
 		color: var(--color-primary);
-	}
-
-	.page-content ul {
-		color: var(--color-secondary);
-		line-height: 1.6;
 		margin-bottom: var(--spacing-md);
-		padding-left: var(--spacing-lg);
 	}
 
-	.page-content li {
-		margin-bottom: calc(var(--spacing-sm) / 2);
-	}
+	
+	
+	
+	
+	
 
 	@media (max-width: 900px) {
-		.page-content {
+		.about__content {
 			width: 60%;
 		}
 	}
 
 	@media (max-width: 768px) {
-		.page-content {
+		.about__content {
 			width: 100%;
 		}
 	}

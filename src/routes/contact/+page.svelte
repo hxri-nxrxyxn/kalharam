@@ -6,80 +6,88 @@
 	<meta name="description" content="Get in touch with our team for inquiries and support." />
 </svelte:head>
 
-<main class="page-container">
-	<div class="page-content">
-		<h1>Contact Kalharam Kalyani</h1>
+<main class="contact">
+	<div class="contact__content">
+		<h1 class="contact__title">Contact Kalharam Kalyani</h1>
+		
+		<p class="contact__lead">We would love to hear from you.</p>
+		<p class="contact__paragraph">Whether you need assistance finding the perfect drape, have a question about our handwoven collections, or want to book a bridal consultation, our team is here to help.</p>
 
-		<p class="lead">We would love to hear from you.</p>
-		<p>Whether you need assistance finding the perfect drape, have a question about our handwoven collections, or want to book a bridal consultation, our team is here to help.</p>
-
-		<h2>Direct Contact</h2>
-		<ul>
-			<li><strong>WhatsApp:</strong> +91 81570 75657</li>
-			<li><strong>Customer Support:</strong> support@kalharam.com</li>
-			<li><strong>General Enquiry:</strong> enquiry@kalharam.com</li>
-			<li><strong>Address:</strong> kalharam.com</li>
+		<h2 class="contact__subtitle">Direct Contact</h2>
+		<ul class="contact__list">
+			<li class="contact__list-item"><strong class="contact__strong">WhatsApp:</strong> +91 81570 75657</li>
+			<li class="contact__list-item"><strong class="contact__strong">Customer Support:</strong> support@kalharam.com</li>
+			<li class="contact__list-item"><strong class="contact__strong">General Enquiry:</strong> enquiry@kalharam.com</li>
+			<li class="contact__list-item"><strong class="contact__strong">Address:</strong> kalharam.com</li>
 		</ul>
 
-		<h2>Boutique Hours</h2>
-		<p>Our online support team is available Monday through Saturday, from 10:00 AM to 7:00 PM (IST). We aim to respond to all inquiries within 24 hours.</p>
+		<h2 class="contact__subtitle">Boutique Hours</h2>
+		<p class="contact__paragraph">Our online support team is available Monday through Saturday, from 10:00 AM to 7:00 PM (IST). We aim to respond to all inquiries within 24 hours.</p>
 		
 	</div>
 </main>
 
-
 <style>
-	.page-container {
+	.contact {
 		display: flex;
 		padding-bottom: var(--spacing-xl);
 	}
 
-	.page-content {
+	.contact__content {
 		width: 40%;
 	}
 
-	.page-content h1 {
+	.contact__title {
 		color: var(--color-primary);
 		margin-bottom: var(--spacing-lg);
 	}
 
-	.page-content p {
+	.contact__paragraph {
 		color: var(--color-secondary);
 		line-height: 1.6;
 		margin-bottom: var(--spacing-md);
 	}
 	
-	.page-content h2 {
+	.contact__subtitle {
 		color: var(--color-primary);
 		margin-top: var(--spacing-lg);
 		margin-bottom: var(--spacing-sm);
 	}
 
-	.page-content .lead {
+	.contact__lead {
 		font-weight: 500;
 		font-size: 1.1rem;
 		color: var(--color-primary);
+		margin-bottom: var(--spacing-md);
 	}
 
-	.page-content ul {
+	
+	
+	.contact__list {
 		color: var(--color-secondary);
 		line-height: 1.6;
 		margin-bottom: var(--spacing-md);
 		padding-left: var(--spacing-lg);
 	}
 
-	.page-content li {
+	.contact__list-item {
 		margin-bottom: calc(var(--spacing-sm) / 2);
 	}
+	
+	.contact__strong {
+		color: var(--color-primary);
+	}
+	
+	
 
 	@media (max-width: 900px) {
-		.page-content {
+		.contact__content {
 			width: 60%;
 		}
 	}
 
 	@media (max-width: 768px) {
-		.page-content {
+		.contact__content {
 			width: 100%;
 		}
 	}
