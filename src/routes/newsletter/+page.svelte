@@ -1,4 +1,15 @@
 <script lang="ts">
+	import Field from '$lib/components/Field.svelte';
+	import { toast } from '$lib/toast.svelte';
+
+	let email = $state('');
+
+	function handleSubscribe() {
+		if (email) {
+			toast.show('Thank you! You are now an insider.');
+			email = '';
+		}
+	}
 </script>
 
 <svelte:head>
@@ -13,13 +24,15 @@
 		<p class="lead">Become an insider.</p>
 		<p>Join the Kalharam Kalyani family. Subscribe to our newsletter to receive early access to our limited-edition handloom drops, styling guides, and exclusive invitations to our festive sales.</p>
 		
-		<div style="margin-top: 2rem; background-color: var(--color-input); padding: 2rem;">
+		<div class="newsletter-form">
 			<h2 style="margin-top: 0;">Subscribe</h2>
-			<p>Enter your email address below. We promise to only send you beautiful things.</p>
-			<div style="display: flex; gap: 1rem; margin-top: 1rem;">
-				<input type="email" placeholder="Your email address" style="flex: 1; padding: 0.8rem; border: 1px solid var(--color-secondary); background: transparent; outline: none; color: var(--color-primary);" />
-				<button class="btn btn--primary" style="padding: 0.8rem 2rem; font-size: 0.9rem;">Subscribe</button>
-			</div>
+			<p style="margin-bottom: var(--spacing-lg);">Enter your email address below. We promise to only send you beautiful things.</p>
+			
+			<Field label="EMAIL">
+				<input type="email" placeholder="Your email address" bind:value={email} />
+			</Field>
+
+			<button class="btn btn--primary" onclick={handleSubscribe} disabled={!email} style="width: 100%;">Subscribe</button>
 		</div>
 		
 	</div>
@@ -68,6 +81,12 @@
 
 	.page-content li {
 		margin-bottom: calc(var(--spacing-sm) / 2);
+	}
+
+	.newsletter-form {
+		margin-top: calc(2 * var(--spacing-xl));
+		background-color: var(--color-surface);
+		padding: var(--spacing-xl);
 	}
 
 	@media (max-width: 900px) {
