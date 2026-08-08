@@ -22,7 +22,7 @@
 		<p>At this time, we provide unstitched blouse pieces included with the sarees (where specified). We do not currently offer tailoring or fall/picot services, allowing you to customize the fit with your trusted local tailor.</p>
 
 		<h2>What if an item is out of stock?</h2>
-		<p>Handlooms take time to weave, which means our stock is limited. If a drape you love is sold out, please reach out to us on WhatsApp (+91 99952 83835) and we will let you know if a restock is planned.</p>
+		<p>Handlooms take time to weave, which means our stock is limited. If a drape you love is sold out, please reach out to us on WhatsApp (+91 81570 75657) and we will let you know if a restock is planned.</p>
 		
 	</div>
 </main>

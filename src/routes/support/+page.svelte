@@ -18,7 +18,7 @@
 			<div class="support__row">
 				<div class="support__column">
 					<h3>Whatsapp</h3>
-					<p>+91 99952 83835</p>
+					<p>+91 81570 75657</p>
 				</div>
 				<div class="support__column">
 					<h3>Email</h3>

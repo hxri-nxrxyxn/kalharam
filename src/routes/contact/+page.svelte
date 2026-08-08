@@ -15,7 +15,7 @@
 
 		<h2>Direct Contact</h2>
 		<ul>
-			<li><strong>WhatsApp:</strong> +91 99952 83835</li>
+			<li><strong>WhatsApp:</strong> +91 81570 75657</li>
 			<li><strong>Customer Support:</strong> support@kalharam.com</li>
 			<li><strong>General Enquiry:</strong> enquiry@kalharam.com</li>
 		</ul>
