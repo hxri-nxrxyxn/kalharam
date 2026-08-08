@@ -1,4 +1,19 @@
 <script lang="ts">
+	import Field from '$lib/components/Field.svelte';
+	import { toast } from '$lib/toast.svelte';
+
+	let name = $state('');
+	let email = $state('');
+	let message = $state('');
+
+	function handleSend() {
+		if (name && email && message) {
+			toast.show('Thank you! We have received your message and will get back to you shortly.');
+			name = '';
+			email = '';
+			message = '';
+		}
+	}
 </script>
 
 <svelte:head>
@@ -12,25 +27,53 @@
 		<img src="/assets/others/support.webp" alt="family">
 	</div>	
 	<div class="support__text">
-		<h1>support</h1>
-		<p>We would love to hear from you! Whether you need assistance finding the perfect drape, have a question about our handwoven collections, or want to book a bridal consultation, our team is here to help. Reach out to us below, and let us bring your saree vision to life.</p>
+		<h1>Contact Us</h1>
+		<p class="lead">We are here to help you weave your perfect story.</p>
+		<p>Whether you need assistance finding the perfect drape, have a question about the care of our handwoven collections, or wish to inquire about a recent order, our dedicated support team is at your service. Let us bring your saree vision to life.</p>
+		
 		<div class="support__rows">
 			<div class="support__row">
 				<div class="support__column">
-					<h3>Whatsapp</h3>
+					<h3>WhatsApp</h3>
 					<p>+91 81570 75657</p>
+					<p class="small-text">Mon - Sat, 10 AM to 7 PM</p>
 				</div>
 				<div class="support__column">
-					<h3>Email</h3>
+					<h3>Customer Support</h3>
 					<p>support@kalharam.com</p>
+					<p class="small-text">Expect a reply within 24 hours</p>
 				</div>
 			</div>
 			<div class="support__row">
 				<div class="support__column">
-					<h3>Enquiry</h3>
+					<h3>General Enquiry</h3>
 					<p>enquiry@kalharam.com</p>
 				</div>
+				<div class="support__column">
+					<h3>Boutique Location</h3>
+					<p>Kochi, Kerala, India</p>
+				</div>
 			</div>
+		</div>
+
+		<div class="support__form">
+			<h2>Send us a message</h2>
+			
+			<Field label="FULL NAME">
+				<input type="text" placeholder="Charulatha" bind:value={name} />
+			</Field>
+
+			<Field label="EMAIL ADDRESS">
+				<input type="email" placeholder="charulatha@example.com" bind:value={email} />
+			</Field>
+
+			<Field label="HOW CAN WE HELP?">
+				<textarea placeholder="Tell us about your inquiry..." bind:value={message} rows="4"></textarea>
+			</Field>
+
+			<button class="btn btn--primary" onclick={handleSend} disabled={!name || !email || !message} style="width: 100%;">
+				Send Message
+			</button>
 		</div>
 	</div>
 </main>
@@ -53,16 +96,32 @@
 	}
 
 	.support__text {
-		width: 40%;
+		width: 50%;
+		display: flex;
+		flex-direction: column;
 	}
 
 	.support__text h1 {
 		color: var(--color-primary);
 	}
+	
+	.lead {
+		font-weight: 500;
+		font-size: 1.1rem;
+		color: var(--color-primary);
+		margin-top: var(--spacing-sm);
+	}
 
 	.support__text > p {
-		margin: var(--spacing-lg) 0;
+		margin: var(--spacing-md) 0;
 		color: var(--color-secondary);
+		line-height: 1.6;
+	}
+
+	.support__rows {
+		margin: var(--spacing-lg) 0;
+		padding: var(--spacing-lg);
+		background-color: var(--color-surface);
 	}
 
 	.support__row {
@@ -70,19 +129,50 @@
 	}
 
 	.support__column {
-		width: 40%;
+		width: 50%;
 	}
 
 	.support__row h3 {
 		color: var(--color-primary);
+		margin-bottom: calc(var(--spacing-sm) / 2);
 	}
 
 	.support__row p {
 		color: var(--color-secondary);
 	}
+	
+	.small-text {
+		font-size: var(--font-sm);
+		opacity: 0.7;
+		margin-top: 4px;
+	}
 
 	.support__row:not(:first-child) {
 		margin-top: var(--spacing-lg);
+	}
+	
+	.support__form {
+		margin-top: var(--spacing-lg);
+	}
+	
+	.support__form h2 {
+		color: var(--color-primary);
+		margin-bottom: var(--spacing-lg);
+	}
+	
+	textarea {
+		width: 100%;
+		background: transparent;
+		border: 1px solid var(--color-secondary);
+		padding: var(--spacing-sm);
+		color: var(--color-primary);
+		outline: none;
+		resize: vertical;
+		font-family: inherit;
+	}
+	
+	textarea:focus {
+		border-color: var(--color-primary);
 	}
 
 </style>
