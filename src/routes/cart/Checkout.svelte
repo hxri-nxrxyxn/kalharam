@@ -55,7 +55,7 @@
 		</div>
 	</div>
 
-	<button class="btn btn--primary checkout__submit-btn" onclick={handleProceed} disabled={cart.items.length === 0}>PROCEED TO PAYMENT</button>
+	<button class="btn btn--primary" onclick={handleProceed} disabled={cart.items.length === 0}>PROCEED TO PAYMENT</button>
 </div>
 
 <style>
@@ -86,7 +86,7 @@
 		flex: 1;
 	}
 
-	.checkout__submit-btn {
+	.checkout :global(.btn) {
 		width: 100%;
 		margin-top: var(--spacing-sm);
 	}

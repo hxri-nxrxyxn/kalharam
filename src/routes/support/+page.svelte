@@ -54,26 +54,6 @@
 				</div>
 			</div>
 		</div>
-
-		<div class="support__form">
-			<h2>Send us a message</h2>
-			
-			<Field label="FULL NAME">
-				<input type="text" placeholder="Your full name" bind:value={name} />
-			</Field>
-
-			<Field label="EMAIL ADDRESS">
-				<input type="email" placeholder="you@email.com" bind:value={email} />
-			</Field>
-
-			<Field label="HOW CAN WE HELP?">
-				<textarea placeholder="Tell us about your inquiry..." bind:value={message} rows="4"></textarea>
-			</Field>
-
-			<button class="btn btn--primary support__submit-btn" onclick={handleSend} disabled={!name || !email || !message}>
-				Send Message
-			</button>
-		</div>
 	</div>
 </main>
 
@@ -138,14 +118,5 @@
 
 	.support__row:not(:first-child) {
 		margin-top: var(--spacing-lg);
-	}
-	
-	.support__form h2 {
-		color: var(--color-primary);
-		margin-bottom: var(--spacing-lg);
-	}
-	
-	.support__submit-btn {
-		width: 100%;
 	}
 </style>

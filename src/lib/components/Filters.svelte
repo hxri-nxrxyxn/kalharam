@@ -56,7 +56,6 @@
 			aria-label="Select category"
 			value={categoryId}
 			onchange={handleCategoryChange}
-			class="filters__category-select"
 		>
 			{#each categories as category (category.id)}
 				<option value={category.id}>{category.name.toLowerCase()}</option>
@@ -102,7 +101,7 @@
 		/>
 	</Field>
 	
-	<button class="btn btn--primary filters__submit-btn" onclick={handleApply}>UPDATE</button>
+	<button class="btn btn--primary" onclick={handleApply}>UPDATE</button>
 </div>
 
 <style>
@@ -112,11 +111,11 @@
 		background-color: var(--color-surface);
 	}
 
-	.filters__category-select {
+	.shop__filters select {
 		text-transform: capitalize;
 	}
 
-	.filters__submit-btn {
+	.shop__filters :global(.btn) {
 		width: 100%;
 	}
 </style>
