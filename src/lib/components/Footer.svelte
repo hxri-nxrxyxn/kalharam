@@ -6,18 +6,18 @@
 	<div class="footer__boxes">
 		<div class="footer__box">
 			<h3>Legal</h3>
-			<a href="#shipping">Shipping Policy</a>
-			<a href="#privacy">Privacy Policy</a>
-			<a href="#terms">Terms of Service</a>
-			<a href="#return">Return Policy</a>
+			<a href="/shipping">Shipping Policy</a>
+			<a href="/privacy">Privacy Policy</a>
+			<a href="/terms">Terms of Service</a>
+			<a href="/return">Return Policy</a>
 		</div>
 		<div class="footer__box">
 			<h3>Information</h3>
-			<a href="#faq">FAQ</a>
-			<a href="#blog">Blog</a>
-			<a href="#newsletter">Newsletter</a>
-			<a href="#about">About Us</a>
-			<a href="#contact">Contact Us</a>
+			<a href="/faq">FAQ</a>
+			<a href="/blog">Blog</a>
+			<a href="/newsletter">Newsletter</a>
+			<a href="/about">About Us</a>
+			<a href="/contact">Contact Us</a>
 		</div>
 	</div>
 	<div class="footer__media">
