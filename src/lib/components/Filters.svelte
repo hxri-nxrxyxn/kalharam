@@ -25,13 +25,14 @@
 <div class="shop__filters">
 	<div class="filter">
 		<div class="filter__text">
-			<img src="/assets/stroke-2px-24px/search.svg" alt="search" />
+			<img src="/assets/stroke-2px-24px/search.svg" alt="" aria-hidden="true" />
 			<h3>SEARCH</h3>
 		</div>
 		<div class="filter__input">
 			<input
 				type="text"
 				placeholder="Charulatha"
+				aria-label="Search products"
 				value={searchQuery}
 				oninput={(e) => onSearchChange((e.target as HTMLInputElement).value)}
 			/>
@@ -40,11 +41,12 @@
 
 	<div class="filter">
 		<div class="filter__text">
-			<img src="/assets/stroke-2px-24px/sort.svg" alt="sort" />
+			<img src="/assets/stroke-2px-24px/sort.svg" alt="" aria-hidden="true" />
 			<h3>SORT BY</h3>
 		</div>
 		<div class="filter__input">
 			<select
+				aria-label="Sort products by"
 				value={sortBy}
 				onchange={(e) => onSortChange((e.target as HTMLSelectElement).value)}
 			>
@@ -59,13 +61,14 @@
 
 	<div class="filter filter--price">
 		<div class="filter__text">
-			<img src="/assets/stroke-2px-24px/rupee.svg" alt="rupee" />
+			<img src="/assets/stroke-2px-24px/rupee.svg" alt="" aria-hidden="true" />
 			<h3>PRICE</h3>
 		</div>
 		<div class="filter__input">
 			<input
 				type="number"
 				placeholder="Min"
+				aria-label="Minimum price"
 				value={minPrice}
 				oninput={(e) => onMinPriceChange((e.target as HTMLInputElement).value)}
 			/>
@@ -73,6 +76,7 @@
 			<input
 				type="number"
 				placeholder="Max"
+				aria-label="Maximum price"
 				value={maxPrice}
 				oninput={(e) => onMaxPriceChange((e.target as HTMLInputElement).value)}
 			/>

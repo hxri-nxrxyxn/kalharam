@@ -10,14 +10,14 @@
 
 <div class="listing">
 	<div class="listing__image">
-		<img src={product.image} alt="{product.title} - {product.subtitle}" loading="lazy" width="300" height="400" />
+		<img src={product.image} alt="{product.title} - {product.subtitle}" decoding="async" fetchpriority="high" width="300" height="400" />
 	</div>
 	<div class="listing__title">
 		<h3>{product.title} <br> <span>{product.subtitle}</span></h3>
 	</div>
 	<div class="listing__info">
 		<div class="listing__info-count">
-			<img src="/assets/stroke-2px-24px/star.svg" alt="rating" width="18" height="18" />
+			<img src="/assets/stroke-2px-24px/star.svg" alt="" aria-hidden="true" width="18" height="18" />
 			<h3>{product.rating}</h3>
 		</div>
 		<div class="listing__info-maxprice">
@@ -25,7 +25,7 @@
 			<h3>{product.mrp}</h3>
 		</div>
 		<div class="listing__info-saleprice">
-			<img src="/assets/stroke-2px-24px/rupee.svg" alt="rupee" width="18" height="18" />
+			<img src="/assets/stroke-2px-24px/rupee.svg" alt="" aria-hidden="true" width="18" height="18" />
 			<h3>{product.salePrice}</h3>
 		</div>
 	</div>
@@ -37,6 +37,11 @@
 		display: flex;
 		flex-direction: column;
 		background-color: var(--color-surface);
+		border: 2px solid var(--color-surface);
+	}
+
+	.listing:hover {
+		border: 2px solid var(--color-secondary);
 	}
 
 	.listing span {
@@ -46,6 +51,7 @@
 	.listing__image {
 		height: 40vh;
 		overflow: hidden;
+		background-color: var(--color-input);
 	}
 
 	.listing__image img {

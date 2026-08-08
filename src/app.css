@@ -4,26 +4,17 @@
     box-sizing: border-box;
 }
 
-*, html, body, button, a, input, select, [role="button"] {
+/* *, html, body, button, a, input, select, [role="button"] {
     cursor: url('/assets/filled-shapes/cursor.svg') 0 0, auto !important;
+} */
+
+p {
+    line-height: 1.5;
 }
 
 :root {
     --font-family: 'Inter', sans-serif;
 
-    /* --- Original Neutral Palette (Commented out) ---
-    --color-primary: #777;
-    --color-secondary: #ccc;
-    --color-tile: white;
-    --color-input: #fafafa;
-    --color-background: white;
-    --color-surface: white;
-
-    --filter-primary: brightness(0) saturate(100%) invert(50%) sepia(0%) saturate(71%) hue-rotate(229deg) brightness(91%) contrast(82%);
-    --filter-secondary: brightness(0) saturate(100%) invert(91%) sepia(4%) saturate(28%) hue-rotate(51deg) brightness(93%) contrast(85%);
-    -------------------------------------------------- */
-
-    /* --- Refined Premium Light Theme (#997d58 Primary Gold/Bronze) --- */
     --color-primary: #584934;
     --color-secondary: #a89278;
     --color-tile: #ffffff;
@@ -31,8 +22,9 @@
     --color-background: #faf9f6;
     --color-surface: #ffffff;
 
-    --fiter-primary: brightness(0) saturate(100%) invert(26%) sepia(32%) saturate(507%) hue-rotate(356deg) brightness(92%) contrast(85%);
+    --filter-primary: brightness(0) saturate(100%) invert(26%) sepia(32%) saturate(507%) hue-rotate(356deg) brightness(92%) contrast(85%);
     --filter-secondary: brightness(0) saturate(100%) invert(75%) sepia(2%) saturate(3669%) hue-rotate(351deg) brightness(77%) contrast(99%); 
+    --filter-surface: brightness(0) saturate(100%) invert(99%) sepia(3%) saturate(627%) hue-rotate(316deg) brightness(119%) contrast(100%);
 
     --height-logo: 3.5rem;
     --height-icon: 1.1rem;
@@ -140,14 +132,15 @@ h1 {
 
 h2, h3, p, a {
     font-size: var(--font-sm);
+    outline: 0;
 }
 
 input, select {
+    font-family: "Inter", sans-serif;
     outline: 0;
     display: block;
     width: 100%;
     padding: var(--spacing-sm) var(--spacing-md);
-    font-family: "Inter", sans-serif;
     font-weight: 500;
     font-size: var(--font-sm);
     background-color: var(--color-input);
@@ -166,4 +159,52 @@ input::placeholder {
 
 a {
     text-decoration: none;
+}
+
+.btns {
+    display: flex;
+}
+
+.btn {
+    font-family: "Inter", sans;
+    font-weight: 700;
+    padding: 1.5rem 4.5rem;
+    border: 0;
+    font-size: 1rem;
+    text-transform: uppercase;
+    outline: 0;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-sm);
+    transition: all ease 0.4s;
+}
+
+.btn--primary {
+    background-color: var(--color-primary);
+    color: var(--color-surface);
+    border: 2px solid transparent;
+}
+
+.btn--primary img {
+    filter: var(--filter-surface);
+}
+
+.btn--secondary {
+    background-color: transparent;
+    color: var(--color-primary);
+}
+
+.btn--secondary img {
+    filter: var(--filter-primary);
+}
+
+.btn--primary:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 2px 5px #aaa;
+}
+
+.btn--primary:active {
+    transform: translateY(0);
 }

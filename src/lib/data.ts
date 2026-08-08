@@ -84,3 +84,56 @@ export function getProductsForCategory(categoryId: string): Product[] {
 export function getAllProducts(): Product[] {
 	return categories.flatMap((cat) => getProductsForCategory(cat.id));
 }
+
+export function preloadAllImages(): void {
+	if (typeof window === 'undefined') return;
+	const allProducts = getAllProducts();
+	allProducts.forEach((p) => {
+		const img = new Image();
+		img.src = p.image;
+	});
+}
+
+if (typeof window !== 'undefined') {
+	preloadAllImages();
+}
+
+export interface FilterParams {
+	searchQuery: string;
+	sortBy: string;
+	minPrice: string;
+	maxPrice: string;
+}
+
+export function filterProducts(products: Product[], params: FilterParams): Product[] {
+	let list = [...products];
+
+	if (params.searchQuery.trim() !== '') {
+		const query = params.searchQuery.toLowerCase().trim();
+		list = list.filter(
+			(p) =>
+				p.title.toLowerCase().includes(query) ||
+				p.subtitle.toLowerCase().includes(query)
+		);
+	}
+
+	if (params.minPrice !== '' && !isNaN(Number(params.minPrice))) {
+		list = list.filter((p) => p.salePrice >= Number(params.minPrice));
+	}
+
+	if (params.maxPrice !== '' && !isNaN(Number(params.maxPrice))) {
+		list = list.filter((p) => p.salePrice <= Number(params.maxPrice));
+	}
+
+	if (params.sortBy === 'price-low') {
+		list.sort((a, b) => a.salePrice - b.salePrice);
+	} else if (params.sortBy === 'price-high') {
+		list.sort((a, b) => b.salePrice - a.salePrice);
+	} else if (params.sortBy === 'rating') {
+		list.sort((a, b) => b.rating - a.rating);
+	} else if (params.sortBy === 'name') {
+		list.sort((a, b) => a.title.localeCompare(b.title));
+	}
+
+	return list;
+}

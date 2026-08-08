@@ -5,16 +5,14 @@
 	interface Props {
 		categories: Category[];
 		selectedCategoryId: string;
-		onSelectCategory?: (id: string) => void;
 	}
 
-	let { categories, selectedCategoryId, onSelectCategory }: Props = $props();
+	let { categories, selectedCategoryId }: Props = $props();
 
 	function handleTileClick(e: MouseEvent, categoryId: string) {
-		if (onSelectCategory) {
-			e.preventDefault();
-			onSelectCategory(categoryId);
-			goto(`/category/${categoryId}`, { keepFocus: true, noScroll: true, replaceState: false });
+		e.preventDefault();
+		if (selectedCategoryId !== categoryId) {
+			goto(`/category/${categoryId}`, { keepFocus: true, noScroll: true, replaceState: true });
 		}
 	}
 </script>
@@ -37,7 +35,7 @@
 						{/each}
 					</span>
 				</div>
-				<div class="tile-back">
+				<div class="tile-back" aria-hidden="true">
 					<div
 						class="tile-blur-bg"
 						style="background-image: url('{category.image}')"
@@ -75,7 +73,7 @@
 		position: relative;
 		width: 100%;
 		height: 100%;
-		transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+		transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 		transform-style: preserve-3d;
 	}
 
@@ -114,19 +112,17 @@
 
 	.tile-blur-bg {
 		position: absolute;
-		inset: -25px;
+		inset: -15px;
 		background-size: cover;
 		background-position: center;
 		background-repeat: no-repeat;
-		filter: blur(22px) saturate(220%) brightness(0.75) contrast(105%);
-		transform: scale(1.15);
-		transition: filter 0.5s ease, transform 0.5s ease;
-		will-change: filter, transform;
+		filter: blur(10px) brightness(0.75);
+		transform: scale(1.1);
+		transition: transform 0.4s ease;
 	}
 
 	.tile:hover .tile-blur-bg {
-		filter: blur(14px) saturate(250%) brightness(0.85) contrast(110%);
-		transform: scale(1.22);
+		transform: scale(1.18);
 	}
 
 	.tile-overlay {

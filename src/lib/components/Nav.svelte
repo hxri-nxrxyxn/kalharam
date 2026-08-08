@@ -9,15 +9,15 @@
 	<div class="nav__links">
 		<a href="/signin" class="nav__link nav__link--desktop">
 			<img src="/assets/stroke-4px-32px/signin.svg" alt="signin" />
-			Sign In
+			<span>Sign In</span>
 		</a>
 		<a href="/support" class="nav__link nav__link--desktop">
 			<img src="/assets/stroke-4px-32px/support.svg" alt="support" />
-			Support
+			<span>Support</span>
 		</a>
 		<a href="/cart" class="nav__link">
 			<img src="/assets/stroke-4px-32px/cart.svg" alt="cart" />
-			My Cart
+			<span>My Cart</span>
 		</a>
 	</div>
 </nav>
@@ -58,6 +58,8 @@
 		color: var(--color-secondary);
 		font-weight: 500;
 		align-items: center;
+		text-decoration: none;
+		cursor: pointer;
 	}
 
 	.nav__link img {
