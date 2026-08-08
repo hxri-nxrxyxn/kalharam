@@ -41,6 +41,18 @@
 	let filteredProducts = $derived(
 		filterProducts(rawProducts, { searchQuery, sortBy, minPrice, maxPrice })
 	);
+
+	function handleApplyFilters(filters: {
+		searchQuery: string;
+		sortBy: string;
+		minPrice: string;
+		maxPrice: string;
+	}) {
+		searchQuery = filters.searchQuery;
+		sortBy = filters.sortBy;
+		minPrice = filters.minPrice;
+		maxPrice = filters.maxPrice;
+	}
 </script>
 
 <main>
@@ -63,10 +75,8 @@
 					{sortBy}
 					{minPrice}
 					{maxPrice}
-					onSearchChange={(val) => (searchQuery = val)}
-					onSortChange={(val) => (sortBy = val)}
-					onMinPriceChange={(val) => (minPrice = val)}
-					onMaxPriceChange={(val) => (maxPrice = val)}
+					categoryId={currentCategory.id}
+					onApply={handleApplyFilters}
 				/>
 			</div>
 			<div class="shop__listings-wrapper">

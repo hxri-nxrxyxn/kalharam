@@ -1,87 +1,108 @@
 <script lang="ts">
+	import Field from '$lib/components/Field.svelte';
+	import { categories } from '$lib/data';
+	import { goto } from '$app/navigation';
+
 	interface Props {
-		searchQuery: string;
-		sortBy: string;
-		minPrice: string;
-		maxPrice: string;
-		onSearchChange: (value: string) => void;
-		onSortChange: (value: string) => void;
-		onMinPriceChange: (value: string) => void;
-		onMaxPriceChange: (value: string) => void;
+		searchQuery?: string;
+		sortBy?: string;
+		minPrice?: string;
+		maxPrice?: string;
+		categoryId?: string;
+		onApply: (filters: {
+			searchQuery: string;
+			sortBy: string;
+			minPrice: string;
+			maxPrice: string;
+		}) => void;
 	}
 
 	let {
-		searchQuery,
-		sortBy,
-		minPrice,
-		maxPrice,
-		onSearchChange,
-		onSortChange,
-		onMinPriceChange,
-		onMaxPriceChange
+		searchQuery = '',
+		sortBy = 'featured',
+		minPrice = '',
+		maxPrice = '',
+		categoryId = '',
+		onApply
 	}: Props = $props();
+
+	// svelte-ignore state_referenced_locally
+	let localSearchQuery = $state(searchQuery);
+	// svelte-ignore state_referenced_locally
+	let localSortBy = $state(sortBy);
+	// svelte-ignore state_referenced_locally
+	let localMinPrice = $state(minPrice);
+	// svelte-ignore state_referenced_locally
+	let localMaxPrice = $state(maxPrice);
+
+	function handleApply() {
+		onApply({
+			searchQuery: localSearchQuery,
+			sortBy: localSortBy,
+			minPrice: localMinPrice,
+			maxPrice: localMaxPrice
+		});
+	}
+
+	function handleCategoryChange(e: Event) {
+		const newCategory = (e.target as HTMLSelectElement).value;
+		goto(`/category/${newCategory}`, { noScroll: true, keepFocus: true });
+	}
 </script>
 
 <div class="shop__filters">
-	<div class="filter">
-		<div class="filter__text">
-			<img src="/assets/stroke-2px-24px/search.svg" alt="" aria-hidden="true" />
-			<h3>SEARCH</h3>
-		</div>
-		<div class="filter__input">
-			<input
-				type="text"
-				placeholder="Charulatha"
-				aria-label="Search products"
-				value={searchQuery}
-				oninput={(e) => onSearchChange((e.target as HTMLInputElement).value)}
-			/>
-		</div>
-	</div>
+	<Field label="CATEGORY" icon="/assets/stroke-2px-24px/search.svg">
+		<select
+			aria-label="Select category"
+			value={categoryId}
+			onchange={handleCategoryChange}
+			style="text-transform: capitalize;"
+		>
+			{#each categories as category}
+				<option value={category.id}>{category.name.toLowerCase()}</option>
+			{/each}
+		</select>
+	</Field>
 
-	<div class="filter">
-		<div class="filter__text">
-			<img src="/assets/stroke-2px-24px/sort.svg" alt="" aria-hidden="true" />
-			<h3>SORT BY</h3>
-		</div>
-		<div class="filter__input">
-			<select
-				aria-label="Sort products by"
-				value={sortBy}
-				onchange={(e) => onSortChange((e.target as HTMLSelectElement).value)}
-			>
-				<option value="featured">Featured</option>
-				<option value="price-low">Price: Low to High</option>
-				<option value="price-high">Price: High to Low</option>
-				<option value="rating">Highest Rated</option>
-				<option value="name">Name (A-Z)</option>
-			</select>
-		</div>
-	</div>
+	<Field label="SEARCH" icon="/assets/stroke-2px-24px/search.svg">
+		<input
+			type="text"
+			placeholder="Charulatha"
+			aria-label="Search products"
+			bind:value={localSearchQuery}
+		/>
+	</Field>
 
-	<div class="filter filter--price">
-		<div class="filter__text">
-			<img src="/assets/stroke-2px-24px/rupee.svg" alt="" aria-hidden="true" />
-			<h3>PRICE</h3>
-		</div>
-		<div class="filter__input">
-			<input
-				type="number"
-				placeholder="Min"
-				aria-label="Minimum price"
-				value={minPrice}
-				oninput={(e) => onMinPriceChange((e.target as HTMLInputElement).value)}
-			/>
-			<p>TO</p>
-			<input
-				type="number"
-				placeholder="Max"
-				aria-label="Maximum price"
-				value={maxPrice}
-				oninput={(e) => onMaxPriceChange((e.target as HTMLInputElement).value)}
-			/>
-		</div>
-	</div>
+	<Field label="SORT BY" icon="/assets/stroke-2px-24px/sort.svg">
+		<select
+			aria-label="Sort products by"
+			bind:value={localSortBy}
+		>
+			<option value="featured">Featured</option>
+			<option value="price-low">Price: Low to High</option>
+			<option value="price-high">Price: High to Low</option>
+			<option value="rating">Highest Rated</option>
+			<option value="name">Name (A-Z)</option>
+		</select>
+	</Field>
+
+	<Field label="PRICE" icon="/assets/stroke-2px-24px/rupee.svg" inline={true}>
+		<input
+			type="number"
+			placeholder="Min"
+			aria-label="Minimum price"
+			bind:value={localMinPrice}
+		/>
+		<p>TO</p>
+		<input
+			type="number"
+			placeholder="Max"
+			aria-label="Maximum price"
+			bind:value={localMaxPrice}
+		/>
+	</Field>
+	
+	<button class="btn btn--primary" onclick={handleApply} style="width: 100%;">UPDATE</button>
 </div>
 
 <style>
@@ -89,34 +110,5 @@
 		width: 100%;
 		padding: var(--spacing-lg);
 		background-color: var(--color-surface);
-	}
-
-	.filter {
-		margin-bottom: var(--spacing-lg);
-		width: 100%;
-	}
-
-	.filter img {
-		height: var(--height-icon);
-		filter: var(--filter-secondary);
-	}
-
-	.filter__text {
-		display: flex;
-		align-items: center;
-		gap: var(--spacing-sm);
-		margin-bottom: var(--spacing-sm);
-		color: var(--color-secondary);
-	}
-
-	.filter--price .filter__input {
-		display: flex;
-		align-items: center;
-		gap: var(--spacing-lg);
-	}
-
-	.filter--price p {
-		color: var(--color-primary);
-		font-weight: 600;
 	}
 </style>

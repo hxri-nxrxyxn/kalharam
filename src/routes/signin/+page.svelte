@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Field from '$lib/components/Field.svelte';
 </script>
 
 <svelte:head>
@@ -19,54 +20,38 @@
 	</div>
 	<div class="signup__form">
 		<div class="signup__fieldset">
-			<div class="signup__field">
-				<div class="signup__label">
-					<h3>NAME</h3>
-				</div>
-				<div class="signup__input-wrapper">
-					<input
-						type="text"
-						placeholder="Enter Name"
-						aria-label="Name"
-					/>
-				</div>
-			</div>
+			<Field label="NAME">
+				<input
+					type="text"
+					placeholder="Enter Name"
+					aria-label="Name"
+				/>
+			</Field>
 
-			<div class="signup__field">
-				<div class="signup__label">
-					<h3>MOBILE</h3>
-				</div>
-				<div class="signup__input-wrapper">
-					<input
-						type="tel"
-						placeholder="Enter Mobile"
-						aria-label="Mobile"
-					/>
-				</div>
-			</div>
+			<Field label="MOBILE">
+				<input
+					type="tel"
+					placeholder="Enter Mobile"
+					aria-label="Mobile"
+				/>
+			</Field>
 
-			<div class="signup__field">
-				<div class="signup__label">
-					<h3>EMAIL</h3>
-				</div>
-				<div class="signup__input-wrapper">
-					<input
-						type="email"
-						placeholder="Enter Email Address"
-						aria-label="Email"
-					/>
-				</div>
-			</div>
+			<Field label="EMAIL">
+				<input
+					type="email"
+					placeholder="Enter Email Address"
+					aria-label="Email"
+				/>
+			</Field>
 
-			<div class="signup__field">
-				<div class="signup__input-wrapper">
-					<input
-						type="submit"
-						value="SIGN UP"
-						aria-label="Sign Up"
-					/>
-				</div>
-			</div>
+			<Field>
+				<input
+					type="submit"
+					value="SIGN UP"
+					aria-label="Sign Up"
+					class="btn btn--primary"
+				/>
+			</Field>
 		</div>
 	</div>
 </main>
@@ -92,12 +77,14 @@
 	}
 
 	.signup__desc-image {
-		background-color: red;
+		background-color: var(--color-input);
+		aspect-ratio: 4 / 3;
 	}
 
 	.signup__desc-image img {
 		height: 100%;
 		width: 100%;
+		object-fit: cover;
 	}
 
 	.signup__form {
@@ -110,16 +97,19 @@
 		background-color: var(--color-surface);
 	}
 
-	.signup__field {
-		margin-bottom: var(--spacing-lg);
+	.btn {
 		width: 100%;
+		cursor: pointer;
 	}
-
-	.signup__label {
-		display: flex;
-		align-items: center;
-		gap: var(--spacing-sm);
-		margin-bottom: var(--spacing-sm);
-		color: var(--color-secondary);
+	
+	@media (max-width: 768px) {
+		.signup {
+			flex-direction: column;
+			gap: var(--spacing-xl);
+		}
+		
+		.signup__desc, .signup__form {
+			width: 100%;
+		}
 	}
 </style>

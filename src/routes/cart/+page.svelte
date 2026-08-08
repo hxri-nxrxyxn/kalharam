@@ -71,21 +71,26 @@
 		<p>
 			Double-check your selected quantities and styles on the right. If you have any questions regarding shipping times, return policies, or require custom finishing touches, please visit our Support page or reach out to us directly.
 		</p>
-		{#if !showCheckout}
-			<button class="btn--primary btn" onclick={() => showCheckout = true}>
-				<img src="/assets/stroke-3px-24px/credit-card.svg" alt="card" width="24" height="24" />
-				PAY ₹{cartTotal}
-			</button>
-			<button class="btn--secondary btn">
-				<img src="/assets/stroke-3px-24px/shopping-basket.svg" alt="shopping" width="24" height="24" />
-				Shop More
-			</button>
-		{:else}
-			<button class="btn--secondary btn" onclick={() => showCheckout = false}>
-				<img src="/assets/stroke-3px-24px/shopping-basket.svg" alt="back to cart" width="24" height="24" />
-				Back to Cart
-			</button>
-		{/if}
+		<div class="btns">
+			{#if !showCheckout}
+				<button class="btn--primary btn" onclick={() => showCheckout = true}>
+					<img src="/assets/stroke-3px-24px/credit-card.svg" alt="card" width="24" height="24" />
+					PAY ₹{cartTotal}
+				</button>
+				<button class="btn--secondary btn">
+					<img src="/assets/stroke-3px-24px/shopping-basket.svg" alt="shopping" width="24" height="24" />
+					Shop More
+				</button>
+			{:else}
+				<button class="btn--primary btn" onclick={() => showCheckout = true}>
+					<img src="/assets/stroke-3px-24px/credit-card.svg" alt="card" width="24" height="24" />
+					PURCHASE
+				</button>
+				<button class="btn--secondary btn" onclick={() => showCheckout = false}>
+					Back to Cart	
+				</button>
+			{/if}
+		</div>
 	</div>
 	
 	{#if showCheckout}
@@ -134,14 +139,6 @@
 		display: flex;
 		gap: var(--spacing-md);
 		margin: var(--spacing-md) 0;
-	}
-
-	.btn--primary img {
-		filter: var(--filter-background);
-	}
-
-	.btn--secondary img {
-		filter: var(--filter-primary);
 	}
 
 	.cart__row-info > img {
