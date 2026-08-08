@@ -1,10 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { afterNavigate } from '$app/navigation';
 	import Lenis from 'lenis';
 	import 'lenis/dist/lenis.css';
 	import Nav from '$lib/components/Nav.svelte';
 	import Footer from '$lib/components/Footer.svelte';
 	import '../app.css';
+	import { gsap } from 'gsap';
+	import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 
 	let { children } = $props();
 
@@ -18,8 +21,12 @@
 			'Exclusive handloom saree collections including Mul Cotton, Kanchi Cotton, Set Saree, Davani Half Saree, Onam Collections, Kalyani Cotton, and Narayan Peth.'
 	});
 
+	let lenis: Lenis;
+
 	onMount(() => {
-		const lenis = new Lenis({
+		gsap.registerPlugin(ScrollTrigger);
+
+		lenis = new Lenis({
 			duration: 1.2,
 			easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
 			smoothWheel: true,
@@ -27,17 +34,33 @@
 			touchMultiplier: 1.5
 		});
 
-		let rafId: number;
-		function raf(time: number) {
-			lenis.raf(time);
-			rafId = requestAnimationFrame(raf);
-		}
-		rafId = requestAnimationFrame(raf);
+		lenis.on('scroll', ScrollTrigger.update);
+
+		gsap.ticker.add((time) => {
+			lenis.raf(time * 1000);
+		});
+
+		gsap.ticker.lagSmoothing(0);
 
 		return () => {
-			cancelAnimationFrame(rafId);
+			gsap.ticker.remove((time) => lenis.raf(time * 1000));
 			lenis.destroy();
 		};
+	});
+
+	afterNavigate(({ type }) => {
+		if (type !== 'popstate') {
+			if (lenis) {
+				lenis.scrollTo(0, { immediate: true });
+			} else {
+				window.scrollTo(0, 0);
+			}
+		}
+		
+		// Refresh ScrollTrigger calculations after page navigation/layout shifts
+		setTimeout(() => {
+			ScrollTrigger.refresh();
+		}, 100);
 	});
 </script>
 

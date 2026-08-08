@@ -4,9 +4,10 @@
 
 	interface Props {
 		products: Product[];
+		columns?: number;
 	}
 
-	let { products }: Props = $props();
+	let { products, columns = 4 }: Props = $props();
 </script>
 
 {#if products.length === 0}
@@ -15,7 +16,7 @@
 	</div>
 {:else}
 	<div class="shop__listings">
-		<div class="grid">
+		<div class="grid" style="--grid-columns: {columns}">
 			{#each products as product (product.id)}
 				<ProductCard {product} />
 			{/each}
@@ -30,7 +31,7 @@
 
 	.grid {
 		display: grid;
-		grid-template-columns: repeat(4, 1fr);
+		grid-template-columns: repeat(var(--grid-columns, 4), 1fr);
 		gap: var(--spacing-md);
 		row-gap: var(--spacing-xl);
 	}
@@ -43,8 +44,8 @@
 
 	@media (max-width: 768px) {
 		.grid {
-			grid-template-columns: 1fr;
-			gap: var(--spacing-xl);
+			grid-template-columns: repeat(2, 1fr);
+			gap: var(--spacing-md);
 		}
 	}
 

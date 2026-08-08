@@ -8,7 +8,7 @@
 	let { product }: Props = $props();
 </script>
 
-<div class="listing">
+<a href="/product/{product.id}" class="listing">
 	<div class="listing__image">
 		<img src={product.image} alt="{product.title} - {product.subtitle}" decoding="async" fetchpriority="high" width="300" height="400" />
 	</div>
@@ -29,7 +29,7 @@
 			<h3>{product.salePrice}</h3>
 		</div>
 	</div>
-</div>
+</a>
 
 <style>
 	.listing {
@@ -38,6 +38,7 @@
 		flex-direction: column;
 		background-color: var(--color-surface);
 		border: 2px solid var(--color-surface);
+		text-decoration: none;
 	}
 
 	.listing:hover {

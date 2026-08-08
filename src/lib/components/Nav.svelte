@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/state';
 </script>
 
 <nav class="nav">
@@ -7,15 +8,15 @@
 		<img src="/assets/filled-shapes/branding.svg" alt="branding" />
 	</a>
 	<div class="nav__links">
-		<a href="/signin" class="nav__link nav__link--desktop">
+		<a href="/signin" class="nav__link nav__link--desktop" class:nav__link--active={page.url.pathname === '/signin'}>
 			<img src="/assets/stroke-4px-32px/signin.svg" alt="signin" />
 			<span>Sign In</span>
 		</a>
-		<a href="/support" class="nav__link nav__link--desktop">
+		<a href="/support" class="nav__link nav__link--desktop" class:nav__link--active={page.url.pathname === '/support'}>
 			<img src="/assets/stroke-4px-32px/support.svg" alt="support" />
 			<span>Support</span>
 		</a>
-		<a href="/cart" class="nav__link">
+		<a href="/cart" class="nav__link" class:nav__link--active={page.url.pathname === '/cart'}>
 			<img src="/assets/stroke-4px-32px/cart.svg" alt="cart" />
 			<span>My Cart</span>
 		</a>
@@ -65,6 +66,14 @@
 	.nav__link img {
 		height: var(--spacing-lg);
 		filter: var(--filter-secondary);
+	}
+
+	.nav__link--active {
+		color: var(--color-primary);
+	}
+
+	.nav__link--active img {
+		filter: var(--filter-primary);
 	}
 
 	@media (max-width: 768px) {

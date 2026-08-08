@@ -67,11 +67,13 @@ export function getProductsForCategory(categoryId: string): Product[] {
 		const rating = (index % 3) + 3; // 3, 4, 5
 		const mrp = 2500 + index * 100;
 		const salePrice = 1999 + index * 90;
+		const subtitle = `${category.name.charAt(0) + category.name.slice(1).toLowerCase()} Saree`;
+		const slug = `${name}-${subtitle}-${index}`.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
 
 		return {
-			id: `${category.id}-${index}`,
+			id: slug,
 			title: name,
-			subtitle: `${category.name.charAt(0) + category.name.slice(1).toLowerCase()} Saree`,
+			subtitle,
 			categoryId: category.id,
 			rating,
 			mrp,
@@ -83,6 +85,10 @@ export function getProductsForCategory(categoryId: string): Product[] {
 
 export function getAllProducts(): Product[] {
 	return categories.flatMap((cat) => getProductsForCategory(cat.id));
+}
+
+export function getProductById(id: string): Product | undefined {
+	return getAllProducts().find((p) => p.id === id);
 }
 
 export function preloadAllImages(): void {
