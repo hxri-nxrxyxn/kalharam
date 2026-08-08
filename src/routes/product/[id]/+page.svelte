@@ -3,6 +3,8 @@
 	import ProductGrid from '$lib/components/ProductGrid.svelte';
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
+	import { toast } from '$lib/toast.svelte';
+	import { cart } from '$lib/cart.svelte';
 	
 	interface Props {
 		data: PageData;
@@ -26,7 +28,8 @@
 	}
 	
 	function addToCart() {
-		alert(`Added ${quantity} of ${product.title} to cart! (Backend integration pending)`);
+		cart.add(product, quantity);
+		toast.show(`Added ${quantity} ${quantity === 1 ? 'piece' : 'pieces'} of ${product.title} to your collection.`);
 	}
 
 	$effect(() => {

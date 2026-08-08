@@ -4,42 +4,42 @@ export const categories: Category[] = [
 	{
 		id: 'mul-cotton',
 		name: 'MUL COTTON',
-		image: '/assets/types/mul-cotton/example.jpg'
+		image: '/assets/types/mul-cotton/example.webp'
 	},
 	{
 		id: 'kanchi-cotton',
 		name: 'KANCHI COTTON',
-		image: '/assets/types/kanchi-cotton/example.jpg'
+		image: '/assets/types/kanchi-cotton/example.webp'
 	},
 	{
 		id: 'set-saree-set-mundu',
 		name: 'SET SAREE SET MUNDU',
-		image: '/assets/types/set-saree-set-mundu/example.jpg'
+		image: '/assets/types/set-saree-set-mundu/example.webp'
 	},
 	{
 		id: 'davani-half-saree',
 		name: 'DAVANI HALF SAREE',
-		image: '/assets/types/davani-half-saree/example.jpg'
+		image: '/assets/types/davani-half-saree/example.webp'
 	},
 	{
 		id: 'onam-collections',
 		name: 'ONAM COLLECTIONS',
-		image: '/assets/types/onam-collections/example.jpg'
+		image: '/assets/types/onam-collections/example.webp'
 	},
 	{
 		id: 'kalyani-cotton',
 		name: 'KALYANI COTTON',
-		image: '/assets/types/kalyani-cotton/example.jpg'
+		image: '/assets/types/kalyani-cotton/example.webp'
 	},
 	{
 		id: 'narayan-peth',
 		name: 'NARAYAN PETH',
-		image: '/assets/types/narayan-peth/example.jpg'
+		image: '/assets/types/narayan-peth/example.webp'
 	},
 	{
 		id: 'more',
 		name: 'MORE',
-		image: '/assets/types/more/example.jpg'
+		image: '/assets/types/more/example.webp'
 	}
 ];
 

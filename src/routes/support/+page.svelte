@@ -9,7 +9,7 @@
 
 <main class="support">
 	<div class="support__image">
-		<img src="/assets/others/support.png" alt="family">
+		<img src="/assets/others/support.webp" alt="family">
 	</div>	
 	<div class="support__text">
 		<h1>support</h1>

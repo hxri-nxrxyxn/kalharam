@@ -21,7 +21,7 @@
 	{#each categories as category (category.id)}
 		<a
 			href="/category/{category.id}"
-			class="tile {selectedCategoryId === category.id ? 'tile--selected' : ''}"
+			class={['tile', selectedCategoryId === category.id && 'tile--selected']}
 			onclick={(e) => handleTileClick(e, category.id)}
 		>
 			<div class="tile-inner">

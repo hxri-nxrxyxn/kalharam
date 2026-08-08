@@ -11,7 +11,7 @@
 	let { label, icon, inline = false, children }: Props = $props();
 </script>
 
-<div class="field" class:field--inline={inline}>
+<div class={['field', inline && 'field--inline']}>
 	{#if label}
 		<div class="field__label">
 			{#if icon}

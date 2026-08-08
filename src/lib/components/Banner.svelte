@@ -2,8 +2,8 @@
 	import { onMount } from 'svelte';
 
 	const banners = [
-		'/assets/types/banner-1.png',
-		'/assets/types/banner-2.png'
+		'/assets/types/banner-1.webp',
+		'/assets/types/banner-2.webp'
 	];
 
 	let currentIndex = $state(0);
@@ -20,7 +20,7 @@
 <div class="banner-slider">
 	{#each banners as banner, index (banner)}
 		<div
-			class="slide {index === currentIndex ? 'active' : ''}"
+			class={['slide', index === currentIndex && 'active']}
 			style="background-image: url('{banner}')"
 		></div>
 	{/each}

@@ -5,6 +5,7 @@
 	import 'lenis/dist/lenis.css';
 	import Nav from '$lib/components/Nav.svelte';
 	import Footer from '$lib/components/Footer.svelte';
+	import Toast from '$lib/components/Toast.svelte';
 	import '../app.css';
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
@@ -77,5 +78,7 @@
 <Nav />
 
 {@render children()}
+
+<Toast />
 
 <Footer />

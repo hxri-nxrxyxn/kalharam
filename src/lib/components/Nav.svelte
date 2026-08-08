@@ -8,15 +8,15 @@
 		<img src="/assets/filled-shapes/branding.svg" alt="branding" />
 	</a>
 	<div class="nav__links">
-		<a href="/signin" class="nav__link nav__link--desktop" class:nav__link--active={page.url.pathname === '/signin'}>
+		<a href="/signin" class={['nav__link', 'nav__link--desktop', page.url.pathname === '/signin' && 'nav__link--active']}>
 			<img src="/assets/stroke-4px-32px/signin.svg" alt="signin" />
 			<span>Sign In</span>
 		</a>
-		<a href="/support" class="nav__link nav__link--desktop" class:nav__link--active={page.url.pathname === '/support'}>
+		<a href="/support" class={['nav__link', 'nav__link--desktop', page.url.pathname === '/support' && 'nav__link--active']}>
 			<img src="/assets/stroke-4px-32px/support.svg" alt="support" />
 			<span>Support</span>
 		</a>
-		<a href="/cart" class="nav__link" class:nav__link--active={page.url.pathname === '/cart'}>
+		<a href="/cart" class={['nav__link', page.url.pathname === '/cart' && 'nav__link--active']}>
 			<img src="/assets/stroke-4px-32px/cart.svg" alt="cart" />
 			<span>My Cart</span>
 		</a>

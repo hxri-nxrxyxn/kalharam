@@ -58,7 +58,7 @@
 			onchange={handleCategoryChange}
 			style="text-transform: capitalize;"
 		>
-			{#each categories as category}
+			{#each categories as category (category.id)}
 				<option value={category.id}>{category.name.toLowerCase()}</option>
 			{/each}
 		</select>

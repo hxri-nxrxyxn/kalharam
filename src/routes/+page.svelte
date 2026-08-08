@@ -27,13 +27,13 @@
 		content="Discover Kalharam's exclusive handloom saree collections including Mul Cotton, Kanchi Cotton, Set Saree, Davani Half Saree, Onam Collections, Kalyani Cotton, and Narayan Peth."
 	/>
 	<meta property="og:url" content="https://kalharam.com" />
-	<meta property="og:image" content="https://kalharam.com/assets/types/banner-1.png" />
+	<meta property="og:image" content="https://kalharam.com/assets/types/banner-1.webp" />
 	<meta name="twitter:title" content="Kalharam - Premium Sarees & Handloom Collections" />
 	<meta
 		name="twitter:description"
 		content="Discover Kalharam's exclusive handloom saree collections including Mul Cotton, Kanchi Cotton, Set Saree, Davani Half Saree, Onam Collections, Kalyani Cotton, and Narayan Peth."
 	/>
-	<meta name="twitter:image" content="https://kalharam.com/assets/types/banner-1.png" />
+	<meta name="twitter:image" content="https://kalharam.com/assets/types/banner-1.webp" />
 
 	{@html `<script type="application/ld+json">${websiteJsonLd}</script>`}
 </svelte:head>

@@ -21,3 +21,14 @@ export interface FilterOptions {
 	minPrice: number | null;
 	maxPrice: number | null;
 }
+
+export interface CartItem {
+	id: string;
+	title: string;
+	subtitle: string;
+	image: string;
+	rating: number;
+	mrp: number;
+	price: number;
+	quantity: number;
+}

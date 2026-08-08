@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { CartItem } from './types';
+	import type { CartItem } from '$lib/types';
 
 	let {
 		cartItems,
@@ -28,14 +28,14 @@
 			{#each cartItems as item (item.id)}
 				<div class="cart__row">
 					<div class="cart__row-notaction">
-						<div class="cart__row-image">
+						<a href="/product/{item.id}" class="cart__row-image">
 							<img src={item.image} alt={item.title}>
-						</div>
+						</a>
 						<div class="cart__row-details">
 							<div class="cart__row-details--top">
-								<div class="cart__row-title">
+								<a href="/product/{item.id}" class="cart__row-title">
 									<h3>{item.title} <span>{item.subtitle}</span></h3>
-								</div>
+								</a>
 								<div class="cart__row-info">
 									<div class="cart__row-info--count">
 										<img src="/assets/stroke-2px-24px/star.svg" alt="rating" aria-hidden="true" width="18" height="18" />
@@ -52,13 +52,13 @@
 								</div>
 								<div class="cart__row-info">
 									<div class="cart__row-info--quantity">
-										<!-- svelte-ignore a11y_click_events_have_key_events -->
-										<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-										<img src="/assets/stroke-3px-24px/minus.svg" alt="decrease quantity" width="18" height="18" onclick={() => decreaseQuantity(item.id)} />
+										<button type="button" class="icon-btn" onclick={() => decreaseQuantity(item.id)} aria-label="Decrease quantity">
+											<img src="/assets/stroke-3px-24px/minus.svg" alt="" width="18" height="18" />
+										</button>
 										<h3>{item.quantity}</h3>
-										<!-- svelte-ignore a11y_click_events_have_key_events -->
-										<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-										<img src="/assets/stroke-3px-24px/plus.svg" alt="increase quantity" width="18" height="18" onclick={() => increaseQuantity(item.id)} />
+										<button type="button" class="icon-btn" onclick={() => increaseQuantity(item.id)} aria-label="Increase quantity">
+											<img src="/assets/stroke-3px-24px/plus.svg" alt="" width="18" height="18" />
+										</button>
 									</div>
 								</div>
 							</div>
@@ -74,9 +74,9 @@
 						</div>
 					</div>
 					<div class="cart__row-action">
-						<!-- svelte-ignore a11y_click_events_have_key_events -->
-						<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-						<img src="/assets/stroke-3px-24px/delete.svg" alt="remove item" width="24" height="24" onclick={() => removeItem(item.id)} />
+						<button type="button" class="icon-btn" onclick={() => removeItem(item.id)} aria-label="Remove item">
+							<img src="/assets/stroke-3px-24px/delete.svg" alt="" width="24" height="24" />
+						</button>
 					</div>
 				</div>
 			{/each}
@@ -96,6 +96,18 @@
 	.cart__row-info--totalprice img,
 	.cart__total-summary-price img {
 		filter: var(--filter-primary);
+	}
+
+	.icon-btn {
+		background: none;
+		border: none;
+		padding: 0;
+		margin: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+		color: inherit;
 	}
 
 	.cart__row-info--quantity img,
@@ -146,6 +158,12 @@
 		transform: translateX(calc( -1 * var(--spacing-lg)));
 	}
 
+	.cart__row-title {
+		text-decoration: none;
+		color: var(--color-primary);
+		display: block;
+	}
+
 	.cart__row-title span {
 		font-weight: 500;
 	}
@@ -155,6 +173,7 @@
 		width: 25vh;
 		overflow: hidden;
 		background-color: var(--color-input);
+		display: block;
 	}
 
 	.cart__row-image img {
@@ -177,8 +196,8 @@
 		justify-content: space-between;
 	}
 
-	.cart__row-title {
-		color: var(--color-primary);
+	.cart__row-title:hover h3 {
+		text-decoration: underline;
 	}
 
 	.cart__row-info {

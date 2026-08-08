@@ -1,5 +1,13 @@
 <script lang="ts">
 	import Field from '$lib/components/Field.svelte';
+	import { goto } from '$app/navigation';
+	import { cart } from '$lib/cart.svelte';
+	
+	function handleProceed() {
+		if (cart.items.length === 0) return;
+		cart.clear(); // Clear the cart since they "purchased"
+		goto('/success');
+	}
 </script>
 
 <div class="checkout">
@@ -47,7 +55,7 @@
 		</div>
 	</div>
 
-	<button class="btn btn--primary" style="width: 100%; margin-top: var(--spacing-sm);">PROCEED TO PAYMENT</button>
+	<button class="btn btn--primary" onclick={handleProceed} disabled={cart.items.length === 0} style="width: 100%; margin-top: var(--spacing-sm);">PROCEED TO PAYMENT</button>
 </div>
 
 <style>

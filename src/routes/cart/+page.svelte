@@ -1,10 +1,11 @@
 <script lang="ts">
 	import type { PageData } from './$types';
-	import type { CartItem } from './types';
 	import CartProducts from './CartProducts.svelte';
 	import Checkout from './Checkout.svelte';
 	import ProductGrid from '$lib/components/ProductGrid.svelte';
 
+	import { cart } from '$lib/cart.svelte';
+	
 	interface Props {
 		data: PageData;
 	}
@@ -12,44 +13,21 @@
 	let { data }: Props = $props();
 	let { recommendedProducts } = $derived(data);
 
-	let cartItems = $state<CartItem[]>([
-		{
-			id: 'charulatha-mul-cotton-saree-1',
-			title: 'CHARULATHA',
-			subtitle: 'MULCOTTON SAREE',
-			image: '/assets/types/mul-cotton/listing/1.jpg',
-			rating: 6,
-			mrp: 2400,
-			price: 2000,
-			quantity: 2
-		},
-		{
-			id: 'mayuri-mul-cotton-saree-2',
-			title: 'MAYURI',
-			subtitle: 'MULCOTTON SAREE',
-			image: '/assets/types/mul-cotton/listing/2.jpg',
-			rating: 5,
-			mrp: 2800,
-			price: 2200,
-			quantity: 1
-		}
-	]);
+	let cartItems = $derived(cart.items);
 
 	function increaseQuantity(id: string) {
-		const item = cartItems.find((i) => i.id === id);
-		if (item) item.quantity += 1;
+		cart.increase(id);
 	}
 
 	function decreaseQuantity(id: string) {
-		const item = cartItems.find((i) => i.id === id);
-		if (item && item.quantity > 1) item.quantity -= 1;
+		cart.decrease(id);
 	}
 
 	function removeItem(id: string) {
-		cartItems = cartItems.filter((i) => i.id !== id);
+		cart.remove(id);
 	}
 
-	let cartTotal = $derived(cartItems.reduce((total, item) => total + item.price * item.quantity, 0));
+	let cartTotal = $derived(cart.total);
 
 	let showCheckout = $state(false);
 </script>
@@ -83,16 +61,16 @@
 			</p>
 			<div class="btns">
 				{#if !showCheckout}
-					<button class="btn--primary btn" onclick={() => showCheckout = true}>
+					<button class="btn--primary btn" onclick={() => showCheckout = true} disabled={cartItems.length === 0}>
 						<img src="/assets/stroke-3px-24px/credit-card.svg" alt="card" width="24" height="24" />
 						PAY ₹{cartTotal}
 					</button>
-					<button class="btn--secondary btn">
+					<a href="/" class="btn--secondary btn" style="text-decoration: none; display: inline-flex;">
 						<img src="/assets/stroke-3px-24px/shopping-basket.svg" alt="shopping" width="24" height="24" />
 						Shop More
-					</button>
+					</a>
 				{:else}
-					<button class="btn--primary btn" onclick={() => showCheckout = true}>
+					<button class="btn--primary btn" onclick={() => showCheckout = true} disabled={cartItems.length === 0}>
 						<img src="/assets/stroke-3px-24px/credit-card.svg" alt="card" width="24" height="24" />
 						PURCHASE
 					</button>

@@ -178,8 +178,14 @@ a {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: var(--spacing-sm);
-    transition: all ease 0.4s;
+    gap: 0.5rem;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
 }
 
 .btn--primary {
