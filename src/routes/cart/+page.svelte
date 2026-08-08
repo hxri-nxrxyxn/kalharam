@@ -65,7 +65,7 @@
 						<img src="/assets/stroke-3px-24px/credit-card.svg" alt="card" width="24" height="24" />
 						PAY ₹{cartTotal}
 					</button>
-					<a href="/" class="btn--secondary btn" style="text-decoration: none; display: inline-flex;">
+					<a href="/" class="btn--secondary btn cart__link-btn">
 						<img src="/assets/stroke-3px-24px/shopping-basket.svg" alt="shopping" width="24" height="24" />
 						Shop More
 					</a>
@@ -129,6 +129,11 @@
 
 	.cart__text button {
 		margin-top: var(--spacing-lg);
+	}
+
+	.cart__link-btn {
+		text-decoration: none;
+		display: inline-flex;
 	}
 
 	.cart__row-info {

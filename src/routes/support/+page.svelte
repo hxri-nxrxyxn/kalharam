@@ -70,7 +70,7 @@
 				<textarea placeholder="Tell us about your inquiry..." bind:value={message} rows="4"></textarea>
 			</Field>
 
-			<button class="btn btn--primary" onclick={handleSend} disabled={!name || !email || !message} style="width: 100%;">
+			<button class="btn btn--primary support__submit-btn" onclick={handleSend} disabled={!name || !email || !message}>
 				Send Message
 			</button>
 		</div>
@@ -143,5 +143,9 @@
 	.support__form h2 {
 		color: var(--color-primary);
 		margin-bottom: var(--spacing-lg);
+	}
+	
+	.support__submit-btn {
+		width: 100%;
 	}
 </style>
