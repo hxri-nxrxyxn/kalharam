@@ -109,6 +109,7 @@ html.lenis, html.lenis body {
 
 html {
     font-size: 16px;
+    overflow-y: scroll;
 }
 
 body {

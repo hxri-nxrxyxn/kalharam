@@ -42,17 +42,16 @@
 						toggleActions: 'play reverse play reverse'
 					},
 					y: 30,
-					opacity: 0,
+					autoAlpha: 0,
 					duration: 0.5,
 					stagger: 0.05,
-					ease: 'power3.out'
+					ease: 'power3.out',
+					overwrite: 'auto'
 				});
 			}
 
 			if (similarRef) {
 				const header = similarRef.querySelector('h2');
-				const gridWrapper = similarRef.querySelector('.grid');
-				const cards = similarRef.querySelectorAll('.listing');
 
 				if (header) {
 					gsap.from(header, {
@@ -63,25 +62,10 @@
 							toggleActions: 'play reverse play reverse'
 						},
 						y: 20,
-						opacity: 0,
+						autoAlpha: 0,
 						duration: 0.5,
-						ease: 'power3.out'
-					});
-				}
-
-				if (gridWrapper && cards.length > 0) {
-					gsap.from(cards, {
-						scrollTrigger: {
-							trigger: gridWrapper,
-							start: 'top 75%',
-							end: 'bottom 10%',
-							toggleActions: 'play reverse play reverse'
-						},
-						y: 40,
-						opacity: 0,
-						duration: 0.6,
-						stagger: 0.08,
-						ease: 'power3.out'
+						ease: 'power3.out',
+						overwrite: 'auto'
 					});
 				}
 			}
@@ -211,6 +195,10 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--spacing-lg);
+	}
+
+	.product__details > * {
+		will-change: transform, opacity;
 	}
 
 	.product__header h1 {

@@ -39,6 +39,7 @@
 		background-color: var(--color-surface);
 		border: 2px solid var(--color-surface);
 		text-decoration: none;
+		will-change: transform, opacity;
 	}
 
 	.listing:hover {
