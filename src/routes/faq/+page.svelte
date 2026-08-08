@@ -2,24 +2,31 @@
 </script>
 
 <svelte:head>
-	<title>Kalharam - FAQ</title>
-	<meta name="description" content="Frequently asked questions about our sarees, orders, and services." />
+	<title>Frequently Asked Questions - Kalharam Kalyani</title>
+	<meta name="description" content="Answers to your questions about our sarees, orders, and services." />
 </svelte:head>
 
 <main class="page-container">
 	<div class="page-content">
-		<h1>FAQ</h1>
-		<p>Frequently asked questions about our sarees, orders, and services.</p>
+		<h1>Frequently Asked Questions</h1>
+
+		<p class="lead">Everything you need to know about shopping with us.</p>
+
+		<h2>Are your sarees authentic handloom?</h2>
+		<p>Absolutely. Authenticity is the cornerstone of Kalharam Kalyani. Every saree, from our Kanchi Cotton to our Narayan Peth collection, is woven by skilled artisans using traditional handloom techniques.</p>
+
+		<h2>How should I care for my cotton sarees?</h2>
+		<p>We recommend dry cleaning for the first wash to preserve the natural dyes. For subsequent washes, gently hand wash in cold water using a mild detergent. Dry in the shade to prevent the vibrant colors from fading.</p>
+
+		<h2>Do you offer blouse stitching services?</h2>
+		<p>At this time, we provide unstitched blouse pieces included with the sarees (where specified). We do not currently offer tailoring or fall/picot services, allowing you to customize the fit with your trusted local tailor.</p>
+
+		<h2>What if an item is out of stock?</h2>
+		<p>Handlooms take time to weave, which means our stock is limited. If a drape you love is sold out, please reach out to us on WhatsApp (+91 99952 83835) and we will let you know if a restock is planned.</p>
 		
-		<!-- Placeholder content -->
-		<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-		
-		<h2>Section Title</h2>
-		<p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-		
-		<p>Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris. Integer in mauris eu nibh euismod gravida.</p>
 	</div>
 </main>
+
 
 <style>
 	.page-container {
@@ -46,6 +53,23 @@
 		color: var(--color-primary);
 		margin-top: var(--spacing-lg);
 		margin-bottom: var(--spacing-sm);
+	}
+
+	.page-content .lead {
+		font-weight: 500;
+		font-size: 1.1rem;
+		color: var(--color-primary);
+	}
+
+	.page-content ul {
+		color: var(--color-secondary);
+		line-height: 1.6;
+		margin-bottom: var(--spacing-md);
+		padding-left: var(--spacing-lg);
+	}
+
+	.page-content li {
+		margin-bottom: calc(var(--spacing-sm) / 2);
 	}
 
 	@media (max-width: 900px) {

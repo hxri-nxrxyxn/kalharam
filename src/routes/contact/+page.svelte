@@ -2,24 +2,30 @@
 </script>
 
 <svelte:head>
-	<title>Kalharam - Contact Us</title>
+	<title>Contact Kalharam Kalyani - Kalharam Kalyani</title>
 	<meta name="description" content="Get in touch with our team for inquiries and support." />
 </svelte:head>
 
 <main class="page-container">
 	<div class="page-content">
-		<h1>Contact Us</h1>
-		<p>Get in touch with our team for inquiries and support.</p>
+		<h1>Contact Kalharam Kalyani</h1>
+
+		<p class="lead">We would love to hear from you.</p>
+		<p>Whether you need assistance finding the perfect drape, have a question about our handwoven collections, or want to book a bridal consultation, our team is here to help.</p>
+
+		<h2>Direct Contact</h2>
+		<ul>
+			<li><strong>WhatsApp:</strong> +91 99952 83835</li>
+			<li><strong>Customer Support:</strong> support@kalharam.com</li>
+			<li><strong>General Enquiry:</strong> enquiry@kalharam.com</li>
+		</ul>
+
+		<h2>Boutique Hours</h2>
+		<p>Our online support team is available Monday through Saturday, from 10:00 AM to 7:00 PM (IST). We aim to respond to all inquiries within 24 hours.</p>
 		
-		<!-- Placeholder content -->
-		<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-		
-		<h2>Section Title</h2>
-		<p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-		
-		<p>Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris. Integer in mauris eu nibh euismod gravida.</p>
 	</div>
 </main>
+
 
 <style>
 	.page-container {
@@ -46,6 +52,23 @@
 		color: var(--color-primary);
 		margin-top: var(--spacing-lg);
 		margin-bottom: var(--spacing-sm);
+	}
+
+	.page-content .lead {
+		font-weight: 500;
+		font-size: 1.1rem;
+		color: var(--color-primary);
+	}
+
+	.page-content ul {
+		color: var(--color-secondary);
+		line-height: 1.6;
+		margin-bottom: var(--spacing-md);
+		padding-left: var(--spacing-lg);
+	}
+
+	.page-content li {
+		margin-bottom: calc(var(--spacing-sm) / 2);
 	}
 
 	@media (max-width: 900px) {

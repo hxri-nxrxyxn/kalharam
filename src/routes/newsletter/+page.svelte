@@ -2,24 +2,29 @@
 </script>
 
 <svelte:head>
-	<title>Kalharam - Newsletter</title>
+	<title>Kalharam Newsletter - Kalharam Kalyani</title>
 	<meta name="description" content="Subscribe to our newsletter for exclusive collections and offers." />
 </svelte:head>
 
 <main class="page-container">
 	<div class="page-content">
-		<h1>Newsletter</h1>
-		<p>Subscribe to our newsletter for exclusive collections and offers.</p>
+		<h1>Kalharam Newsletter</h1>
+
+		<p class="lead">Become an insider.</p>
+		<p>Join the Kalharam Kalyani family. Subscribe to our newsletter to receive early access to our limited-edition handloom drops, styling guides, and exclusive invitations to our festive sales.</p>
 		
-		<!-- Placeholder content -->
-		<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+		<div style="margin-top: 2rem; background-color: var(--color-input); padding: 2rem;">
+			<h2 style="margin-top: 0;">Subscribe</h2>
+			<p>Enter your email address below. We promise to only send you beautiful things.</p>
+			<div style="display: flex; gap: 1rem; margin-top: 1rem;">
+				<input type="email" placeholder="Your email address" style="flex: 1; padding: 0.8rem; border: 1px solid var(--color-secondary); background: transparent; outline: none; color: var(--color-primary);" />
+				<button class="btn btn--primary" style="padding: 0.8rem 2rem; font-size: 0.9rem;">Subscribe</button>
+			</div>
+		</div>
 		
-		<h2>Section Title</h2>
-		<p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-		
-		<p>Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris. Integer in mauris eu nibh euismod gravida.</p>
 	</div>
 </main>
+
 
 <style>
 	.page-container {
@@ -46,6 +51,23 @@
 		color: var(--color-primary);
 		margin-top: var(--spacing-lg);
 		margin-bottom: var(--spacing-sm);
+	}
+
+	.page-content .lead {
+		font-weight: 500;
+		font-size: 1.1rem;
+		color: var(--color-primary);
+	}
+
+	.page-content ul {
+		color: var(--color-secondary);
+		line-height: 1.6;
+		margin-bottom: var(--spacing-md);
+		padding-left: var(--spacing-lg);
+	}
+
+	.page-content li {
+		margin-bottom: calc(var(--spacing-sm) / 2);
 	}
 
 	@media (max-width: 900px) {

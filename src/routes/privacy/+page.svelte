@@ -2,24 +2,28 @@
 </script>
 
 <svelte:head>
-	<title>Kalharam - Privacy Policy</title>
+	<title>Privacy Policy - Kalharam Kalyani</title>
 	<meta name="description" content="Understand how we collect, use, and protect your personal information." />
 </svelte:head>
 
 <main class="page-container">
 	<div class="page-content">
 		<h1>Privacy Policy</h1>
-		<p>Understand how we collect, use, and protect your personal information.</p>
+
+		<p class="lead">Your privacy is as important to us as the quality of our weaves.</p>
+
+		<h2>Data Collection</h2>
+		<p>When you purchase something from Kalharam Kalyani, we collect the personal information you give us, such as your name, address, and email address, to fulfill your order and provide customer support.</p>
+
+		<h2>Payment Security</h2>
+		<p>We use encrypted, industry-standard payment gateways. We do not store your credit card details or payment information on our servers. Your transactions are 100% secure.</p>
+
+		<h2>Data Usage</h2>
+		<p>We will never sell, rent, or distribute your personal information to third parties. With your permission, we may send you emails about our boutique, new collections, and exclusive sales.</p>
 		
-		<!-- Placeholder content -->
-		<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-		
-		<h2>Section Title</h2>
-		<p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-		
-		<p>Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris. Integer in mauris eu nibh euismod gravida.</p>
 	</div>
 </main>
+
 
 <style>
 	.page-container {
@@ -46,6 +50,23 @@
 		color: var(--color-primary);
 		margin-top: var(--spacing-lg);
 		margin-bottom: var(--spacing-sm);
+	}
+
+	.page-content .lead {
+		font-weight: 500;
+		font-size: 1.1rem;
+		color: var(--color-primary);
+	}
+
+	.page-content ul {
+		color: var(--color-secondary);
+		line-height: 1.6;
+		margin-bottom: var(--spacing-md);
+		padding-left: var(--spacing-lg);
+	}
+
+	.page-content li {
+		margin-bottom: calc(var(--spacing-sm) / 2);
 	}
 
 	@media (max-width: 900px) {

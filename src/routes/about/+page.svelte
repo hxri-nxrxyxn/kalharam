@@ -2,24 +2,27 @@
 </script>
 
 <svelte:head>
-	<title>Kalharam - About Us</title>
-	<meta name="description" content="Discover the story behind Kalharam and our commitment to authentic handlooms." />
+	<title>About Us - Kalharam Kalyani</title>
+	<meta name="description" content="Discover the story behind Kalharam Kalyani and our commitment to authentic handlooms." />
 </svelte:head>
 
 <main class="page-container">
 	<div class="page-content">
 		<h1>About Us</h1>
-		<p>Discover the story behind Kalharam and our commitment to authentic handlooms.</p>
+
+		<p class="lead">Woven with heritage, crafted with soul.</p>
 		
-		<!-- Placeholder content -->
-		<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+		<p>Kalharam Kalyani was born from a deep reverence for India's rich handloom heritage. We are more than just a boutique; we are a celebration of the artisans, the weavers, and the generations of tradition that breathe life into every thread.</p>
 		
-		<h2>Section Title</h2>
-		<p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+		<h2>Our Philosophy</h2>
+		<p>In a world of fast fashion, we choose the slow, intentional rhythm of the loom. Every drape in our collection—from the breezy elegance of Mul Cotton to the regal weight of Kanchi Cotton—is meticulously curated to ensure unparalleled quality. We believe that a saree is not just a garment, but a canvas of cultural storytelling.</p>
 		
-		<p>Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris. Integer in mauris eu nibh euismod gravida.</p>
+		<h2>Empowering Artisans</h2>
+		<p>We work directly with weaving communities across the country, ensuring fair trade practices and sustainable livelihoods. By choosing Kalharam Kalyani, you are directly contributing to the preservation of ancient weaving techniques and the prosperity of the hands that craft them.</p>
+		
 	</div>
 </main>
+
 
 <style>
 	.page-container {
@@ -46,6 +49,23 @@
 		color: var(--color-primary);
 		margin-top: var(--spacing-lg);
 		margin-bottom: var(--spacing-sm);
+	}
+
+	.page-content .lead {
+		font-weight: 500;
+		font-size: 1.1rem;
+		color: var(--color-primary);
+	}
+
+	.page-content ul {
+		color: var(--color-secondary);
+		line-height: 1.6;
+		margin-bottom: var(--spacing-md);
+		padding-left: var(--spacing-lg);
+	}
+
+	.page-content li {
+		margin-bottom: calc(var(--spacing-sm) / 2);
 	}
 
 	@media (max-width: 900px) {

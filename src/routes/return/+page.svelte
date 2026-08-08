@@ -2,24 +2,31 @@
 </script>
 
 <svelte:head>
-	<title>Kalharam - Return Policy</title>
+	<title>Return & Exchange Policy - Kalharam Kalyani</title>
 	<meta name="description" content="Find out about our hassle-free return and exchange process." />
 </svelte:head>
 
 <main class="page-container">
 	<div class="page-content">
-		<h1>Return Policy</h1>
-		<p>Find out about our hassle-free return and exchange process.</p>
+		<h1>Return & Exchange Policy</h1>
+
+		<p class="lead">We want you to fall in love with your drape.</p>
+
+		<h2>Our Promise</h2>
+		<p>If your saree is not a perfect match, we offer a hassle-free 7-day return and exchange policy from the date of delivery.</p>
+
+		<h2>Conditions for Return</h2>
+		<p>To be eligible for a return or exchange, the item must be unworn, unwashed, and in its original packaging with all Kalharam Kalyani tags completely intact. Sarees that have had their blouse pieces cut or falls stitched are considered customized and are strictly non-returnable.</p>
+
+		<h2>The Handloom Mark</h2>
+		<p>Please note that minor irregularities in weave, color, or print are natural characteristics of authentic handloom products and are not considered defects. These nuances are what make your saree truly one-of-a-kind.</p>
+
+		<h2>How to Initiate</h2>
+		<p>To start a return or exchange, please email our support team at <strong>support@kalharam.com</strong> with your order number. Our team will arrange a reverse pickup within 48 hours.</p>
 		
-		<!-- Placeholder content -->
-		<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-		
-		<h2>Section Title</h2>
-		<p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-		
-		<p>Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris. Integer in mauris eu nibh euismod gravida.</p>
 	</div>
 </main>
+
 
 <style>
 	.page-container {
@@ -46,6 +53,23 @@
 		color: var(--color-primary);
 		margin-top: var(--spacing-lg);
 		margin-bottom: var(--spacing-sm);
+	}
+
+	.page-content .lead {
+		font-weight: 500;
+		font-size: 1.1rem;
+		color: var(--color-primary);
+	}
+
+	.page-content ul {
+		color: var(--color-secondary);
+		line-height: 1.6;
+		margin-bottom: var(--spacing-md);
+		padding-left: var(--spacing-lg);
+	}
+
+	.page-content li {
+		margin-bottom: calc(var(--spacing-sm) / 2);
 	}
 
 	@media (max-width: 900px) {

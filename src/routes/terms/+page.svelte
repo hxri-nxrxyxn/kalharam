@@ -2,24 +2,29 @@
 </script>
 
 <svelte:head>
-	<title>Kalharam - Terms of Service</title>
-	<meta name="description" content="Read the terms and conditions governing your use of Kalharam." />
+	<title>Terms of Service - Kalharam Kalyani</title>
+	<meta name="description" content="Read the terms and conditions governing your use of Kalharam Kalyani." />
 </svelte:head>
 
 <main class="page-container">
 	<div class="page-content">
 		<h1>Terms of Service</h1>
-		<p>Read the terms and conditions governing your use of Kalharam.</p>
+
+		<p class="lead">Welcome to Kalharam Kalyani.</p>
+		<p>By accessing our website and purchasing our products, you agree to be bound by the following terms and conditions.</p>
+
+		<h2>Product Accuracy</h2>
+		<p>We have made every effort to display the colors and textures of our sarees as accurately as possible. However, due to variations in monitor displays and the natural dyeing processes used in handlooms, we cannot guarantee that the physical product will perfectly match your screen.</p>
+
+		<h2>Pricing and Availability</h2>
+		<p>All prices are listed in INR (Indian Rupees) and are inclusive of applicable taxes. We reserve the right to modify prices or discontinue products without prior notice. In the rare event that an item is out of stock after an order is placed, we will notify you immediately and process a full refund.</p>
+
+		<h2>Intellectual Property</h2>
+		<p>All content on this website, including photographs, branding, text, and graphics, is the exclusive property of Kalharam Kalyani. Any unauthorized use, reproduction, or distribution is strictly prohibited.</p>
 		
-		<!-- Placeholder content -->
-		<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-		
-		<h2>Section Title</h2>
-		<p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-		
-		<p>Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris. Integer in mauris eu nibh euismod gravida.</p>
 	</div>
 </main>
+
 
 <style>
 	.page-container {
@@ -46,6 +51,23 @@
 		color: var(--color-primary);
 		margin-top: var(--spacing-lg);
 		margin-bottom: var(--spacing-sm);
+	}
+
+	.page-content .lead {
+		font-weight: 500;
+		font-size: 1.1rem;
+		color: var(--color-primary);
+	}
+
+	.page-content ul {
+		color: var(--color-secondary);
+		line-height: 1.6;
+		margin-bottom: var(--spacing-md);
+		padding-left: var(--spacing-lg);
+	}
+
+	.page-content li {
+		margin-bottom: calc(var(--spacing-sm) / 2);
 	}
 
 	@media (max-width: 900px) {

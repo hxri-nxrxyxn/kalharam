@@ -2,24 +2,27 @@
 </script>
 
 <svelte:head>
-	<title>Kalharam - Blog</title>
+	<title>The Kalharam Blog - Kalharam Kalyani</title>
 	<meta name="description" content="Read our latest stories about handloom heritage, styling tips, and artisan features." />
 </svelte:head>
 
 <main class="page-container">
 	<div class="page-content">
-		<h1>Blog</h1>
-		<p>Read our latest stories about handloom heritage, styling tips, and artisan features.</p>
+		<h1>The Kalharam Blog</h1>
+
+		<p class="lead">Stories from the Loom.</p>
+
+		<h2>The Breathable Elegance of Mul Cotton</h2>
+		<p><em>Posted on August 5th, 2026</em></p>
+		<p>There is a distinct magic to Mul Cotton (Mulmul). Known for its feather-light texture and incredible breathability, it has been the fabric of choice for Indian summers for centuries. In our latest collection, we explore how this ancient textile is being reimagined for the modern wardrobe. <a href="/blog" style="color: var(--color-primary); text-decoration: underline;">Read more...</a></p>
+
+		<h2>Styling Your Davani Half Saree</h2>
+		<p><em>Posted on July 22nd, 2026</em></p>
+		<p>The Davani, or Half Saree, is a beautiful bridge between childhood and womanhood in South Indian tradition. But today, it has evolved into a high-fashion statement piece. Here are three ways to style your Kalharam Davani for your next festive occasion. <a href="/blog" style="color: var(--color-primary); text-decoration: underline;">Read more...</a></p>
 		
-		<!-- Placeholder content -->
-		<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-		
-		<h2>Section Title</h2>
-		<p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-		
-		<p>Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris. Integer in mauris eu nibh euismod gravida.</p>
 	</div>
 </main>
+
 
 <style>
 	.page-container {
@@ -46,6 +49,23 @@
 		color: var(--color-primary);
 		margin-top: var(--spacing-lg);
 		margin-bottom: var(--spacing-sm);
+	}
+
+	.page-content .lead {
+		font-weight: 500;
+		font-size: 1.1rem;
+		color: var(--color-primary);
+	}
+
+	.page-content ul {
+		color: var(--color-secondary);
+		line-height: 1.6;
+		margin-bottom: var(--spacing-md);
+		padding-left: var(--spacing-lg);
+	}
+
+	.page-content li {
+		margin-bottom: calc(var(--spacing-sm) / 2);
 	}
 
 	@media (max-width: 900px) {
