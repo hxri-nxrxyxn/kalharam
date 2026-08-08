@@ -18,7 +18,7 @@
 </svelte:head>
 
 <main class="newsletter">
-	<div class="newsletter__content">
+	<div class="newsletter__text">
 		<h1 class="newsletter__title">Kalharam Newsletter</h1>
 		
 		<p class="newsletter__lead">Become an insider.</p>
@@ -28,24 +28,43 @@
 			<h2 class="newsletter__subtitle">Subscribe</h2>
 			<p class="newsletter__paragraph">Enter your email address below. We promise to only send you beautiful things.</p>
 			
-			<Field label="EMAIL">
-				<input type="email" placeholder="Your email address" bind:value={email} />
+			<Field label="EMAIL ADDRESS">
+				<input type="email" placeholder="you@email.com" bind:value={email} />
 			</Field>
 
 			<button class="btn btn--primary newsletter__btn" onclick={handleSubscribe} disabled={!email}>Subscribe</button>
 		</div>
-		
+	</div>
+	<div class="newsletter__image">
+		<img src="/assets/types/kanchi-cotton/example.webp" alt="Kalharam Newsletter">
 	</div>
 </main>
 
 <style>
 	.newsletter {
 		display: flex;
+		justify-content: space-between;
+		gap: var(--spacing-xl);
 		padding-bottom: var(--spacing-xl);
 	}
 
-	.newsletter__content {
+	.newsletter__text {
+		width: 50%;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+	}
+
+	.newsletter__image {
 		width: 40%;
+		background-color: var(--color-input);
+		height: 80vh;
+	}
+
+	.newsletter__image img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
 	}
 
 	.newsletter__title {
@@ -61,7 +80,7 @@
 	
 	.newsletter__subtitle {
 		color: var(--color-primary);
-		margin-top: var(--spacing-lg);
+		margin-top: 0;
 		margin-bottom: var(--spacing-sm);
 	}
 
@@ -71,30 +90,40 @@
 		color: var(--color-primary);
 		margin-bottom: var(--spacing-md);
 	}
-
-	
-	
-	
 	
 	.newsletter__form {
-		margin-top: calc(2 * var(--spacing-xl));
+		margin-top: var(--spacing-lg);
 		background-color: var(--color-surface);
 		padding: var(--spacing-xl);
 	}
 	
 	.newsletter__btn {
 		width: 100%;
+		margin-top: var(--spacing-sm);
 	}
 
 	@media (max-width: 900px) {
-		.newsletter__content {
+		.newsletter__text {
 			width: 60%;
+		}
+		.newsletter__image {
+			width: 35%;
 		}
 	}
 
 	@media (max-width: 768px) {
-		.newsletter__content {
+		.newsletter {
+			flex-direction: column;
+		}
+		.newsletter__text, .newsletter__image {
 			width: 100%;
+		}
+		.newsletter__image {
+			height: 50vh;
+			order: -1;
+		}
+		.newsletter__form {
+			padding: var(--spacing-lg);
 		}
 	}
 </style>
