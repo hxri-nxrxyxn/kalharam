@@ -96,9 +96,7 @@
 	}
 
 	.support__text {
-		width: 50%;
-		display: flex;
-		flex-direction: column;
+		width: 40%;
 	}
 
 	.support__text h1 {
@@ -113,15 +111,13 @@
 	}
 
 	.support__text > p {
-		margin: var(--spacing-md) 0;
+		margin: var(--spacing-lg) 0;
 		color: var(--color-secondary);
 		line-height: 1.6;
 	}
 
 	.support__rows {
-		margin: var(--spacing-lg) 0;
-		padding: var(--spacing-lg);
-		background-color: var(--color-surface);
+		margin-bottom: calc(2 * var(--spacing-lg));
 	}
 
 	.support__row {
@@ -151,28 +147,9 @@
 		margin-top: var(--spacing-lg);
 	}
 	
-	.support__form {
-		margin-top: var(--spacing-lg);
-	}
-	
 	.support__form h2 {
 		color: var(--color-primary);
 		margin-bottom: var(--spacing-lg);
-	}
-	
-	textarea {
-		width: 100%;
-		background: transparent;
-		border: 1px solid var(--color-secondary);
-		padding: var(--spacing-sm);
-		color: var(--color-primary);
-		outline: none;
-		resize: vertical;
-		font-family: inherit;
-	}
-	
-	textarea:focus {
-		border-color: var(--color-primary);
 	}
 
 </style>

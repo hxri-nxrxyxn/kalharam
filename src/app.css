@@ -136,7 +136,7 @@ h2, h3, p, a {
     outline: 0;
 }
 
-input, select {
+input, select, textarea {
     font-family: "Inter", sans-serif;
     outline: 0;
     display: block;
@@ -150,11 +150,15 @@ input, select {
     color: var(--color-primary);
 }
 
+textarea {
+    resize: vertical;
+}
+
 select {
     appearance: none;
 }
 
-input::placeholder {
+input::placeholder, textarea::placeholder {
     color: var(--color-secondary);
 }
 
