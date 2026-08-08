@@ -20,7 +20,7 @@
 			<h3>{label}</h3>
 		</div>
 	{/if}
-	<div class="field__input-wrapper">
+	<div class="field__control">
 		{@render children()}
 	</div>
 </div>
@@ -44,13 +44,13 @@
 		filter: var(--filter-secondary);
 	}
 
-	.field--inline .field__input-wrapper {
+	.field--inline .field__control {
 		display: flex;
 		align-items: center;
 		gap: var(--spacing-lg);
 	}
 
-	.field--inline .field__input-wrapper :global(p) {
+	.field--inline .field__control :global(p) {
 		color: var(--color-primary);
 		font-weight: 600;
 	}

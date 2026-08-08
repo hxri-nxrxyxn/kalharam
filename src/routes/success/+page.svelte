@@ -8,7 +8,7 @@
 
 <main class="success">
 	<div class="success__content">
-		<div class="success__icon-wrapper">
+		<div class="success__icon-box">
 			<img src="/assets/stroke-3px-24px/circle-check.svg" alt="Success" width="48" height="48" />
 		</div>
 		
@@ -51,7 +51,7 @@
 		align-items: center;
 	}
 	
-	.success__icon-wrapper {
+	.success__icon-box {
 		width: 80px;
 		height: 80px;
 		border-radius: 50%;
@@ -62,7 +62,7 @@
 		margin-bottom: var(--spacing-md);
 	}
 	
-	.success__icon-wrapper img {
+	.success__icon-box img {
 		filter: var(--filter-primary);
 	}
 	

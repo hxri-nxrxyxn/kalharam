@@ -21,7 +21,6 @@
 	<div class="newsletter__text">
 		<h1 class="newsletter__title">Kalharam Newsletter</h1>
 		
-		<p class="newsletter__lead">Become an insider.</p>
 		<p class="newsletter__paragraph">Join the Kalharam Kalyani family. Subscribe to our newsletter to receive early access to our limited-edition handloom drops, styling guides, and exclusive invitations to our festive sales.</p>
 		
 		<div class="newsletter__form">
@@ -84,17 +83,11 @@
 		margin-bottom: var(--spacing-sm);
 	}
 
-	.newsletter__lead {
-		font-weight: 500;
-		font-size: 1.1rem;
-		color: var(--color-primary);
-		margin-bottom: var(--spacing-md);
-	}
 	
 	.newsletter__form {
 		margin-top: var(--spacing-lg);
 		background-color: var(--color-surface);
-		padding: var(--spacing-xl);
+		padding: var(--spacing-lg);
 	}
 	
 	.newsletter__btn {

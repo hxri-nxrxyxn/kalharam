@@ -10,7 +10,6 @@
 	<div class="terms__content">
 		<h1 class="terms__title">Terms of Service</h1>
 		
-		<p class="terms__lead">Welcome to Kalharam Kalyani.</p>
 		<p class="terms__paragraph">By accessing our website and purchasing our products, you agree to be bound by the following terms and conditions.</p>
 
 		<h2 class="terms__subtitle">Product Accuracy</h2>
@@ -52,12 +51,6 @@
 		margin-bottom: var(--spacing-sm);
 	}
 
-	.terms__lead {
-		font-weight: 500;
-		font-size: 1.1rem;
-		color: var(--color-primary);
-		margin-bottom: var(--spacing-md);
-	}
 
 	
 	

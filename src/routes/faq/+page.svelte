@@ -10,7 +10,6 @@
 	<div class="faq__content">
 		<h1 class="faq__title">Frequently Asked Questions</h1>
 		
-		<p class="faq__lead">Everything you need to know about shopping with us.</p>
 
 		<h2 class="faq__subtitle">Are your sarees authentic handloom?</h2>
 		<p class="faq__paragraph">Absolutely. Authenticity is the cornerstone of Kalharam Kalyani. Every saree, from our Kanchi Cotton to our Narayan Peth collection, is woven by skilled artisans using traditional handloom techniques.</p>
@@ -54,12 +53,6 @@
 		margin-bottom: var(--spacing-sm);
 	}
 
-	.faq__lead {
-		font-weight: 500;
-		font-size: 1.1rem;
-		color: var(--color-primary);
-		margin-bottom: var(--spacing-md);
-	}
 
 	
 	

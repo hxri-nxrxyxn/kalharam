@@ -10,7 +10,6 @@
 	<div class="return__content">
 		<h1 class="return__title">Return & Exchange Policy</h1>
 		
-		<p class="return__lead">We want you to fall in love with your drape.</p>
 
 		<h2 class="return__subtitle">Our Promise</h2>
 		<p class="return__paragraph">If your saree is not a perfect match, we offer a hassle-free 7-day return and exchange policy from the date of delivery.</p>
@@ -54,12 +53,6 @@
 		margin-bottom: var(--spacing-sm);
 	}
 
-	.return__lead {
-		font-weight: 500;
-		font-size: 1.1rem;
-		color: var(--color-primary);
-		margin-bottom: var(--spacing-md);
-	}
 
 	
 	

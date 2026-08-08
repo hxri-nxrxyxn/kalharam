@@ -69,7 +69,7 @@
 			<h1>{currentCategory.name}</h1>
 		</div>
 		<div class="shop">
-			<div class="shop__filters-wrapper">
+			<div class="shop__sidebar">
 				<Filters
 					{searchQuery}
 					{sortBy}
@@ -79,7 +79,7 @@
 					onApply={handleApplyFilters}
 				/>
 			</div>
-			<div class="shop__listings-wrapper">
+			<div class="shop__main">
 				<ProductGrid products={filteredProducts} />
 			</div>
 		</div>
@@ -106,7 +106,7 @@
 		align-items: flex-start;
 	}
 
-	.shop__filters-wrapper {
+	.shop__sidebar {
 		width: 20%;
 		position: sticky;
 		top: var(--nav-offset);
@@ -114,7 +114,7 @@
 		z-index: 10;
 	}
 
-	.shop__listings-wrapper {
+	.shop__main {
 		width: 75%;
 	}
 
@@ -123,13 +123,13 @@
 			flex-direction: column;
 		}
 
-		.shop__filters-wrapper {
+		.shop__sidebar {
 			width: 100%;
 			position: static;
 			margin-bottom: var(--spacing-xl);
 		}
 
-		.shop__listings-wrapper {
+		.shop__main {
 			width: 100%;
 		}
 	}

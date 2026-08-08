@@ -28,7 +28,6 @@
 	</div>	
 	<div class="support__text">
 		<h1>Contact Us</h1>
-		<p class="support__lead">We are here to help you weave your perfect story.</p>
 		<p>Whether you need assistance finding the perfect drape, have a question about the care of our handwoven collections, or wish to inquire about a recent order, our dedicated support team is at your service. Let us bring your saree vision to life.</p>
 		
 		<div class="support__rows">
@@ -103,12 +102,6 @@
 		color: var(--color-primary);
 	}
 	
-	.support__lead {
-		font-weight: 500;
-		font-size: 1.1rem;
-		color: var(--color-primary);
-		margin-top: var(--spacing-sm);
-	}
 
 	.support__text > p {
 		margin: var(--spacing-md) 0;

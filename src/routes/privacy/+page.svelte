@@ -10,7 +10,6 @@
 	<div class="privacy__content">
 		<h1 class="privacy__title">Privacy Policy</h1>
 		
-		<p class="privacy__lead">Your privacy is as important to us as the quality of our weaves.</p>
 
 		<h2 class="privacy__subtitle">Data Collection</h2>
 		<p class="privacy__paragraph">When you purchase something from Kalharam Kalyani, we collect the personal information you give us, such as your name, address, and email address, to fulfill your order and provide customer support.</p>
@@ -51,12 +50,6 @@
 		margin-bottom: var(--spacing-sm);
 	}
 
-	.privacy__lead {
-		font-weight: 500;
-		font-size: 1.1rem;
-		color: var(--color-primary);
-		margin-bottom: var(--spacing-md);
-	}
 
 	
 	

@@ -10,7 +10,6 @@
 	<div class="shipping__content">
 		<h1 class="shipping__title">Shipping Policy</h1>
 		
-		<p class="shipping__lead">Bringing heritage to your doorstep, securely and swiftly.</p>
 
 		<h2 class="shipping__subtitle">Order Processing</h2>
 		<p class="shipping__paragraph">Every piece at Kalharam Kalyani is thoroughly inspected and lovingly packaged before it begins its journey to your wardrobe. Orders are typically processed and dispatched within 1-2 business days.</p>
@@ -54,12 +53,6 @@
 		margin-bottom: var(--spacing-sm);
 	}
 
-	.shipping__lead {
-		font-weight: 500;
-		font-size: 1.1rem;
-		color: var(--color-primary);
-		margin-bottom: var(--spacing-md);
-	}
 
 	
 	

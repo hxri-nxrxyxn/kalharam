@@ -10,7 +10,6 @@
 	<div class="about__content">
 		<h1 class="about__title">About Us</h1>
 		
-		<p class="about__lead">Woven with heritage, crafted with soul.</p>
 		
 		<p class="about__paragraph">Kalharam Kalyani was born from a deep reverence for India's rich handloom heritage. We are more than just a boutique; we are a celebration of the artisans, the weavers, and the generations of tradition that breathe life into every thread.</p>
 		
@@ -50,12 +49,6 @@
 		margin-bottom: var(--spacing-sm);
 	}
 
-	.about__lead {
-		font-weight: 500;
-		font-size: 1.1rem;
-		color: var(--color-primary);
-		margin-bottom: var(--spacing-md);
-	}
 
 	
 	

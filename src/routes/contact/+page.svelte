@@ -10,7 +10,6 @@
 	<div class="contact__content">
 		<h1 class="contact__title">Contact Kalharam Kalyani</h1>
 		
-		<p class="contact__lead">We would love to hear from you.</p>
 		<p class="contact__paragraph">Whether you need assistance finding the perfect drape, have a question about our handwoven collections, or want to book a bridal consultation, our team is here to help.</p>
 
 		<h2 class="contact__subtitle">Direct Contact</h2>
@@ -54,12 +53,6 @@
 		margin-bottom: var(--spacing-sm);
 	}
 
-	.contact__lead {
-		font-weight: 500;
-		font-size: 1.1rem;
-		color: var(--color-primary);
-		margin-bottom: var(--spacing-md);
-	}
 
 	
 	

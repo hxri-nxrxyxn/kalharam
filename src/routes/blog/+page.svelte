@@ -10,7 +10,6 @@
 	<div class="blog__content">
 		<h1 class="blog__title">The Kalharam Blog</h1>
 		
-		<p class="blog__lead">Stories from the Loom.</p>
 
 		<h2 class="blog__subtitle">The Breathable Elegance of Mul Cotton</h2>
 		<p class="blog__paragraph"><em class="blog__date">Posted on August 5th, 2026</em></p>
@@ -50,12 +49,6 @@
 		margin-bottom: var(--spacing-sm);
 	}
 
-	.blog__lead {
-		font-weight: 500;
-		font-size: 1.1rem;
-		color: var(--color-primary);
-		margin-bottom: var(--spacing-md);
-	}
 
 	.blog__link {
 		color: var(--color-primary);
