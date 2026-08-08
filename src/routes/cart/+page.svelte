@@ -38,8 +38,8 @@
 	<link rel="canonical" href="https://kalharam.com/cart" />
 </svelte:head>
 
-<main class="cart-page">
-	<div class="cart">
+<main class="cart">
+	<div class="cart__content">
 		<div class="cart__text">
 			<h1>CART</h1>
 			<p>Take a moment to review your chosen drapes before proceeding to secure checkout. These handcrafted treasures are almost yours.</p>
@@ -101,11 +101,11 @@
 </main>
 
 <style>
-	.cart-page {
+	.cart {
 		padding-bottom: var(--spacing-xl);
 	}
 
-	.cart {
+	.cart__content {
 		display: flex;
 		gap: var(--spacing-xl);
 	}
@@ -152,7 +152,7 @@
 	}
 
 	@media (max-width: 768px) {
-		.cart {
+		.cart__content {
 			flex-direction: column;
 		}
 		.cart__text {
