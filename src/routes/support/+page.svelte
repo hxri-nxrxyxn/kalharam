@@ -28,7 +28,6 @@
 	</div>	
 	<div class="support__text">
 		<h1>Contact Us</h1>
-		<p class="lead">We are here to help you weave your perfect story.</p>
 		<p>Whether you need assistance finding the perfect drape, have a question about the care of our handwoven collections, or wish to inquire about a recent order, our dedicated support team is at your service. Let us bring your saree vision to life.</p>
 		
 		<div class="support__rows">
@@ -51,7 +50,7 @@
 				</div>
 				<div class="support__column">
 					<h3>Boutique Location</h3>
-					<p>Kochi, Kerala, India</p>
+					<p>kalharam.com</p>
 				</div>
 			</div>
 		</div>
@@ -60,11 +59,11 @@
 			<h2>Send us a message</h2>
 			
 			<Field label="FULL NAME">
-				<input type="text" placeholder="Charulatha" bind:value={name} />
+				<input type="text" placeholder="Your full name" bind:value={name} />
 			</Field>
 
 			<Field label="EMAIL ADDRESS">
-				<input type="email" placeholder="charulatha@example.com" bind:value={email} />
+				<input type="email" placeholder="you@email.com" bind:value={email} />
 			</Field>
 
 			<Field label="HOW CAN WE HELP?">
@@ -92,7 +91,7 @@
 	.support__image img {
 		width: 100%;
 		height: 100%;
-		object-fit: contain;
+		object-fit: cover;
 	}
 
 	.support__text {

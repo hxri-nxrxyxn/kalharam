@@ -67,7 +67,7 @@
 	<Field label="SEARCH" icon="/assets/stroke-2px-24px/search.svg">
 		<input
 			type="text"
-			placeholder="Charulatha"
+			placeholder="Search for a drape..."
 			aria-label="Search products"
 			bind:value={localSearchQuery}
 		/>
