@@ -6,7 +6,6 @@
 	import AlertTriangleIcon from "@lucide/svelte/icons/alert-triangle";
 	import PackageXIcon from "@lucide/svelte/icons/package-x";
 	import { productsState, ordersState } from "$lib/stores/app.svelte";
-	import { salesTrend } from "$lib/mock/data";
 
 	import * as Card from "$lib/components/ui/card";
 	import * as Table from "$lib/components/ui/table";
@@ -23,9 +22,34 @@
 	const newOrders = $derived(ordersState.filter((o) => o.status === "new"));
 	const deadStock = $derived(productsState.filter((p) => p.deadStockDays != null));
 	const deadStockTotal = $derived(deadStock.reduce((a, p) => a + p.stock * p.price, 0));
-	const revenue = $derived(salesTrend[salesTrend.length - 1].revenue);
-	const lastRevenue = $derived(salesTrend[salesTrend.length - 2].revenue);
-	const growth = $derived(Math.round(((revenue - lastRevenue) / lastRevenue) * 100));
+
+	const validOrders = $derived(ordersState.filter((o) => o.status !== "cancelled"));
+
+	const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+	
+	const revenueData = $derived.by(() => {
+		const now = new Date();
+		const result = [];
+		for (let i = 5; i >= 0; i--) {
+			const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+			const monthName = months[d.getMonth()];
+			const year = d.getFullYear();
+			
+			const monthOrders = validOrders.filter((o) => {
+				if (!o.time) return false;
+				const orderDate = new Date(o.time);
+				return !isNaN(orderDate.getTime()) && orderDate.getMonth() === d.getMonth() && orderDate.getFullYear() === year;
+			});
+			
+			const monthRev = monthOrders.reduce((a, o) => a + o.total, 0);
+			result.push({ month: monthName, revenue: monthRev, orders: monthOrders.length });
+		}
+		return result;
+	});
+
+	const revenue = $derived(revenueData[revenueData.length - 1].revenue);
+	const lastRevenue = $derived(revenueData[revenueData.length - 2]?.revenue || 0);
+	const growth = $derived(lastRevenue > 0 ? Math.round(((revenue - lastRevenue) / lastRevenue) * 100) : (revenue > 0 ? 100 : 0));
 	const growthLabel = $derived(`${growth >= 0 ? "+" : ""}${growth}%`);
 	const growthTone = $derived(growth >= 0 ? "success" : "destructive");
 
@@ -37,8 +61,6 @@
 		orders: { label: "Orders", color: "var(--chart-2)" },
 		revenue: { label: "Revenue (₹)", color: "var(--chart-2)" }
 	} satisfies Chart.ChartConfig;
-
-	const revenueData = salesTrend.map((d) => ({ ...d }));
 
 	// category demand summary
 	const catSummary = $derived(
