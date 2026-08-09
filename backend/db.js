@@ -30,6 +30,7 @@ db.exec(`
 		title TEXT NOT NULL,
 		subtitle TEXT NOT NULL,
 		categoryId TEXT NOT NULL,
+		color TEXT,
 		rating REAL NOT NULL,
 		mrp REAL NOT NULL,
 		salePrice REAL NOT NULL,

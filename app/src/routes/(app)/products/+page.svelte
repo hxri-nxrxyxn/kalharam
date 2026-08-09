@@ -20,6 +20,8 @@
 	import LoaderCircleIcon from "@lucide/svelte/icons/loader-circle";
 	import ChevronDownIcon from "@lucide/svelte/icons/chevron-down";
 	import CheckIcon from "@lucide/svelte/icons/check";
+	import XIcon from "@lucide/svelte/icons/x";
+	import ImagePlusIcon from "@lucide/svelte/icons/image-plus";
 
 	import { productsState } from "$lib/stores/app.svelte";
 
@@ -28,6 +30,7 @@
 		name: string;
 		details: string;
 		category: string; // The ID of the category
+		color?: string;
 		rating: number;
 		price: number;
 		offerPrice: number;
@@ -46,6 +49,15 @@
 
 	let query = $state("");
 	let filterCat = $state("All");
+	let filterStatus = $state("all");
+
+	const statusOptions = [
+		{ value: "all", label: "All stock levels" },
+		{ value: "out", label: "Out of stock" },
+		{ value: "low", label: "Low stock" },
+		{ value: "in", label: "In stock" }
+	];
+	const filterStatusLabel = $derived(statusOptions.find((s) => s.value === filterStatus)?.label ?? "All stock levels");
 
 	// upload / edit form state
 	let editingId: string | null = $state(null);
@@ -54,9 +66,11 @@
 	let pName = $state("");
 	let pSubtitle = $state("");
 	let pCategory = $state("");
+	let pColor = $state("");
 	let pPrice = $state(0);
 	let pMrp = $state(0);
 	let pImageId = $state("");
+	let pGallery = $state<string[]>([]);
 
 	async function loadData() {
 		try {
@@ -90,8 +104,10 @@
 
 	const visibleProducts = $derived(
 		productsState.filter((p) => {
+			const status = p.stock === 0 ? "out" : p.stock < 3 ? "low" : "in";
 			return (
 				(filterCat === "All" || p.category === filterCat) &&
+				(filterStatus === "all" || status === filterStatus) &&
 				(query.trim() === "" || p.name.toLowerCase().includes(query.trim().toLowerCase()))
 			);
 		})
@@ -108,9 +124,11 @@
 		pName = "";
 		pSubtitle = "";
 		pCategory = allCategories.length > 0 ? allCategories[0].id : "";
+		pColor = "";
 		pPrice = 0;
 		pMrp = 0;
 		pImageId = "";
+		pGallery = [];
 	}
 
 	function openAdd() {
@@ -123,9 +141,12 @@
 		pName = p.name;
 		pSubtitle = p.details;
 		pCategory = p.category;
+		pColor = p.color ?? "";
 		pPrice = p.price;
 		pMrp = p.offerPrice ?? 0;
 		pImageId = p.imageId;
+		// Mock reconstructing gallery if present, else just cover
+		pGallery = p.images ? [...p.images] : (p.imageId ? [p.imageId] : []);
 		open = true;
 	}
 
@@ -133,33 +154,83 @@
 		return "₹" + n.toLocaleString("en-IN");
 	}
 
+	let fileInputRef: HTMLInputElement | null = $state(null);
+	let isUploadingImage = $state(false);
+
+	async function handleUpload(e: Event) {
+		const files = (e.target as HTMLInputElement).files;
+		if (!files || files.length === 0) return;
+
+		isUploadingImage = true;
+		try {
+			for (let i = 0; i < files.length; i++) {
+				const formData = new FormData();
+				formData.append('image', files[i]);
+				formData.append('alt_text', `${pName} Image ${i + 1}`);
+				formData.append('type', 'product');
+
+				const res = await fetch('http://localhost:3000/api/admin/images/upload', {
+					method: 'POST',
+					body: formData
+				});
+				const data = await res.json();
+				if (res.ok) {
+					pGallery = [...pGallery, data.uid];
+					// First uploaded image becomes the cover by default if not set
+					if (!pImageId) pImageId = data.uid;
+					toast.success(`Image ${i + 1} uploaded`);
+				} else {
+					toast.error(data.error || "Upload failed");
+				}
+			}
+			await loadData();
+		} catch (err: any) {
+			toast.error(err.message);
+		} finally {
+			isUploadingImage = false;
+			if (fileInputRef) fileInputRef.value = '';
+		}
+	}
+
+	function removePhoto(index: number) {
+		const removed = pGallery.splice(index, 1);
+		// If we removed the cover image, pick the next one or blank it
+		if (removed[0] === pImageId) {
+			pImageId = pGallery.length > 0 ? pGallery[0] : "";
+		}
+	}
+
 	async function submit() {
 		if (submitting) return;
 		if (!pName.trim()) return toast.error("Product name is required");
 		if (!pCategory) return toast.error("Please select a category");
-		if (!pImageId) return toast.error("Please select a cover image");
+		if (!pMrp || pMrp <= 0) return toast.error("MRP is required");
+		if (pGallery.length === 0) return toast.error("Please add at least one product photo");
 		
 		submitting = true;
 		const publishedId = editingId ?? `${pCategory}-prod-${Date.now()}`;
+		const finalSalePrice = pPrice > 0 ? pPrice : pMrp;
 		
 		try {
-			const res = await fetch(`http://localhost:3000/api/admin/products`, {
-				method: 'POST', // Mock POST logic (update if PUT needed later)
+			const method = editingId ? 'PUT' : 'POST';
+			const res = await fetch(`http://localhost:3000/api/admin/products${editingId ? '/' + editingId : ''}`, {
+				method,
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					id: publishedId,
 					title: pName.trim(),
 					subtitle: pSubtitle.trim(),
 					categoryId: pCategory,
-					rating: 4.5,
-					salePrice: pPrice,
-					mrp: pMrp || pPrice,
-					imageId: pImageId
+					color: pColor.trim(),
+					salePrice: finalSalePrice,
+					mrp: pMrp,
+					imageId: pImageId || pGallery[0],
+					galleryImages: pGallery
 				})
 			});
 			if (res.ok) {
-				toast.success(`"${pName}" published`);
-				// Force a quick sync from backend to avoid code dupe
+				toast.success(`"${pName}" ${editingId ? 'updated' : 'published'}`);
+				// Reload UI cleanly
 				window.dispatchEvent(new Event('reload-store'));
 			} else {
 				throw new Error("Failed to save product");
@@ -210,6 +281,24 @@
 					<DropdownMenu.Item onSelect={() => (filterCat = c.id)}>
 						{#if c.id === filterCat}<CheckIcon class="size-4" />{:else}<span class="size-4"></span>{/if}
 						{c.name}
+					</DropdownMenu.Item>
+				{/each}
+			</DropdownMenu.Content>
+		</DropdownMenu.Root>
+		<DropdownMenu.Root>
+			<DropdownMenu.Trigger>
+				{#snippet child({ props })}
+					<Button variant="outline" {...props} class="justify-between font-normal">
+						{filterStatusLabel}
+						<ChevronDownIcon class="size-4 opacity-60" />
+					</Button>
+				{/snippet}
+			</DropdownMenu.Trigger>
+			<DropdownMenu.Content align="start" class="min-w-44">
+				{#each statusOptions as s}
+					<DropdownMenu.Item onSelect={() => (filterStatus = s.value)}>
+						{#if filterStatus === s.value}<CheckIcon class="size-4" />{:else}<span class="size-4"></span>{/if}
+						{s.label}
 					</DropdownMenu.Item>
 				{/each}
 			</DropdownMenu.Content>
@@ -286,14 +375,51 @@
 
 		<div class="flex flex-col gap-4 overflow-y-auto py-2 pr-1">
 			
-			<div class="flex flex-col gap-1.5">
-				<Label>Cover Image</Label>
-				<select bind:value={pImageId} class="flex h-9 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background focus:outline-none focus:ring-1 focus:ring-ring">
-					<option value="">-- Select an Image --</option>
-					{#each allImages as img}
-						<option value={img.uid}>{img.alt_text || img.uid}</option>
-					{/each}
-				</select>
+			<div class="flex flex-col gap-2">
+				<Label>Product Gallery</Label>
+				{#if pGallery.length > 0}
+					<div class="grid grid-cols-3 gap-2">
+						{#each pGallery as photoUid, i (photoUid)}
+							{@const img = allImages.find(x => x.uid === photoUid)}
+							<div class="relative aspect-square overflow-hidden rounded-lg border {photoUid === pImageId ? 'ring-2 ring-primary' : ''}">
+								{#if img}
+									<img src={img.thumb_url} alt={`photo ${i + 1}`} class="size-full object-cover" />
+								{/if}
+								<Button
+									type="button"
+									variant="ghost"
+									size="icon-sm"
+									class="absolute right-1 top-1 size-6 bg-background/85 backdrop-blur"
+									aria-label={`Remove photo ${i + 1}`}
+									onclick={() => removePhoto(i)}
+								>
+									<XIcon class="size-3" />
+								</Button>
+								<button 
+									class="absolute bottom-1 left-1 right-1 bg-background/85 text-[10px] py-0.5 rounded text-center backdrop-blur cursor-pointer hover:bg-primary hover:text-primary-foreground"
+									onclick={() => pImageId = photoUid}
+								>
+									{photoUid === pImageId ? 'Cover' : 'Make Cover'}
+								</button>
+							</div>
+						{/each}
+					</div>
+				{/if}
+				<div class="flex gap-2 mt-1">
+					<button
+						type="button"
+						onclick={() => fileInputRef?.click()}
+						class="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-dashed py-2.5 text-sm text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+						disabled={isUploadingImage}
+					>
+						{#if isUploadingImage}
+							<LoaderCircleIcon class="size-4 animate-spin" /> Uploading...
+						{:else}
+							<ImagePlusIcon class="size-4" /> Add Photos
+						{/if}
+					</button>
+					<input type="file" accept="image/*" multiple class="hidden" bind:this={fileInputRef} onchange={handleUpload} />
+				</div>
 			</div>
 
 			<div class="flex flex-col gap-1.5">
@@ -302,7 +428,12 @@
 			</div>
 
 			<div class="flex flex-col gap-1.5">
-				<Label for="p-cat">Saree type / Category</Label>
+				<Label for="p-color">Color</Label>
+				<Input id="p-color" bind:value={pColor} placeholder="e.g. Emerald Green" />
+			</div>
+
+			<div class="flex flex-col gap-1.5">
+				<Label for="p-cat">Category</Label>
 				<DropdownMenu.Root bind:open={catOpen}>
 					<DropdownMenu.Trigger>
 						{#snippet child({ props })}

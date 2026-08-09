@@ -4,6 +4,7 @@ export interface Product {
 	id: string;
 	name: string;
 	category: string;
+	color?: string;
 	/** short description shown to buyers */
 	details: string;
 	price: number;

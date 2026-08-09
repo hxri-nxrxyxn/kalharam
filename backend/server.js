@@ -58,7 +58,7 @@ app.get('/api/products', (req, res) => {
 	try {
 		const { categoryId, tileId, q, limit } = req.query;
 		let query = `
-			SELECT p.id, p.title, p.subtitle, p.categoryId, p.rating, p.mrp, p.salePrice, i.thumb_url as image 
+			SELECT p.id, p.title, p.subtitle, p.categoryId, p.color, p.rating, p.mrp, p.salePrice, i.thumb_url as image 
 			FROM products p 
 			JOIN images i ON p.imageId = i.uid 
 			WHERE 1=1
@@ -105,7 +105,7 @@ app.get('/api/products', (req, res) => {
 app.get('/api/products/:id', (req, res) => {
 	try {
 		const product = db.prepare(`
-			SELECT p.id, p.title, p.subtitle, p.categoryId, p.rating, p.mrp, p.salePrice, i.thumb_url as image, i.high_res_url as highResImage 
+			SELECT p.id, p.title, p.subtitle, p.categoryId, p.color, p.rating, p.mrp, p.salePrice, i.thumb_url as image, i.high_res_url as highResImage 
 			FROM products p 
 			JOIN images i ON p.imageId = i.uid 
 			WHERE p.id = ?
@@ -221,7 +221,7 @@ app.put('/api/admin/orders/:id/status', (req, res) => {
 app.get('/api/admin/products', (req, res) => {
 	try {
 		const products = db.prepare(`
-			SELECT p.id, p.title as name, p.categoryId as category, p.subtitle as details, p.salePrice as price, p.mrp as offerPrice, 
+			SELECT p.id, p.title as name, p.categoryId as category, p.subtitle as details, p.color, p.salePrice as price, p.mrp as offerPrice, 
 				   p.stock, p.sold, p.demand, p.deadStockDays, p.createdAt, i.thumb_url as image, '#f4f4f5' as imageTone
 			FROM products p 
 			JOIN images i ON p.imageId = i.uid 
@@ -299,14 +299,29 @@ app.put('/api/admin/products/:id', (req, res) => {
 
 app.post('/api/admin/products', (req, res) => {
 	try {
-		const { id, title, subtitle, categoryId, rating, mrp, salePrice, imageId } = req.body;
+		const { id, title, subtitle, categoryId, color, rating, mrp, salePrice, imageId, galleryImages } = req.body;
 		
-		const stmt = db.prepare(`
-			INSERT INTO products (id, title, subtitle, categoryId, rating, mrp, salePrice, imageId)
-			VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-		`);
-		
-		stmt.run(id, title, subtitle, categoryId, rating, mrp, salePrice, imageId);
+		const transaction = db.transaction(() => {
+			const stmt = db.prepare(`
+				INSERT INTO products (id, title, subtitle, categoryId, color, rating, mrp, salePrice, imageId)
+				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+			`);
+			
+			stmt.run(id, title, subtitle, categoryId, color || null, rating || 4.5, mrp, salePrice, imageId);
+
+			if (galleryImages && galleryImages.length > 0) {
+				const insertGallery = db.prepare('INSERT INTO product_gallery (productId, imageId, displayOrder) VALUES (?, ?, ?)');
+				// imageId is index 0. The rest are 1, 2, 3...
+				insertGallery.run(id, imageId, 0);
+				galleryImages.forEach((gImgId, index) => {
+					if (gImgId !== imageId) {
+						insertGallery.run(id, gImgId, index + 1);
+					}
+				});
+			}
+		});
+
+		transaction();
 		res.json({ message: 'Product created successfully' });
 	} catch (err) {
 		res.status(500).json({ error: err.message });

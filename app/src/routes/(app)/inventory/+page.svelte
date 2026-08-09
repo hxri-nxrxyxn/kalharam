@@ -11,8 +11,9 @@
 	import { Label } from "$lib/components/ui/label";
 	import { toast } from "svelte-sonner";
 	import { page } from "$app/state";
+	import { onMount } from "svelte";
 	import PageHeading from "$lib/components/page-heading.svelte";
-	import { productsState, categoriesState, updateProduct } from "$lib/stores/app.svelte";
+	import { productsState, updateProduct } from "$lib/stores/app.svelte";
 	import type { DeadStock } from "$lib/types";
 	import ChevronDownIcon from "@lucide/svelte/icons/chevron-down";
 	import CheckIcon from "@lucide/svelte/icons/check";
@@ -21,8 +22,17 @@
 
 	const lowThreshold = 3;
 
-	const categories = categoriesState;
-	let filterCat = $state("Any type");
+	let allCategories = $state<{id: string, name: string}[]>([]);
+	let filterCat = $state("Any Category");
+
+	onMount(async () => {
+		try {
+			const res = await fetch('http://localhost:3000/api/admin/raw-categories');
+			if (res.ok) allCategories = await res.json();
+		} catch (e) {
+			console.error(e);
+		}
+	});
 
 	const validFilters = ["in-stock", "out-of-stock", "low-stock", "dead-stock"];
 
@@ -49,7 +59,7 @@
 	const statusFiltered = $derived(withStatus.filter((p) => p.status === filter));
 
 	const typeRows = $derived(
-		(filterCat === "Any type" ? statusFiltered : withStatus)
+		(filterCat === "Any Category" ? statusFiltered : withStatus)
 			.reduce<Map<string, { name: string; units: number; count: number }>>((m, p) => {
 				const cur = m.get(p.category) ?? { name: p.category, units: 0, count: 0 };
 				cur.units += p.stock;
@@ -59,11 +69,11 @@
 			}, new Map())
 	);
 	const typeList = $derived([...typeRows.values()].sort((a, b) => b.units - a.units));
-	const filteredByCat = $derived(typeList.filter((t) => filterCat === "Any type" || t.name === filterCat));
+	const filteredByCat = $derived(typeList.filter((t) => filterCat === "Any Category" || t.name === filterCat));
 
 	const visible = $derived(
 		statusFiltered
-			.filter((p) => filterCat === "Any type" || p.category === filterCat)
+			.filter((p) => filterCat === "Any Category" || p.category === filterCat)
 			.sort((a, b) => a.stock - b.stock)
 	);
 
@@ -185,16 +195,20 @@
 				<DropdownMenu.Trigger>
 					{#snippet child({ props })}
 						<Button variant="outline" {...props} class="justify-between font-normal">
-							{filterCat}
+							{allCategories.find(c => c.id === filterCat)?.name || filterCat}
 							<ChevronDownIcon class="size-4 opacity-60" />
 						</Button>
 					{/snippet}
 				</DropdownMenu.Trigger>
 				<DropdownMenu.Content align="start" class="min-w-48">
-					{#each ["Any type", ...categories] as c}
-						<DropdownMenu.Item onSelect={() => (filterCat = c)}>
-							{#if c === filterCat}<CheckIcon class="size-4" />{:else}<span class="size-4"></span>{/if}
-							{c}
+					<DropdownMenu.Item onSelect={() => (filterCat = "Any Category")}>
+						{#if filterCat === "Any Category"}<CheckIcon class="size-4" />{:else}<span class="size-4"></span>{/if}
+						Any Category
+					</DropdownMenu.Item>
+					{#each allCategories as c}
+						<DropdownMenu.Item onSelect={() => (filterCat = c.id)}>
+							{#if c.id === filterCat}<CheckIcon class="size-4" />{:else}<span class="size-4"></span>{/if}
+							{c.name}
 						</DropdownMenu.Item>
 					{/each}
 				</DropdownMenu.Content>
@@ -245,13 +259,13 @@
 			<Card.Header>
 				<Card.Title>Current stock counts</Card.Title>
 				<Card.Description>
-					{filterCat === "Any type"
-						? "On-hand units and status per saree type"
-						: `Products in the ${filterCat} type`}
+					{filterCat === "Any Category"
+						? "On-hand units and status per category"
+						: `Products in the ${allCategories.find(c => c.id === filterCat)?.name || filterCat} category`}
 				</Card.Description>
 			</Card.Header>
 			<Card.Content class="p-0">
-				{#if filterCat === "Any type"}
+				{#if filterCat === "Any Category"}
 					<Table.Root class="table-fixed">
 						<colgroup>
 							<col class="w-[46%]" />
@@ -260,7 +274,7 @@
 						</colgroup>
 						<Table.Header>
 							<Table.Row>
-								<Table.Head class="px-5">Saree type</Table.Head>
+								<Table.Head class="px-5">Category</Table.Head>
 								<Table.Head class="px-5 text-center">On hand</Table.Head>
 								<Table.Head class="px-5 text-center">Status</Table.Head>
 							</Table.Row>
@@ -270,7 +284,7 @@
 								{@const status = stockStatus(t.units)}
 								<Table.Row>
 									<Table.Cell class="px-5">
-										<span class="block min-w-0 truncate font-medium" title={t.name}>{t.name}</span>
+										<span class="block min-w-0 truncate font-medium" title={t.name}>{allCategories.find(c => c.id === t.name)?.name || t.name}</span>
 										<span class="block text-xs text-muted-foreground">
 											{t.count} product{t.count > 1 ? "s" : ""}
 										</span>
@@ -312,7 +326,7 @@
 								<Table.Row>
 									<Table.Cell class="px-5">
 										<span class="block min-w-0 truncate font-medium" title={p.name}>{p.name}</span>
-										<span class="block text-xs text-muted-foreground">{p.category}</span>
+										<span class="block text-xs text-muted-foreground">{allCategories.find(c => c.id === p.category)?.name || p.category}</span>
 									</Table.Cell>
 									<Table.Cell class="px-5 text-center">
 										<span class="block min-w-0 font-semibold {p.stock === 0 ? 'text-destructive' : ''}">{p.stock}</span>
