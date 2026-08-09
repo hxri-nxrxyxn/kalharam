@@ -8,6 +8,7 @@
 	import { Button } from "$lib/components/ui/button";
 	import { toast } from "svelte-sonner";
 	import { onMount } from "svelte";
+	import XIcon from "@lucide/svelte/icons/x";
 
 	type Category = {
 		id: string;
@@ -61,7 +62,7 @@
 
 		const formData = new FormData();
 		formData.append('image', file);
-		formData.append('alt_text', newCatName || 'Category Image');
+		formData.append('alt_text', (editingCategory ? editingCategory.name : newCatName) || 'Category Image');
 		formData.append('type', 'category');
 
 		isUploading = true;
@@ -89,14 +90,14 @@
 	}
 
 	async function handleDeleteImage(uid: string) {
-		if (!confirm("Are you sure you want to permanently delete this image from the database?")) return;
+		if (!uid) return;
 		try {
 			const res = await fetch(`http://localhost:3000/api/admin/images/${uid}`, {
 				method: 'DELETE'
 			});
 			const data = await res.json();
 			if (res.ok) {
-				toast.success("Image deleted.");
+				toast.success("Image deleted from storage.");
 				if (newCatImage === uid) newCatImage = "";
 				if (editingCategory?.imageId === uid) editingCategory.imageId = "";
 				await loadData();
@@ -216,7 +217,7 @@
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
-					{#each categories as c}
+					{#each categories as c (c.id)}
 						<Table.Row>
 							<Table.Cell class="font-medium">{c.id}</Table.Cell>
 							<Table.Cell>{c.name}</Table.Cell>
@@ -245,6 +246,8 @@
 	</Card.Root>
 </div>
 
+<input type="file" accept="image/*" class="hidden" bind:this={fileInputRef} onchange={handleUpload} />
+
 <Dialog.Root bind:open={showAddModal}>
 	<Dialog.Content>
 		<Dialog.Header>
@@ -267,19 +270,20 @@
 					<Button variant="outline" size="sm" class="w-full" onclick={() => fileInputRef?.click()} disabled={isUploading}>
 						{isUploading ? "Uploading..." : "Upload Cover Image"}
 					</Button>
-					<input type="file" accept="image/*" class="hidden" bind:this={fileInputRef} onchange={handleUpload} />
 				</div>
 				{#if newCatImage}
 					{@const img = allImages.find(i => i.uid === newCatImage)}
 					{#if img}
-						<div class="relative mt-2 w-32 h-32 border rounded-md overflow-hidden group">
+						<div class="relative mt-2 w-32 h-32 border rounded-md overflow-hidden bg-muted">
 							<img src={img.thumb_url} alt="preview" class="w-full h-full object-cover" />
 							<button 
-								class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity" 
+								type="button"
+								class="absolute top-1 right-1 bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-full p-1.5 shadow-md transition-colors cursor-pointer z-10" 
 								onclick={() => handleDeleteImage(img.uid)}
-								title="Delete Image completely"
+								title="Delete photo from storage"
+								aria-label="Delete photo from storage"
 							>
-								<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+								<XIcon class="size-4" />
 							</button>
 						</div>
 					{/if}
@@ -287,7 +291,10 @@
 			</div>
 		</div>
 		<Dialog.Footer>
-			<Button variant="secondary" onclick={() => showAddModal = false}>Cancel</Button>
+			<Button variant="secondary" onclick={() => {
+				if (newCatImage) handleDeleteImage(newCatImage);
+				showAddModal = false;
+			}}>Cancel</Button>
 			<Button onclick={handleAdd} disabled={isSaving}>Save</Button>
 		</Dialog.Footer>
 	</Dialog.Content>
@@ -315,14 +322,16 @@
 					{#if editingCategory && editingCategory.imageId}
 						{@const img = allImages.find(i => i.uid === editingCategory?.imageId)}
 						{#if img}
-							<div class="relative mt-2 w-32 h-32 border rounded-md overflow-hidden group">
+							<div class="relative mt-2 w-32 h-32 border rounded-md overflow-hidden bg-muted">
 								<img src={img.thumb_url} alt="preview" class="w-full h-full object-cover" />
 								<button 
-									class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity" 
+									type="button"
+									class="absolute top-1 right-1 bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-full p-1.5 shadow-md transition-colors cursor-pointer z-10" 
 									onclick={() => handleDeleteImage(img.uid)}
-									title="Delete Image completely"
+									title="Delete photo from storage"
+									aria-label="Delete photo from storage"
 								>
-									<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+									<XIcon class="size-4" />
 								</button>
 							</div>
 						{/if}

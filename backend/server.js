@@ -418,13 +418,15 @@ app.delete('/api/admin/images/:uid', (req, res) => {
 	try {
 		const uid = req.params.uid;
 		
-		const catCount = db.prepare('SELECT COUNT(*) as count FROM categories WHERE imageId = ?').get(uid).count;
+		// Unset this image from categories first if it is set
+		db.prepare("UPDATE categories SET imageId = '' WHERE imageId = ?").run(uid);
+
 		const prodCount = db.prepare('SELECT COUNT(*) as count FROM products WHERE imageId = ?').get(uid).count;
 		const galCount = db.prepare('SELECT COUNT(*) as count FROM product_gallery WHERE imageId = ?').get(uid).count;
 		const tileCount = db.prepare('SELECT COUNT(*) as count FROM layout_tiles WHERE imageId = ?').get(uid).count;
 
-		if (catCount > 0 || prodCount > 0 || galCount > 0 || tileCount > 0) {
-			return res.status(400).json({ error: 'Cannot delete image that is currently in use.' });
+		if (prodCount > 0 || galCount > 0 || tileCount > 0) {
+			return res.status(400).json({ error: 'Cannot delete image that is currently in use by products or tiles.' });
 		}
 
 		const img = db.prepare('SELECT * FROM images WHERE uid = ?').get(uid);
@@ -468,7 +470,30 @@ app.post('/api/admin/categories', (req, res) => {
 app.put('/api/admin/categories/:id', (req, res) => {
 	try {
 		const { name, imageId } = req.body;
+		const oldCat = db.prepare('SELECT imageId FROM categories WHERE id = ?').get(req.params.id);
+		const oldImageId = oldCat?.imageId;
+
 		db.prepare('UPDATE categories SET name = ?, imageId = ? WHERE id = ?').run(name, imageId, req.params.id);
+
+		// If oldImageId was replaced or removed, clean it up if no longer used anywhere
+		if (oldImageId && oldImageId !== imageId) {
+			const catCount = db.prepare('SELECT COUNT(*) as count FROM categories WHERE imageId = ?').get(oldImageId).count;
+			const prodCount = db.prepare('SELECT COUNT(*) as count FROM products WHERE imageId = ?').get(oldImageId).count;
+			const galCount = db.prepare('SELECT COUNT(*) as count FROM product_gallery WHERE imageId = ?').get(oldImageId).count;
+			const tileCount = db.prepare('SELECT COUNT(*) as count FROM layout_tiles WHERE imageId = ?').get(oldImageId).count;
+
+			if (catCount === 0 && prodCount === 0 && galCount === 0 && tileCount === 0) {
+				const img = db.prepare('SELECT * FROM images WHERE uid = ?').get(oldImageId);
+				if (img) {
+					db.prepare('DELETE FROM images WHERE uid = ?').run(oldImageId);
+					const highresDisk = path.join(__dirname, '../web/static', img.high_res_url);
+					const thumbDisk = path.join(__dirname, '../web/static', img.thumb_url);
+					if (fs.existsSync(highresDisk)) fs.unlinkSync(highresDisk);
+					if (fs.existsSync(thumbDisk)) fs.unlinkSync(thumbDisk);
+				}
+			}
+		}
+
 		res.json({ message: 'Category updated' });
 	} catch (err) {
 		res.status(500).json({ error: err.message });
@@ -481,7 +506,31 @@ app.delete('/api/admin/categories/:id', (req, res) => {
 		if (count.count > 0) {
 			return res.status(400).json({ error: 'Cannot delete category with existing products.' });
 		}
+
+		const cat = db.prepare('SELECT imageId FROM categories WHERE id = ?').get(req.params.id);
+		const imageId = cat?.imageId;
+
 		db.prepare('DELETE FROM categories WHERE id = ?').run(req.params.id);
+
+		// Clean up category image if no longer used anywhere else
+		if (imageId) {
+			const catCount = db.prepare('SELECT COUNT(*) as count FROM categories WHERE imageId = ?').get(imageId).count;
+			const prodCount = db.prepare('SELECT COUNT(*) as count FROM products WHERE imageId = ?').get(imageId).count;
+			const galCount = db.prepare('SELECT COUNT(*) as count FROM product_gallery WHERE imageId = ?').get(imageId).count;
+			const tileCount = db.prepare('SELECT COUNT(*) as count FROM layout_tiles WHERE imageId = ?').get(imageId).count;
+
+			if (catCount === 0 && prodCount === 0 && galCount === 0 && tileCount === 0) {
+				const img = db.prepare('SELECT * FROM images WHERE uid = ?').get(imageId);
+				if (img) {
+					db.prepare('DELETE FROM images WHERE uid = ?').run(imageId);
+					const highresDisk = path.join(__dirname, '../web/static', img.high_res_url);
+					const thumbDisk = path.join(__dirname, '../web/static', img.thumb_url);
+					if (fs.existsSync(highresDisk)) fs.unlinkSync(highresDisk);
+					if (fs.existsSync(thumbDisk)) fs.unlinkSync(thumbDisk);
+				}
+			}
+		}
+
 		res.json({ message: 'Category deleted' });
 	} catch (err) {
 		res.status(500).json({ error: err.message });
