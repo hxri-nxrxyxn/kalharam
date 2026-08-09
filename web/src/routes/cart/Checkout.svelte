@@ -2,6 +2,7 @@
 	import Field from '$lib/components/Field.svelte';
 	import { goto } from '$app/navigation';
 	import { cart } from '$lib/cart.svelte';
+	import { toast } from '$lib/toast.svelte';
 	
 	let customerName = $state('');
 	let address = $state('');
@@ -15,6 +16,12 @@
 
 	async function handleProceed() {
 		if (cart.items.length === 0) return;
+		
+		if (!customerName || !email || !phone || !address || !city || !pin) {
+			toast.show("Please fill out all required delivery and contact fields.");
+			return;
+		}
+
 		isSubmitting = true;
 		
 		try {
@@ -34,13 +41,16 @@
 				})
 			});
 			
-			if (!res.ok) throw new Error('Order failed');
+			if (!res.ok) {
+				const errorData = await res.json();
+				throw new Error(errorData.error || 'Order failed to process');
+			}
 			
 			cart.clear();
 			goto('/success');
-		} catch (error) {
+		} catch (error: any) {
 			console.error(error);
-			alert('Failed to process order');
+			toast.show(error.message || 'Failed to process order. Please try again.');
 		} finally {
 			isSubmitting = false;
 		}

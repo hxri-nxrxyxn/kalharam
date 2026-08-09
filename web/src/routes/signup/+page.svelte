@@ -1,5 +1,42 @@
 <script lang="ts">
 	import Field from '$lib/components/Field.svelte';
+	import { toast } from '$lib/toast.svelte';
+
+	let name = $state("");
+	let email = $state("");
+	let password = $state("");
+	let isSubmitting = $state(false);
+
+	async function handleSubmit(e: Event) {
+		e.preventDefault();
+		if (!name || !email || !password) {
+			toast.show("Please fill in all fields.");
+			return;
+		}
+
+		isSubmitting = true;
+		try {
+			const res = await fetch('http://localhost:3000/api/auth/signup', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ name, email, password })
+			});
+
+			const data = await res.json();
+			if (!res.ok) {
+				throw new Error(data.error || "Failed to sign up.");
+			}
+			toast.show("Account created successfully!");
+			// In a real app, redirect or login
+			name = "";
+			email = "";
+			password = "";
+		} catch (err: any) {
+			toast.show(err.message);
+		} finally {
+			isSubmitting = false;
+		}
+	}
 </script>
 
 <svelte:head>
@@ -19,12 +56,13 @@
 		</div>
 	</div>
 	<div class="auth__form">
-		<div class="auth__fieldset">
+		<form class="auth__fieldset" onsubmit={handleSubmit}>
 			<Field label="NAME">
 				<input
 					type="text"
 					placeholder="e.g. Parvathy Nair"
 					aria-label="Name"
+					bind:value={name}
 				/>
 			</Field>
 
@@ -33,6 +71,7 @@
 					type="email"
 					placeholder="e.g. parvathy.n@example.com"
 					aria-label="Email"
+					bind:value={email}
 				/>
 			</Field>
 
@@ -41,22 +80,24 @@
 					type="password"
 					placeholder="e.g. 8+ characters, letters & numbers"
 					aria-label="Password"
+					bind:value={password}
 				/>
 			</Field>
 
 			<Field>
 				<input
 					type="submit"
-					value="CREATE ACCOUNT"
+					value={isSubmitting ? "CREATING..." : "CREATE ACCOUNT"}
 					aria-label="Sign Up"
 					class="btn btn--primary"
+					disabled={isSubmitting}
 				/>
 			</Field>
 			
 			<div class="auth__switch">
 				<p>Already have an account? <a href="/signin">Sign In &rarr;</a></p>
 			</div>
-		</div>
+		</form>
 	</div>
 </main>
 

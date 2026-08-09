@@ -165,6 +165,37 @@ app.post('/api/orders', (req, res) => {
 	}
 });
 
+app.post('/api/auth/login', (req, res) => {
+	try {
+		const { email, password } = req.body;
+		if (!email || !password) {
+			return res.status(400).json({ error: 'Email and password are required' });
+		}
+		// For demo purposes, we accept any login except if they literally enter "error"
+		if (email === 'error@example.com') {
+			return res.status(401).json({ error: 'Invalid credentials. Please try again.' });
+		}
+		res.json({ token: 'mock-jwt-token', message: 'Logged in successfully' });
+	} catch (err) {
+		res.status(500).json({ error: err.message });
+	}
+});
+
+app.post('/api/auth/signup', (req, res) => {
+	try {
+		const { name, email, password } = req.body;
+		if (!name || !email || !password) {
+			return res.status(400).json({ error: 'Name, email, and password are required' });
+		}
+		if (password.length < 8) {
+			return res.status(400).json({ error: 'Password must be at least 8 characters long' });
+		}
+		res.json({ token: 'mock-jwt-token', message: 'Account created successfully' });
+	} catch (err) {
+		res.status(500).json({ error: err.message });
+	}
+});
+
 // --- Admin Endpoints (for App) ---
 
 app.get('/api/admin/orders', (req, res) => {

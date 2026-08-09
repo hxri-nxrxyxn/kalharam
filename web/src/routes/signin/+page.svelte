@@ -1,5 +1,40 @@
 <script lang="ts">
 	import Field from '$lib/components/Field.svelte';
+	import { toast } from '$lib/toast.svelte';
+
+	let email = $state("");
+	let password = $state("");
+	let isSubmitting = $state(false);
+
+	async function handleSubmit(e: Event) {
+		e.preventDefault();
+		if (!email || !password) {
+			toast.show("Please enter your email and password.");
+			return;
+		}
+
+		isSubmitting = true;
+		try {
+			const res = await fetch('http://localhost:3000/api/auth/login', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ email, password })
+			});
+
+			const data = await res.json();
+			if (!res.ok) {
+				throw new Error(data.error || "Failed to sign in.");
+			}
+			toast.show("Successfully signed in!");
+			// In a real app, redirect to dashboard or save token
+			email = "";
+			password = "";
+		} catch (err: any) {
+			toast.show(err.message);
+		} finally {
+			isSubmitting = false;
+		}
+	}
 </script>
 
 <svelte:head>
@@ -19,12 +54,13 @@
 		</div>
 	</div>
 	<div class="auth__form">
-		<div class="auth__fieldset">
+		<form class="auth__fieldset" onsubmit={handleSubmit}>
 			<Field label="EMAIL">
 				<input
 					type="email"
 					placeholder="e.g. parvathy.n@example.com"
 					aria-label="Email"
+					bind:value={email}
 				/>
 			</Field>
 
@@ -33,22 +69,24 @@
 					type="password"
 					placeholder="e.g. ••••••••"
 					aria-label="Password"
+					bind:value={password}
 				/>
 			</Field>
 
 			<Field>
 				<input
 					type="submit"
-					value="SIGN IN"
+					value={isSubmitting ? "SIGNING IN..." : "SIGN IN"}
 					aria-label="Sign In"
 					class="btn btn--primary"
+					disabled={isSubmitting}
 				/>
 			</Field>
 
 			<div class="auth__switch">
 				<p>Don't have an account? <a href="/signup">Sign Up &rarr;</a></p>
 			</div>
-		</div>
+		</form>
 	</div>
 </main>
 
