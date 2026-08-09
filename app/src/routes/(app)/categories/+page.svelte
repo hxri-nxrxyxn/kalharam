@@ -1,0 +1,344 @@
+<script lang="ts">
+	import PageHeading from "$lib/components/page-heading.svelte";
+	import * as Card from "$lib/components/ui/card";
+	import * as Table from "$lib/components/ui/table";
+	import * as Dialog from "$lib/components/ui/dialog";
+	import { Input } from "$lib/components/ui/input";
+	import { Label } from "$lib/components/ui/label";
+	import { Button } from "$lib/components/ui/button";
+	import { toast } from "svelte-sonner";
+	import { onMount } from "svelte";
+
+	type Category = {
+		id: string;
+		name: string;
+		imageId: string;
+	};
+
+	let categories = $state<Category[]>([]);
+	let allImages = $state<{uid: string, thumb_url: string, type: string, alt_text: string | null}[]>([]);
+
+	let isSaving = $state(false);
+
+	let showAddModal = $state(false);
+	let newCatName = $state("");
+	let newCatId = $derived(generateSlug(newCatName));
+	let newCatImage = $state("");
+
+	function generateSlug(name: string) {
+		return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+	}
+
+	let editingCategory = $state<Category | null>(null);
+
+	let fileInputRef: HTMLInputElement | null = $state(null);
+	let isUploading = $state(false);
+
+	async function loadData() {
+		try {
+			const [catRes, imgRes] = await Promise.all([
+				fetch('http://localhost:3000/api/admin/raw-categories'),
+				fetch('http://localhost:3000/api/admin/images')
+			]);
+			
+			if (catRes.ok) categories = await catRes.json();
+			if (imgRes.ok) allImages = await imgRes.json();
+			
+		} catch (e) {
+			toast.error("Failed to load categories.");
+		}
+	}
+
+	async function handleUpload(e: Event) {
+		const file = (e.target as HTMLInputElement).files?.[0];
+		if (!file) return;
+
+		const formData = new FormData();
+		formData.append('image', file);
+		formData.append('alt_text', newCatName || 'Category Image');
+		formData.append('type', 'category');
+
+		isUploading = true;
+		try {
+			const res = await fetch('http://localhost:3000/api/admin/images/upload', {
+				method: 'POST',
+				body: formData
+			});
+			const data = await res.json();
+			if (res.ok) {
+				toast.success("Image uploaded successfully!");
+				await loadData();
+				// Auto-select the newly uploaded image
+				newCatImage = data.uid;
+				if (editingCategory) editingCategory.imageId = data.uid;
+			} else {
+				throw new Error(data.error || "Upload failed");
+			}
+		} catch (err: any) {
+			toast.error(err.message);
+		} finally {
+			isUploading = false;
+			if (fileInputRef) fileInputRef.value = '';
+		}
+	}
+
+	async function handleDeleteImage(uid: string) {
+		if (!confirm("Are you sure you want to permanently delete this image from the database?")) return;
+		try {
+			const res = await fetch(`http://localhost:3000/api/admin/images/${uid}`, {
+				method: 'DELETE'
+			});
+			const data = await res.json();
+			if (res.ok) {
+				toast.success("Image deleted.");
+				if (newCatImage === uid) newCatImage = "";
+				if (editingCategory?.imageId === uid) editingCategory.imageId = "";
+				await loadData();
+			} else {
+				throw new Error(data.error || "Delete failed");
+			}
+		} catch (err: any) {
+			toast.error(err.message);
+		}
+	}
+
+	onMount(loadData);
+
+	async function handleAdd() {
+		if (!newCatId || !newCatName || !newCatImage) {
+			toast.error("Please fill all fields.");
+			return;
+		}
+
+		isSaving = true;
+		try {
+			const res = await fetch(`http://localhost:3000/api/admin/categories`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					id: newCatId,
+					name: newCatName,
+					imageId: newCatImage
+				})
+			});
+			const data = await res.json();
+			if (res.ok) {
+				toast.success("Category created!");
+				showAddModal = false;
+				newCatName = "";
+				newCatImage = "";
+				await loadData();
+			} else {
+				throw new Error(data.error || "API Error");
+			}
+		} catch (e: any) {
+			toast.error(e.message || "Failed to create category.");
+		} finally {
+			isSaving = false;
+		}
+	}
+
+	async function handleEdit() {
+		if (!editingCategory || !editingCategory.name || !editingCategory.imageId) {
+			toast.error("Please fill all fields.");
+			return;
+		}
+
+		isSaving = true;
+		try {
+			const res = await fetch(`http://localhost:3000/api/admin/categories/${editingCategory.id}`, {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					name: editingCategory.name,
+					imageId: editingCategory.imageId
+				})
+			});
+			const data = await res.json();
+			if (res.ok) {
+				toast.success("Category updated!");
+				editingCategory = null;
+				await loadData();
+			} else {
+				throw new Error(data.error || "API Error");
+			}
+		} catch (e: any) {
+			toast.error(e.message || "Failed to update category.");
+		} finally {
+			isSaving = false;
+		}
+	}
+
+	async function handleDelete(id: string) {
+		if (!confirm("Are you sure you want to delete this category?")) return;
+		try {
+			const res = await fetch(`http://localhost:3000/api/admin/categories/${id}`, {
+				method: 'DELETE'
+			});
+			const data = await res.json();
+			if (res.ok) {
+				toast.success("Category deleted.");
+				await loadData();
+			} else {
+				throw new Error(data.error || "API Error");
+			}
+		} catch (e: any) {
+			toast.error(e.message || "Failed to delete category.");
+		}
+	}
+
+	function startEdit(c: Category) {
+		editingCategory = { ...c };
+	}
+</script>
+
+<div class="flex flex-col gap-6">
+	<div class="flex items-center justify-between">
+		<PageHeading title="Categories" description="Manage your storefront product categories" />
+		<Button onclick={() => showAddModal = true}>Add Category</Button>
+	</div>
+
+	<Card.Root>
+		<Card.Content class="p-0">
+			<Table.Root>
+				<Table.Header>
+					<Table.Row>
+						<Table.Head>ID (Slug)</Table.Head>
+						<Table.Head>Name</Table.Head>
+						<Table.Head>Image</Table.Head>
+						<Table.Head class="text-right">Actions</Table.Head>
+					</Table.Row>
+				</Table.Header>
+				<Table.Body>
+					{#each categories as c}
+						<Table.Row>
+							<Table.Cell class="font-medium">{c.id}</Table.Cell>
+							<Table.Cell>{c.name}</Table.Cell>
+							<Table.Cell>
+								{#if c.imageId}
+									{@const img = allImages.find(i => i.uid === c.imageId)}
+									{#if img}
+										<img src={img.thumb_url} alt="cat" class="w-12 h-12 object-cover rounded" />
+									{/if}
+								{/if}
+							</Table.Cell>
+							<Table.Cell class="text-right">
+								<Button variant="ghost" size="sm" onclick={() => startEdit(c)}>Edit</Button>
+								<Button variant="ghost" size="sm" class="text-red-500 hover:text-red-700" onclick={() => handleDelete(c.id)}>Delete</Button>
+							</Table.Cell>
+						</Table.Row>
+					{/each}
+					{#if categories.length === 0}
+						<Table.Row>
+							<Table.Cell colspan={4} class="text-center text-muted-foreground py-8">No categories found.</Table.Cell>
+						</Table.Row>
+					{/if}
+				</Table.Body>
+			</Table.Root>
+		</Card.Content>
+	</Card.Root>
+</div>
+
+<Dialog.Root bind:open={showAddModal}>
+	<Dialog.Content>
+		<Dialog.Header>
+			<Dialog.Title>Add New Category</Dialog.Title>
+			<Dialog.Description>Create a new product grouping.</Dialog.Description>
+		</Dialog.Header>
+		<div class="grid gap-4 py-4">
+			<div class="grid gap-2">
+				<Label>Name</Label>
+				<Input bind:value={newCatName} placeholder="e.g. Kanchi Cotton" />
+			</div>
+			<div class="grid gap-2">
+				<Label>ID (Slug)</Label>
+				<Input value={newCatId} disabled class="bg-muted text-muted-foreground" />
+				<p class="text-xs text-muted-foreground">Auto-generated identifier used for routing and linking.</p>
+			</div>
+			<div class="grid gap-2">
+				<Label>Category Image</Label>
+				<div class="flex items-center gap-2">
+					<select bind:value={newCatImage} class="flex h-9 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background focus:outline-none focus:ring-1 focus:ring-ring">
+						<option value="">-- Select an Image --</option>
+						{#each allImages as img}
+							<option value={img.uid}>{img.alt_text || img.uid}</option>
+						{/each}
+					</select>
+					<Button variant="outline" size="sm" onclick={() => fileInputRef?.click()} disabled={isUploading}>
+						{isUploading ? "..." : "Upload"}
+					</Button>
+					<input type="file" accept="image/*" class="hidden" bind:this={fileInputRef} onchange={handleUpload} />
+				</div>
+				{#if newCatImage}
+					{@const img = allImages.find(i => i.uid === newCatImage)}
+					{#if img}
+						<div class="relative mt-2 w-32 h-32 border rounded-md overflow-hidden group">
+							<img src={img.thumb_url} alt="preview" class="w-full h-full object-cover" />
+							<button 
+								class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity" 
+								onclick={() => handleDeleteImage(img.uid)}
+								title="Delete Image completely"
+							>
+								<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+							</button>
+						</div>
+					{/if}
+				{/if}
+			</div>
+		</div>
+		<Dialog.Footer>
+			<Button variant="secondary" onclick={() => showAddModal = false}>Cancel</Button>
+			<Button onclick={handleAdd} disabled={isSaving}>Save</Button>
+		</Dialog.Footer>
+	</Dialog.Content>
+</Dialog.Root>
+
+<Dialog.Root open={!!editingCategory} onOpenChange={(open) => { if (!open) editingCategory = null; }}>
+	{#if editingCategory}
+		<Dialog.Content>
+			<Dialog.Header>
+				<Dialog.Title>Edit Category</Dialog.Title>
+				<Dialog.Description>Updating {editingCategory.id}</Dialog.Description>
+			</Dialog.Header>
+			<div class="grid gap-4 py-4">
+				<div class="grid gap-2">
+					<Label>Name</Label>
+					<Input bind:value={editingCategory.name} placeholder="Name" />
+				</div>
+				<div class="grid gap-2">
+					<Label>Category Image</Label>
+					<div class="flex items-center gap-2">
+						<select bind:value={editingCategory.imageId} class="flex h-9 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background focus:outline-none focus:ring-1 focus:ring-ring">
+							<option value="">-- Select an Image --</option>
+							{#each allImages as img}
+								<option value={img.uid}>{img.alt_text || img.uid}</option>
+							{/each}
+						</select>
+						<Button variant="outline" size="sm" onclick={() => fileInputRef?.click()} disabled={isUploading}>
+							{isUploading ? "..." : "Upload"}
+						</Button>
+					</div>
+					{#if editingCategory && editingCategory.imageId}
+						{@const img = allImages.find(i => i.uid === editingCategory?.imageId)}
+						{#if img}
+							<div class="relative mt-2 w-32 h-32 border rounded-md overflow-hidden group">
+								<img src={img.thumb_url} alt="preview" class="w-full h-full object-cover" />
+								<button 
+									class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity" 
+									onclick={() => handleDeleteImage(img.uid)}
+									title="Delete Image completely"
+								>
+									<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+								</button>
+							</div>
+						{/if}
+					{/if}
+				</div>
+			</div>
+			<Dialog.Footer>
+				<Button variant="secondary" onclick={() => editingCategory = null}>Cancel</Button>
+				<Button onclick={handleEdit} disabled={isSaving}>Update</Button>
+			</Dialog.Footer>
+		</Dialog.Content>
+	{/if}
+</Dialog.Root>

@@ -1,0 +1,52 @@
+erDiagram
+    images {
+        %% Rows: 104
+        TEXT uid PK
+        TEXT high_res_url
+        TEXT thumb_url
+        TEXT alt_text
+        TEXT type
+    }
+    categories {
+        %% Rows: 8
+        TEXT id PK
+        TEXT name
+        TEXT imageId
+    }
+    categories }o--|| images : references
+    products {
+        %% Rows: 96
+        TEXT id PK
+        TEXT title
+        TEXT subtitle
+        TEXT categoryId
+        REAL rating
+        REAL mrp
+        REAL salePrice
+        TEXT imageId
+    }
+    products }o--|| images : references
+    products }o--|| categories : references
+    product_gallery {
+        %% Rows: 288
+        TEXT productId PK
+        TEXT imageId PK
+        INTEGER displayOrder
+    }
+    product_gallery }o--|| images : references
+    product_gallery }o--|| products : references
+    orders {
+        %% Rows: 0
+        INTEGER id PK
+        TEXT customerName
+        TEXT email
+        TEXT phone
+        TEXT address
+        TEXT city
+        TEXT state
+        TEXT pin
+        REAL total
+        TEXT items
+        TEXT status
+        DATETIME createdAt
+    }
