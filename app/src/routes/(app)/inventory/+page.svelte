@@ -34,7 +34,7 @@
 		}
 	});
 
-	const validFilters = ["in-stock", "out-of-stock", "low-stock", "dead-stock"];
+	const validFilters = ["in-stock", "out-of-stock", "low-stock"];
 
 	function filterFromUrl() {
 		const f = String(page.url.searchParams.get("filter"));
@@ -79,24 +79,6 @@
 
 	const outList = $derived(productsState.filter((p) => p.stock === 0));
 
-	// dead stock — derived from products that have not sold in `deadStockDays`
-	let daysThreshold = $state(60);
-	const deadStock: DeadStock[] = $derived(
-		productsState
-			.filter((p) => p.deadStockDays != null)
-			.map((p) => ({
-				productId: p.id,
-				reason: `No sale in ${p.deadStockDays} days`,
-				days: p.deadStockDays!,
-				qty: p.stock,
-				value: p.stock * p.price,
-				severity: (p.deadStockDays! >= 90 ? "high" : "medium") as DeadStock["severity"]
-			}))
-	);
-	const visibleDeadStock = $derived(deadStock.filter((d) => d.days >= daysThreshold));
-	const deadTotalValue = $derived(visibleDeadStock.reduce((a, d) => a + d.value, 0));
-	const deadTotalQty = $derived(visibleDeadStock.reduce((a, d) => a + d.qty, 0));
-
 	function productName(id: string) {
 		return productsState.find((p) => p.id === id)?.name ?? id;
 	}
@@ -105,29 +87,6 @@
 	}
 	function stockStatus(n: number) {
 		return n === 0 ? "out-of-stock" : n < lowThreshold ? "low-stock" : "in-stock";
-	}
-
-	// clearance dialog state
-	let clearOpen = $state(false);
-	let clearItem: DeadStock | null = $state(null);
-	let clearPrice = $state<number>(0);
-
-	function openClearout(d: DeadStock) {
-		clearItem = d;
-		clearPrice = 0;
-		clearOpen = true;
-	}
-
-	function applyClearance() {
-		const item = clearItem;
-		if (!item) return;
-		if (!clearPrice || clearPrice <= 0) return toast.error("Enter a valid clearance price");
-		const p = productsState.find((x) => x.id === item.productId);
-		if (p && clearPrice >= p.price) return toast.error("Clearance price must be below the original price");
-		if (p) updateProduct(p.id, { offerPrice: clearPrice, deadStockDays: null });
-		toast.success(`"${productName(item.productId)}" pushed to clearance at ${money(clearPrice)}`);
-		clearOpen = false;
-		clearItem = null;
 	}
 
 	// restock dialog state
@@ -161,31 +120,20 @@
 	<PageHeading title="Inventory" description="Live stock counts and availability alerts" />
 
 	<div class="grid grid-cols-2 gap-4 lg:grid-cols-2">
-		{#if filter === "dead-stock"}
-			<Card.Root>
-				<Card.Header class="pb-2"><Card.Title>Dead stock units</Card.Title></Card.Header>
-				<Card.Content><span class="text-3xl font-semibold">{deadTotalQty}</span></Card.Content>
-			</Card.Root>
-			<Card.Root>
-				<Card.Header class="pb-2"><Card.Title>Capital tied up</Card.Title></Card.Header>
-				<Card.Content><span class="text-3xl font-semibold">{money(deadTotalValue)}</span></Card.Content>
-			</Card.Root>
-		{:else}
-			<Card.Root>
-				<Card.Header class="pb-2"><Card.Title>On-hand units</Card.Title></Card.Header>
-				<Card.Content><span class="text-3xl font-semibold">{onHandTotal}</span></Card.Content>
-			</Card.Root>
-			<Card.Root>
-				<Card.Header class="pb-2"><Card.Title>Out of stock</Card.Title></Card.Header>
-				<Card.Content><span class="text-3xl font-semibold text-destructive">{outList.length}</span></Card.Content>
-			</Card.Root>
-		{/if}
+		<Card.Root>
+			<Card.Header class="pb-2"><Card.Title>On-hand units</Card.Title></Card.Header>
+			<Card.Content><span class="text-3xl font-semibold">{onHandTotal}</span></Card.Content>
+		</Card.Root>
+		<Card.Root>
+			<Card.Header class="pb-2"><Card.Title>Out of stock</Card.Title></Card.Header>
+			<Card.Content><span class="text-3xl font-semibold text-destructive">{outList.length}</span></Card.Content>
+		</Card.Root>
 	</div>
 
 	<div class="flex flex-wrap items-center gap-3">
 		<Tabs.Root bind:value={filter} class="w-full min-w-0">
 			<Tabs.List class="w-full justify-start overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-				{#each ["in-stock", "out-of-stock", "low-stock", "dead-stock"] as f}
+				{#each ["in-stock", "out-of-stock", "low-stock"] as f}
 					<Tabs.Trigger value={f} class="flex-none capitalize px-3">{f.replace("-", " ")}</Tabs.Trigger>
 				{/each}
 			</Tabs.List>
@@ -213,59 +161,20 @@
 					{/each}
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>
-			{#if filter === "dead-stock"}
-				<label class="flex items-center gap-2 text-sm text-muted-foreground">
-					Dead stock after
-					<Input id="ds-days" type="number" min="1" bind:value={daysThreshold} class="w-20" onfocus={(e) => e.currentTarget.select()} />
-					days
-				</label>
-			{/if}
 		</div>
 	</div>
 
-	{#if filter === "dead-stock"}
-		<div class="grid gap-4">
-			{#each visibleDeadStock as d (d.productId)}
-				<Card.Root>
-					<Card.Header>
-						<div class="flex items-center gap-4">
-							<div class="flex flex-col gap-1">
-								<Card.Title class="flex items-center gap-2">
-									{productName(d.productId)}
-									{#if d.severity === "high"}
-										<Badge variant="destructive">High</Badge>
-									{:else}
-										<Badge variant="outline" class="text-muted-foreground">Medium</Badge>
-									{/if}
-								</Card.Title>
-								<Card.Description>{d.reason}</Card.Description>
-								<p class="text-xs text-muted-foreground">{d.qty} units · {money(d.value)} inventory value · {d.days} days unsold</p>
-							</div>
-						</div>
-					</Card.Header>
-					<Card.Footer class="gap-2">
-						<Button variant="outline" onclick={() => openClearout(d)}>
-							<MegaphoneIcon data-icon="inline-start" /> Push clearance
-						</Button>
-						<Button variant="outline" onclick={() => removeDead(d.productId)}>
-							<TrashIcon data-icon="inline-start" /> Remove
-						</Button>
-					</Card.Footer>
-				</Card.Root>
-			{/each}
-		</div>
-	{:else}
-		<Card.Root>
-			<Card.Header>
-				<Card.Title>Current stock counts</Card.Title>
-				<Card.Description>
-					{filterCat === "Any Category"
-						? "On-hand units and status per category"
-						: `Products in the ${allCategories.find(c => c.id === filterCat)?.name || filterCat} category`}
-				</Card.Description>
-			</Card.Header>
-			<Card.Content class="p-0">
-				{#if filterCat === "Any Category"}
+	<Card.Root>
+		<Card.Header>
+			<Card.Title>Current stock counts</Card.Title>
+			<Card.Description>
+				{filterCat === "Any Category"
+					? "On-hand units and status per category"
+					: `Products in the ${allCategories.find(c => c.id === filterCat)?.name || filterCat} category`}
+			</Card.Description>
+		</Card.Header>
+		<Card.Content class="p-0">
+			{#if filterCat === "Any Category"}
 					<Table.Root class="table-fixed">
 						<colgroup>
 							<col class="w-[46%]" />
@@ -350,38 +259,7 @@
 				{/if}
 			</Card.Content>
 		</Card.Root>
-	{/if}
 </div>
-
-<Dialog.Root bind:open={clearOpen}>
-	<Dialog.Content class="sm:max-w-md">
-		<Dialog.Header>
-			<Dialog.Title>Push clearance</Dialog.Title>
-			<Dialog.Description>
-				{clearItem ? `Set a clearance price for ${productName(clearItem?.productId ?? "")}.` : ""}
-			</Dialog.Description>
-		</Dialog.Header>
-
-		<div class="flex flex-col gap-4 py-2">
-			<div class="flex flex-col gap-1.5">
-				<Label for="c-price">Clearance price (₹)</Label>
-				<Input id="c-price" type="number" min="0" bind:value={clearPrice} placeholder="Enter clearance price" />
-				{#if clearItem}
-					<p class="text-xs text-muted-foreground">
-						Original price: {money(productsState.find((x) => x.id === clearItem?.productId)?.price ?? 0)} · {clearItem?.qty} units · {money(clearItem?.value ?? 0)} tied up
-					</p>
-				{/if}
-			</div>
-		</div>
-
-		<Dialog.Footer>
-			<Button variant="outline" onclick={() => (clearOpen = false)}>Cancel</Button>
-			<Button onclick={applyClearance} disabled={!clearPrice}>
-				<MegaphoneIcon data-icon="inline-start" /> Apply clearance
-			</Button>
-		</Dialog.Footer>
-	</Dialog.Content>
-</Dialog.Root>
 
 <Dialog.Root bind:open={restockOpen}>
 	<Dialog.Content class="sm:max-w-md">

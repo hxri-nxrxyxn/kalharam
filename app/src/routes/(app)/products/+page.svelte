@@ -165,6 +165,11 @@
 	async function handleUpload(e: Event) {
 		const files = (e.target as HTMLInputElement).files;
 		if (!files || files.length === 0) return;
+		
+		if (pGallery.length + files.length > 3) {
+			toast.error("Maximum 3 images allowed per product.");
+			return;
+		}
 
 		isUploadingImage = true;
 		try {
@@ -419,12 +424,21 @@
 						disabled={isUploadingImage}
 					>
 						{#if isUploadingImage}
-							<LoaderCircleIcon class="size-4 animate-spin" /> Uploading...
+							<LoaderCircleIcon class="size-4 animate-spin" />
 						{:else}
-							<ImagePlusIcon class="size-4" /> Add Photos
+							<ImagePlusIcon class="size-4" /> Files
 						{/if}
 					</button>
+					<button
+						type="button"
+						onclick={() => cameraInputRef?.click()}
+						class="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-dashed py-2.5 text-sm text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+						disabled={isUploadingImage}
+					>
+						<CameraIcon class="size-4" /> Camera
+					</button>
 					<input type="file" accept="image/*" multiple class="hidden" bind:this={fileInputRef} onchange={handleUpload} />
+					<input type="file" accept="image/*" capture="environment" multiple class="hidden" bind:this={cameraInputRef} onchange={handleUpload} />
 				</div>
 			</div>
 

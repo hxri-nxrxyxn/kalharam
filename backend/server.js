@@ -224,10 +224,16 @@ app.get('/api/admin/products', (req, res) => {
 	try {
 		const products = db.prepare(`
 			SELECT p.id, p.title as name, p.categoryId as category, p.subtitle as details, p.color, p.salePrice as price, p.mrp as offerPrice, 
-				   p.stock, p.sold, p.demand, p.deadStockDays, p.createdAt, i.thumb_url as image, '#f4f4f5' as imageTone
+				   p.stock, p.sold, p.demand, p.deadStockDays, p.createdAt, p.imageId, i.thumb_url as image, '#f4f4f5' as imageTone
 			FROM products p 
 			JOIN images i ON p.imageId = i.uid 
 		`).all();
+		
+		for (const p of products) {
+			const gallery = db.prepare('SELECT imageId FROM product_gallery WHERE productId = ? ORDER BY displayOrder ASC').all(p.id);
+			p.images = gallery.map(g => g.imageId);
+		}
+		
 		res.json(products);
 	} catch (err) {
 		res.status(500).json({ error: err.message });

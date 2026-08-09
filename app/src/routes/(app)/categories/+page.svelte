@@ -34,6 +34,12 @@
 	let fileInputRef: HTMLInputElement | null = $state(null);
 	let isUploading = $state(false);
 
+	function resetAddModal() {
+		newCatName = "";
+		newCatImage = "";
+		showAddModal = true;
+	}
+
 	async function loadData() {
 		try {
 			const [catRes, imgRes] = await Promise.all([
@@ -195,7 +201,7 @@
 <div class="flex flex-col gap-6">
 	<div class="flex items-center justify-between">
 		<PageHeading title="Categories" description="Manage your storefront product categories" />
-		<Button onclick={() => showAddModal = true}>Add Category</Button>
+		<Button onclick={resetAddModal}>Add Category</Button>
 	</div>
 
 	<Card.Root>
@@ -258,14 +264,8 @@
 			<div class="grid gap-2">
 				<Label>Category Image</Label>
 				<div class="flex items-center gap-2">
-					<select bind:value={newCatImage} class="flex h-9 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background focus:outline-none focus:ring-1 focus:ring-ring">
-						<option value="">-- Select an Image --</option>
-						{#each allImages as img}
-							<option value={img.uid}>{img.alt_text || img.uid}</option>
-						{/each}
-					</select>
-					<Button variant="outline" size="sm" onclick={() => fileInputRef?.click()} disabled={isUploading}>
-						{isUploading ? "..." : "Upload"}
+					<Button variant="outline" size="sm" class="w-full" onclick={() => fileInputRef?.click()} disabled={isUploading}>
+						{isUploading ? "Uploading..." : "Upload Cover Image"}
 					</Button>
 					<input type="file" accept="image/*" class="hidden" bind:this={fileInputRef} onchange={handleUpload} />
 				</div>
@@ -308,14 +308,8 @@
 				<div class="grid gap-2">
 					<Label>Category Image</Label>
 					<div class="flex items-center gap-2">
-						<select bind:value={editingCategory.imageId} class="flex h-9 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background focus:outline-none focus:ring-1 focus:ring-ring">
-							<option value="">-- Select an Image --</option>
-							{#each allImages as img}
-								<option value={img.uid}>{img.alt_text || img.uid}</option>
-							{/each}
-						</select>
-						<Button variant="outline" size="sm" onclick={() => fileInputRef?.click()} disabled={isUploading}>
-							{isUploading ? "..." : "Upload"}
+						<Button variant="outline" size="sm" class="w-full" onclick={() => fileInputRef?.click()} disabled={isUploading}>
+							{isUploading ? "Uploading..." : "Upload New Cover"}
 						</Button>
 					</div>
 					{#if editingCategory && editingCategory.imageId}

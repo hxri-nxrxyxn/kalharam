@@ -11,7 +11,7 @@
 	import * as Card from "$lib/components/ui/card";
 	import * as Table from "$lib/components/ui/table";
 	import * as Chart from "$lib/components/ui/chart/index.js";
-	import { AreaChart } from "layerchart";
+	import { AreaChart, BarChart } from "layerchart";
 	import { scaleBand } from "d3-scale";
 	import { cubicInOut } from "svelte/easing";
 
@@ -57,7 +57,12 @@
 		[...catSummary.entries()]
 			.map(([name, v]) => ({ name, ...v }))
 			.sort((a, b) => b.revenue - a.revenue)
+			.slice(0, 5) // Top 5 categories for the chart
 	);
+
+	const catChartConfig = {
+		revenue: { label: "Revenue (₹)", color: "var(--chart-1)" }
+	} satisfies Chart.ChartConfig;
 </script>
 
 <div class="flex flex-col gap-6">
@@ -140,28 +145,27 @@
 
 		<Card.Root>
 			<Card.Header>
-				<Card.Title>Revenue by saree type</Card.Title>
+				<Card.Title>Top Revenue by Category</Card.Title>
 				<Card.Description>Lifetime revenue contribution</Card.Description>
 			</Card.Header>
-			<Card.Content class="p-0">
-				<Table.Root>
-					<Table.Header>
-						<Table.Row>
-							<Table.Head>Saree type</Table.Head>
-							<Table.Head>Sold</Table.Head>
-							<Table.Head class="text-right">Revenue</Table.Head>
-						</Table.Row>
-					</Table.Header>
-					<Table.Body>
-						{#each catRows as c (c.name)}
-							<Table.Row>
-								<Table.Cell class="font-medium">{c.name}</Table.Cell>
-								<Table.Cell>{c.sold}</Table.Cell>
-								<Table.Cell class="text-right font-medium">₹{c.revenue.toLocaleString("en-IN")}</Table.Cell>
-							</Table.Row>
-						{/each}
-					</Table.Body>
-				</Table.Root>
+			<Card.Content>
+				<Chart.Container config={catChartConfig} class="min-h-[200px] w-full">
+					<BarChart
+						data={catRows}
+						x="revenue"
+						y="name"
+						orientation="horizontal"
+						xScale={scaleBand().padding(0.2)}
+						series={[{ key: "revenue", label: catChartConfig.revenue.label, color: catChartConfig.revenue.color }]}
+						props={{
+							bars: { radius: 4 }
+						}}
+					>
+						{#snippet tooltip()}
+							<Chart.Tooltip hideLabel />
+						{/snippet}
+					</BarChart>
+				</Chart.Container>
 			</Card.Content>
 		</Card.Root>
 	</div>
