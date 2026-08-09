@@ -67,10 +67,13 @@
 	let pSubtitle = $state("");
 	let pCategory = $state("");
 	let pColor = $state("");
+	let pStock = $state(10);
 	let pPrice = $state(0);
 	let pMrp = $state(0);
 	let pImageId = $state("");
 	let pGallery = $state<string[]>([]);
+	
+	let cameraInputRef: HTMLInputElement | null = $state(null);
 
 	async function loadData() {
 		try {
@@ -125,6 +128,7 @@
 		pSubtitle = "";
 		pCategory = allCategories.length > 0 ? allCategories[0].id : "";
 		pColor = "";
+		pStock = 10;
 		pPrice = 0;
 		pMrp = 0;
 		pImageId = "";
@@ -142,6 +146,7 @@
 		pSubtitle = p.details;
 		pCategory = p.category;
 		pColor = p.color ?? "";
+		pStock = p.stock;
 		pPrice = p.price;
 		pMrp = p.offerPrice ?? 0;
 		pImageId = p.imageId;
@@ -222,6 +227,7 @@
 					subtitle: pSubtitle.trim(),
 					categoryId: pCategory,
 					color: pColor.trim(),
+					stock: pStock,
 					salePrice: finalSalePrice,
 					mrp: pMrp,
 					imageId: pImageId || pGallery[0],
@@ -468,6 +474,11 @@
 					<Label for="p-price">Sale Price (₹)</Label>
 					<Input id="p-price" type="number" min="0" bind:value={pPrice} onfocus={(e) => e.currentTarget.select()} />
 				</div>
+			</div>
+			
+			<div class="flex flex-col gap-1.5">
+				<Label for="p-stock">Stock Units</Label>
+				<Input id="p-stock" type="number" min="0" bind:value={pStock} onfocus={(e) => e.currentTarget.select()} />
 			</div>
 		</div>
 

@@ -17,6 +17,8 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
+app.use('/assets/uploads', express.static(path.join(__dirname, '../web/static/assets/uploads')));
+
 const upload = multer({ storage: multer.memoryStorage() });
 
 // --- Public Endpoints (for Web) ---
@@ -299,15 +301,15 @@ app.put('/api/admin/products/:id', (req, res) => {
 
 app.post('/api/admin/products', (req, res) => {
 	try {
-		const { id, title, subtitle, categoryId, color, rating, mrp, salePrice, imageId, galleryImages } = req.body;
+		const { id, title, subtitle, categoryId, color, stock, rating, mrp, salePrice, imageId, galleryImages } = req.body;
 		
 		const transaction = db.transaction(() => {
 			const stmt = db.prepare(`
-				INSERT INTO products (id, title, subtitle, categoryId, color, rating, mrp, salePrice, imageId)
-				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+				INSERT INTO products (id, title, subtitle, categoryId, color, stock, rating, mrp, salePrice, imageId)
+				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 			`);
 			
-			stmt.run(id, title, subtitle, categoryId, color || null, rating || 4.5, mrp, salePrice, imageId);
+			stmt.run(id, title, subtitle, categoryId, color || null, stock !== undefined ? stock : 10, rating || 4.5, mrp, salePrice, imageId);
 
 			if (galleryImages && galleryImages.length > 0) {
 				const insertGallery = db.prepare('INSERT INTO product_gallery (productId, imageId, displayOrder) VALUES (?, ?, ?)');

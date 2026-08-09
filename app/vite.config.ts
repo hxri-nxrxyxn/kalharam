@@ -19,6 +19,9 @@ export default defineConfig({
 		})
 	],
 	server: {
-		port: 5174
+		port: 5174,
+		proxy: {
+			'/assets/uploads': 'http://localhost:3000'
+		}
 	}
 });

@@ -224,6 +224,10 @@ export function initSync() {
 	// Fetch real data on init
 	loadBackendData();
 	
+	if (typeof window !== "undefined") {
+		window.addEventListener('reload-store', loadBackendData);
+	}
+
 	transport = createTransport(getOrCreateDeviceId());
 	transport.onMessage(handleMessage);
 	sessionsState.push(selfSession());
