@@ -23,6 +23,7 @@ class CartState {
 				subtitle: product.subtitle,
 				image: product.image,
 				rating: product.rating,
+				stock: product.stock,
 				mrp: product.mrp,
 				price: product.salePrice,
 				quantity

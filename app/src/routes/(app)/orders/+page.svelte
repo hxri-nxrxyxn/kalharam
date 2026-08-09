@@ -11,6 +11,7 @@
 	import ShoppingCartIcon from "@lucide/svelte/icons/shopping-cart";
 	import BellRingIcon from "@lucide/svelte/icons/bell-ring";
 	import CheckIcon from "@lucide/svelte/icons/check";
+	import TruckIcon from "@lucide/svelte/icons/truck";
 	import type { Order } from "$lib/types";
 
 	function money(n: number) {
@@ -93,6 +94,13 @@
 							<span class="text-xs font-normal text-muted-foreground">· {o.time}</span>
 						</Card.Title>
 						<Card.Description>{o.qty} × {o.item}</Card.Description>
+						{#if o.phone || o.email || o.address}
+							<div class="flex flex-col gap-0.5 text-xs text-muted-foreground">
+								{#if o.phone}<span>📞 {o.phone}</span>{/if}
+								{#if o.email}<span>✉ {o.email}</span>{/if}
+								{#if o.address}<span>{o.address}{o.city ? `, ${o.city}` : ""}{o.state ? `, ${o.state}` : ""} {o.pin ? `- ${o.pin}` : ""}</span>{/if}
+							</div>
+						{/if}
 					</div>
 				</Card.Header>
 				<Card.Footer class="flex-wrap items-center justify-between gap-2">
@@ -102,12 +110,16 @@
 					</div>
 					<div class="flex gap-2">
 						{#if o.status === "new"}
-							<Button size="sm" onclick={() => advance(o.orderId, o.id, "processing")}>Accept</Button>
-							<Button size="sm" variant="outline" class="text-destructive" onclick={() => advance(o.orderId, o.id, "cancelled")}>Cancel</Button>
+							<Button onclick={() => advance(o.orderId, o.id, "processing")}>
+								<CheckIcon data-icon="inline-start" /> Accept
+							</Button>
+							<Button variant="outline" class="text-destructive" onclick={() => advance(o.orderId, o.id, "cancelled")}>Cancel</Button>
 						{:else if o.status === "processing"}
-							<Button size="sm" variant="outline" onclick={() => advance(o.orderId, o.id, "shipped")}>Mark shipped</Button>
+							<Button onclick={() => advance(o.orderId, o.id, "shipped")}>
+								<TruckIcon data-icon="inline-start" /> Mark shipped
+							</Button>
 						{:else if o.status === "shipped"}
-							<Button size="sm" variant="outline" onclick={() => advance(o.orderId, o.id, "delivered")}>
+							<Button onclick={() => advance(o.orderId, o.id, "delivered")}>
 								<CheckIcon data-icon="inline-start" /> Delivered
 							</Button>
 						{/if}

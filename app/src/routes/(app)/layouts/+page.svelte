@@ -6,6 +6,7 @@
 	import { Button } from "$lib/components/ui/button";
 	import { toast } from "svelte-sonner";
 	import { onMount } from "svelte";
+	import XIcon from "@lucide/svelte/icons/x";
 
 	type Tile = {
 		id: number;
@@ -17,21 +18,21 @@
 
 	let tiles = $state<Tile[]>([]);
 	let allCategories = $state<{id: string, name: string}[]>([]);
-	let allImages = $state<{uid: string, thumb_url: string, type: string, alt_text: string | null}[]>([]);
 
 	let isSaving = $state(false);
 
+	let fileInputRef: HTMLInputElement | null = $state(null);
+	let isUploading = $state(false);
+	let uploadTarget = $state<Tile | null>(null);
+
 	async function loadData() {
 		try {
-			const [tilesRes, catRes, imgRes] = await Promise.all([
+			const [tilesRes, catRes] = await Promise.all([
 				fetch('http://localhost:3000/api/admin/tiles'),
-				fetch('http://localhost:3000/api/categories'),
-				fetch('http://localhost:3000/api/admin/images')
+				fetch('http://localhost:3000/api/categories')
 			]);
 			
 			if (tilesRes.ok) tiles = await tilesRes.json();
-			// We might need an admin endpoint for raw categories since public uses tiles now
-			if (imgRes.ok) allImages = await imgRes.json();
 			
 			// Let's get raw categories
 			const rawCatRes = await fetch('http://localhost:3000/api/admin/raw-categories');
@@ -39,6 +40,61 @@
 			
 		} catch (e) {
 			toast.error("Failed to load layout data.");
+		}
+	}
+
+	async function handleUpload(e: Event) {
+		const files = (e.target as HTMLInputElement).files;
+		const tile = uploadTarget;
+		if (!files || files.length === 0 || !tile) return;
+
+		isUploading = true;
+		try {
+			const formData = new FormData();
+			formData.append('image', files[0]);
+			formData.append('alt_text', `${tile.title || 'Tile'} Image`);
+			formData.append('type', 'tile');
+
+			const res = await fetch('http://localhost:3000/api/admin/images/upload', {
+				method: 'POST',
+				body: formData
+			});
+			const data = await res.json();
+			if (res.ok) {
+				tile.imageId = data.uid;
+				tile.image = data.thumb_url;
+				toast.success("Tile image uploaded. Click Save Tile to persist.");
+			} else {
+				throw new Error(data.error || "Upload failed");
+			}
+		} catch (err: any) {
+			toast.error(err.message);
+		} finally {
+			isUploading = false;
+			if (fileInputRef) fileInputRef.value = '';
+		}
+	}
+
+	function pickFile(tile: Tile) {
+		uploadTarget = tile;
+		fileInputRef?.click();
+	}
+
+	async function handleDeleteImage(uid: string) {
+		if (!uid) return;
+		try {
+			const res = await fetch(`http://localhost:3000/api/admin/images/${uid}`, {
+				method: 'DELETE'
+			});
+			const data = await res.json().catch(() => ({}));
+			if (res.ok) {
+				toast.success("Tile image removed.");
+				await loadData();
+			} else {
+				throw new Error(data.error || "Delete failed");
+			}
+		} catch (err: any) {
+			toast.error(err.message);
 		}
 	}
 
@@ -90,6 +146,33 @@
 				</Card.Header>
 				<Card.Content class="flex flex-col gap-4">
 					<div class="grid gap-2">
+						<Label>Tile Image</Label>
+						<div class="flex items-center gap-2">
+							<Button variant="outline" size="sm" class="w-full" onclick={() => pickFile(tile)} disabled={isUploading}>
+								{isUploading ? "Uploading..." : "Upload Cover Image"}
+							</Button>
+						</div>
+						<div class="relative">
+							{#if tile.image}
+								<img src={tile.image} alt="Tile preview" class="w-full h-32 object-cover rounded-md mt-2" />
+							{:else}
+								<div class="mt-2 flex h-32 w-full items-center justify-center rounded-md border bg-muted text-xs text-muted-foreground">No image yet</div>
+							{/if}
+							{#if tile.imageId}
+								<button
+									type="button"
+									title="Remove tile image"
+									aria-label="Remove tile image"
+									class="absolute right-2 top-2 rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/90 p-1.5 shadow-md transition-colors cursor-pointer"
+									onclick={() => handleDeleteImage(tile.imageId)}
+								>
+									<XIcon class="size-4" />
+								</button>
+							{/if}
+						</div>
+					</div>
+
+					<div class="grid gap-2">
 						<Label>Tile Title</Label>
 						<Input bind:value={tile.title} placeholder="e.g. Summer Collection" />
 					</div>
@@ -113,22 +196,6 @@
 						</div>
 						<p class="text-xs text-muted-foreground">Select one or more categories to aggregate their products under this tile.</p>
 					</div>
-					
-					<div class="grid gap-2">
-						<Label>Tile Image</Label>
-						<select bind:value={tile.imageId} class="flex h-9 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50">
-							<option value="">-- Select an Image --</option>
-							{#each allImages as img}
-								<option value={img.uid}>{img.alt_text || img.uid}</option>
-							{/each}
-						</select>
-						{#if tile.imageId}
-							{@const selectedImg = allImages.find(i => i.uid === tile.imageId)}
-							{#if selectedImg}
-								<img src={selectedImg.thumb_url} alt="preview" class="w-full h-24 object-cover mt-2 rounded-md" />
-							{/if}
-						{/if}
-					</div>
 				</Card.Content>
 				<Card.Footer>
 					<Button class="w-full" disabled={isSaving} onclick={() => saveTile(tile)}>Save Tile {tile.id}</Button>
@@ -136,4 +203,12 @@
 			</Card.Root>
 		{/each}
 	</div>
+
+	<input
+		type="file"
+		accept="image/*"
+		class="hidden"
+		bind:this={fileInputRef}
+		onchange={(e) => handleUpload(e)}
+	/>
 </div>

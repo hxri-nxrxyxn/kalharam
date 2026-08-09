@@ -215,6 +215,8 @@
 		if (!pName.trim()) return toast.error("Product name is required");
 		if (!pCategory) return toast.error("Please select a category");
 		if (!pMrp || pMrp <= 0) return toast.error("MRP is required");
+		if (!pPrice || pPrice <= 0) return toast.error("Sale price is required");
+		if (pPrice > pMrp) return toast.error("Sale price cannot be greater than MRP");
 		if (pGallery.length === 0) return toast.error("Please add at least one product photo");
 		
 		submitting = true;
@@ -475,8 +477,8 @@
 			</div>
 
 			<div class="flex flex-col gap-1.5">
-				<Label for="p-details">Subtitle Details</Label>
-				<Textarea id="p-details" bind:value={pSubtitle} rows={2} placeholder="e.g. Handloom Classic Saree" />
+				<Label for="p-details">Description</Label>
+				<Textarea id="p-details" bind:value={pSubtitle} rows={3} placeholder="e.g. Handloom Classic Saree, handwoven with fine detailing" />
 			</div>
 
 			<div class="grid grid-cols-2 gap-3">

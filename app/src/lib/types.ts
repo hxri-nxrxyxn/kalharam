@@ -37,6 +37,12 @@ export interface Order {
 	total: number;
 	status: "new" | "processing" | "shipped" | "delivered" | "cancelled";
 	time: string;
+	email?: string;
+	phone?: string;
+	address?: string;
+	city?: string;
+	state?: string;
+	pin?: string;
 }
 
 export interface PendingLine {

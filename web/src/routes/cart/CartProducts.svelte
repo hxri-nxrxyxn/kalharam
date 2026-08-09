@@ -39,7 +39,7 @@
 								<div class="cart__row-info">
 									<div class="cart__row-info--count">
 										<img src="/assets/stroke-2px-24px/star.svg" alt="rating" aria-hidden="true" width="18" height="18" />
-										<h3>{item.rating}</h3>
+										<h3>{item.stock}</h3>
 									</div>
 									<div class="cart__row-info--maxprice">
 										<p>MRP</p>

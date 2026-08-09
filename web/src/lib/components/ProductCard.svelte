@@ -18,7 +18,7 @@
 	<div class="listing__info">
 		<div class="listing__info-count">
 			<img src="/assets/stroke-2px-24px/star.svg" alt="" aria-hidden="true" width="18" height="18" />
-			<h3>{product.rating}</h3>
+			<h3>{product.stock}</h3>
 		</div>
 		<div class="listing__info-maxprice">
 			<p>MRP</p>

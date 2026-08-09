@@ -3,12 +3,14 @@
 	import * as Card from "$lib/components/ui/card";
 	import * as Table from "$lib/components/ui/table";
 	import * as Dialog from "$lib/components/ui/dialog";
+	import * as AlertDialog from "$lib/components/ui/alert-dialog";
 	import { Input } from "$lib/components/ui/input";
 	import { Label } from "$lib/components/ui/label";
 	import { Button } from "$lib/components/ui/button";
 	import { toast } from "svelte-sonner";
 	import { onMount } from "svelte";
 	import XIcon from "@lucide/svelte/icons/x";
+	import PlusIcon from "@lucide/svelte/icons/plus";
 
 	type Category = {
 		id: string;
@@ -28,6 +30,15 @@
 
 	function generateSlug(name: string) {
 		return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+	}
+
+	async function parseJson(res: Response) {
+		const text = await res.text();
+		try {
+			return JSON.parse(text);
+		} catch {
+			return {};
+		}
 	}
 
 	let editingCategory = $state<Category | null>(null);
@@ -71,7 +82,7 @@
 				method: 'POST',
 				body: formData
 			});
-			const data = await res.json();
+			const data = await parseJson(res);
 			if (res.ok) {
 				toast.success("Image uploaded successfully!");
 				await loadData();
@@ -95,7 +106,7 @@
 			const res = await fetch(`http://localhost:3000/api/admin/images/${uid}`, {
 				method: 'DELETE'
 			});
-			const data = await res.json();
+			const data = await parseJson(res);
 			if (res.ok) {
 				toast.success("Image deleted from storage.");
 				if (newCatImage === uid) newCatImage = "";
@@ -128,7 +139,7 @@
 					imageId: newCatImage
 				})
 			});
-			const data = await res.json();
+			const data = await parseJson(res);
 			if (res.ok) {
 				toast.success("Category created!");
 				showAddModal = false;
@@ -161,7 +172,7 @@
 					imageId: editingCategory.imageId
 				})
 			});
-			const data = await res.json();
+			const data = await parseJson(res);
 			if (res.ok) {
 				toast.success("Category updated!");
 				editingCategory = null;
@@ -176,18 +187,19 @@
 		}
 	}
 
+	let deleteTarget = $state<Category | null>(null);
+
 	async function handleDelete(id: string) {
-		if (!confirm("Are you sure you want to delete this category?")) return;
 		try {
 			const res = await fetch(`http://localhost:3000/api/admin/categories/${id}`, {
 				method: 'DELETE'
 			});
-			const data = await res.json();
+			const data = await parseJson(res);
 			if (res.ok) {
 				toast.success("Category deleted.");
 				await loadData();
 			} else {
-				throw new Error(data.error || "API Error");
+				throw new Error(data.error || "Failed to delete category.");
 			}
 		} catch (e: any) {
 			toast.error(e.message || "Failed to delete category.");
@@ -200,9 +212,13 @@
 </script>
 
 <div class="flex flex-col gap-6">
-	<div class="flex items-center justify-between">
+	<div class="flex flex-wrap items-end justify-between gap-3">
 		<PageHeading title="Categories" description="Manage your storefront product categories" />
-		<Button onclick={resetAddModal}>Add Category</Button>
+		<div class="flex items-center gap-2">
+			<Button onclick={resetAddModal}>
+				<PlusIcon data-icon="inline-start" /> Add Category
+			</Button>
+		</div>
 	</div>
 
 	<Card.Root>
@@ -231,7 +247,7 @@
 							</Table.Cell>
 							<Table.Cell class="text-right">
 								<Button variant="ghost" size="sm" onclick={() => startEdit(c)}>Edit</Button>
-								<Button variant="ghost" size="sm" class="text-red-500 hover:text-red-700" onclick={() => handleDelete(c.id)}>Delete</Button>
+								<Button variant="ghost" size="sm" class="text-red-500 hover:text-red-700" onclick={() => (deleteTarget = c)}>Delete</Button>
 							</Table.Cell>
 						</Table.Row>
 					{/each}
@@ -322,17 +338,8 @@
 					{#if editingCategory && editingCategory.imageId}
 						{@const img = allImages.find(i => i.uid === editingCategory?.imageId)}
 						{#if img}
-							<div class="relative mt-2 w-32 h-32 border rounded-md overflow-hidden bg-muted">
+							<div class="mt-2 w-32 h-32 border rounded-md overflow-hidden bg-muted">
 								<img src={img.thumb_url} alt="preview" class="w-full h-full object-cover" />
-								<button 
-									type="button"
-									class="absolute top-1 right-1 bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-full p-1.5 shadow-md transition-colors cursor-pointer z-10" 
-									onclick={() => handleDeleteImage(img.uid)}
-									title="Delete photo from storage"
-									aria-label="Delete photo from storage"
-								>
-									<XIcon class="size-4" />
-								</button>
 							</div>
 						{/if}
 					{/if}
@@ -345,3 +352,28 @@
 		</Dialog.Content>
 	{/if}
 </Dialog.Root>
+
+<AlertDialog.Root open={deleteTarget !== null} onOpenChange={(open) => { if (!open) deleteTarget = null; }}>
+	{#if deleteTarget}
+		<AlertDialog.Content>
+			<AlertDialog.Header>
+				<AlertDialog.Title>Delete category?</AlertDialog.Title>
+				<AlertDialog.Description>
+					Are you sure you want to delete <span class="font-medium">{deleteTarget.name}</span>? This action cannot be undone.
+				</AlertDialog.Description>
+			</AlertDialog.Header>
+			<AlertDialog.Footer>
+				<AlertDialog.Cancel onclick={() => (deleteTarget = null)}>Cancel</AlertDialog.Cancel>
+				<AlertDialog.Action
+					onclick={() => {
+						const id = deleteTarget?.id;
+						deleteTarget = null;
+						if (id) handleDelete(id);
+					}}
+				>
+					Delete
+				</AlertDialog.Action>
+			</AlertDialog.Footer>
+		</AlertDialog.Content>
+	{/if}
+</AlertDialog.Root>

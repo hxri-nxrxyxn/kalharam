@@ -26,7 +26,14 @@
 
 	let categories = $state<Category[]>([]);
 	let rawProducts = $state<Product[]>([]);
-	
+
+	// Default to the first tile when nothing specific matches (e.g. the home page)
+	let activeCategoryId = $derived(
+		categories.some((c) => c.id === currentCategoryId)
+			? currentCategoryId
+			: (categories[0]?.id ?? '')
+	);
+
 	// Fetch categories globally for the catalog tiles
 	$effect(() => {
 		getCategories().then(res => {
@@ -36,13 +43,13 @@
 
 	// Reactively fetch products when category changes
 	$effect(() => {
-		getProducts({ tileId: currentCategoryId }).then(res => {
+		getProducts({ tileId: activeCategoryId }).then(res => {
 			rawProducts = res;
 		});
 	});
 
 	let currentCategory = $derived(
-		categories.find((c) => c.id === currentCategoryId) || { id: '', name: 'Loading...', image: '' }
+		categories.find((c) => c.id === activeCategoryId) || { id: '', name: 'Loading...', image: '' }
 	);
 
 	let filteredProducts = $derived(

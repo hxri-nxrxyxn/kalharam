@@ -67,7 +67,8 @@ export function filterProducts(products: Product[], params: FilterParams): Produ
 		list = list.filter(
 			(p) =>
 				p.title.toLowerCase().includes(query) ||
-				p.subtitle.toLowerCase().includes(query)
+				p.subtitle.toLowerCase().includes(query) ||
+				p.details.toLowerCase().includes(query)
 		);
 	}
 

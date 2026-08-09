@@ -1,8 +1,6 @@
 import type { ActiveSession, Order, Product } from "$lib/types";
-import { seedOrders, seedProducts, CATEGORIES } from "$lib/mock/data";
 import {
 	type SessionUser,
-	type SnapshotData,
 	type StorePatch,
 	type SyncMessage,
 	type SyncTransport,
@@ -22,7 +20,7 @@ export type { SessionUser } from "$lib/sync/transport";
  */
 export const productsState = $state<Product[]>([]);
 export const ordersState = $state<Order[]>([]);
-export const categoriesState = $state<string[]>([...CATEGORIES]);
+export const categoriesState = $state<string[]>([]);
 export const sessionsState = $state<ActiveSession[]>([]);
 
 /** Auth state — the account is shared; any device can sign in on it. */
@@ -32,10 +30,6 @@ let transport: SyncTransport | null = null;
 let syncStarted = false;
 /** monotonic revision of the shared state; grows on every applied mutation */
 let revision = 0;
-/** true once this device has adopted a peer snapshot (history we didn't witness) */
-let hydrated = false;
-/** local mutations made before hydration — replayed on top of the snapshot */
-let pendingLocalPatches: StorePatch[] = [];
 
 function myId() {
 	return transport?.deviceId ?? "";
@@ -72,34 +66,10 @@ function removeSession(deviceId: string) {
 
 function resetState() {
 	productsState.length = 0;
-	productsState.push(...seedProducts);
 	ordersState.length = 0;
-	ordersState.push(...seedOrders);
 	sessionsState.length = 0;
 	sessionsState.push(selfSession());
 	auth.user = null;
-}
-
-function applySnapshot(data: SnapshotData) {
-	if (hydrated && data.revision <= revision) return;
-	revision = data.revision;
-	productsState.length = 0;
-	productsState.push(...data.products);
-	ordersState.length = 0;
-	ordersState.push(...data.orders);
-	sessionsState.length = 0;
-	for (const s of data.sessions) {
-		if (s.deviceId === myId()) continue;
-		sessionsState.push({ ...s, current: false });
-	}
-	if (!sessionsState.some((s) => s.deviceId === myId())) {
-		sessionsState.push(selfSession());
-	}
-	auth.user = data.user;
-	hydrated = true;
-	// any change this device made before hydrating is re-applied on top
-	for (const p of pendingLocalPatches) applyPatch(p);
-	pendingLocalPatches = [];
 }
 
 function applyPatch(patch: StorePatch) {
@@ -167,25 +137,6 @@ function handleMessage(message: SyncMessage) {
 			if (message.deviceId === myId()) return;
 			removeSession(message.deviceId);
 			break;
-		case "request-snapshot":
-			if (message.deviceId === myId()) return;
-			transport.broadcast({
-				kind: "snapshot",
-				deviceId: myId(),
-				requestId: message.requestId,
-				data: {
-					products: [...productsState],
-					orders: [...ordersState],
-					sessions: [...sessionsState],
-					user: auth.user,
-					revision
-				}
-			});
-			break;
-		case "snapshot":
-			if (message.deviceId === myId()) return;
-			applySnapshot(message.data);
-			break;
 		case "patch":
 			if (message.deviceId === myId()) return;
 			applyPatch(message.patch);
@@ -216,6 +167,19 @@ export async function loadBackendData() {
 	}
 }
 
+/** Lightweight poller that syncs new/customer-updated orders without disturbing products. */
+export async function refreshOrders() {
+	try {
+		const res = await fetch('http://localhost:3000/api/admin/orders');
+		if (!res.ok) return;
+		const data = await res.json();
+		ordersState.length = 0;
+		ordersState.push(...data);
+	} catch (err) {
+		console.error('Failed to refresh orders:', err);
+	}
+}
+
 /** Wire up the sync transport. Call once from the root layout (browser only). */
 export function initSync() {
 	if (typeof window === "undefined" || syncStarted) return;
@@ -226,17 +190,14 @@ export function initSync() {
 	
 	if (typeof window !== "undefined") {
 		window.addEventListener('reload-store', loadBackendData);
+		// Keep an eye out for orders placed on the storefront
+		setInterval(refreshOrders, 15000);
 	}
 
 	transport = createTransport(getOrCreateDeviceId());
 	transport.onMessage(handleMessage);
 	sessionsState.push(selfSession());
 	transport.broadcast({ kind: "session-hello", deviceId: transport.deviceId, session: selfSession() });
-	transport.broadcast({
-		kind: "request-snapshot",
-		deviceId: transport.deviceId,
-		requestId: crypto.randomUUID()
-	});
 	window.addEventListener("beforeunload", () => {
 		transport?.broadcast({ kind: "session-bye", deviceId: transport.deviceId });
 		transport?.close();
@@ -262,7 +223,6 @@ export function addProduct(p: Product) {
 	productsState.push(p);
 	bump();
 	const patch: StorePatch = { action: "product:add", payload: p };
-	if (!hydrated) pendingLocalPatches.push(patch);
 	broadcast(patch);
 }
 
@@ -274,7 +234,6 @@ export async function updateProduct(id: string, fields: Partial<Product>) {
 	Object.assign(p, fields);
 	bump();
 	const patch: StorePatch = { action: "product:update", payload: { id, fields } };
-	if (!hydrated) pendingLocalPatches.push(patch);
 	broadcast(patch);
 
 	// send to backend
@@ -294,7 +253,6 @@ export async function setOrderStatus(orderId: string, id: string, status: Order[
 	if (o) o.status = status;
 	bump();
 	const patch: StorePatch = { action: "order:status", payload: { id, status } };
-	if (!hydrated) pendingLocalPatches.push(patch);
 	broadcast(patch);
 
 	try {
@@ -313,7 +271,6 @@ export function buyBackStock(productId: string, qty: number) {
 	if (p) p.stock += qty;
 	bump();
 	const patch: StorePatch = { action: "product:restock", payload: { productId, qty } };
-	if (!hydrated) pendingLocalPatches.push(patch);
 	broadcast(patch);
 }
 
@@ -321,7 +278,6 @@ export function signIn(user: SessionUser) {
 	auth.user = user;
 	bump();
 	const patch: StorePatch = { action: "auth:login", payload: user };
-	if (!hydrated) pendingLocalPatches.push(patch);
 	broadcast(patch);
 }
 
@@ -329,7 +285,6 @@ export function signOut() {
 	auth.user = null;
 	bump();
 	const patch: StorePatch = { action: "auth:logout", payload: null };
-	if (!hydrated) pendingLocalPatches.push(patch);
 	broadcast(patch);
 }
 
@@ -339,7 +294,6 @@ export function endSession(deviceId: string) {
 	if (deviceId === myId()) auth.user = null;
 	bump();
 	const patch: StorePatch = { action: "session:end", payload: { deviceId } };
-	if (!hydrated) pendingLocalPatches.push(patch);
 	broadcast(patch);
 }
 
@@ -347,6 +301,7 @@ export function resetDemo() {
 	resetState();
 	bump();
 	const patch: StorePatch = { action: "reset", payload: null };
-	if (!hydrated) pendingLocalPatches.push(patch);
 	broadcast(patch);
+	// Repopulate from the backend DB (never mock/hardcoded data)
+	loadBackendData();
 }

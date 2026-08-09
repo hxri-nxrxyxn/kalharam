@@ -60,8 +60,9 @@ app.get('/api/products', (req, res) => {
 	try {
 		const { categoryId, tileId, q, limit } = req.query;
 		let query = `
-			SELECT p.id, p.title, p.subtitle, p.categoryId, p.color, p.rating, p.mrp, p.salePrice, i.thumb_url as image 
+			SELECT p.id, p.title, TRIM(COALESCE(c.name, '')) || ' Saree' as subtitle, p.subtitle as details, p.categoryId, p.color, p.rating, p.mrp, p.salePrice, p.stock, i.thumb_url as image 
 			FROM products p 
+			JOIN categories c ON p.categoryId = c.id
 			JOIN images i ON p.imageId = i.uid 
 			WHERE 1=1
 		`;
@@ -88,8 +89,8 @@ app.get('/api/products', (req, res) => {
 		}
 
 		if (q) {
-			query += ' AND (p.title LIKE ? OR p.subtitle LIKE ?)';
-			params.push(`%${q}%`, `%${q}%`);
+			query += ' AND (p.title LIKE ? OR p.subtitle LIKE ? OR c.name LIKE ?)';
+			params.push(`%${q}%`, `%${q}%`, `%${q}%`);
 		}
 
 		if (limit) {
@@ -107,8 +108,9 @@ app.get('/api/products', (req, res) => {
 app.get('/api/products/:id', (req, res) => {
 	try {
 		const product = db.prepare(`
-			SELECT p.id, p.title, p.subtitle, p.categoryId, p.color, p.rating, p.mrp, p.salePrice, i.thumb_url as image, i.high_res_url as highResImage 
+			SELECT p.id, p.title, TRIM(COALESCE(c.name, '')) || ' Saree' as subtitle, p.subtitle as details, p.categoryId, p.color, p.rating, p.mrp, p.salePrice, p.stock, i.thumb_url as image, i.high_res_url as highResImage 
 			FROM products p 
+			JOIN categories c ON p.categoryId = c.id
 			JOIN images i ON p.imageId = i.uid 
 			WHERE p.id = ?
 		`).get(req.params.id);
@@ -137,8 +139,8 @@ app.post('/api/orders', (req, res) => {
 		const { customerName, email, phone, address, city, state, pin, total, items } = req.body;
 		
 		const insertOrder = db.prepare(`
-			INSERT INTO orders (customerName, email, phone, address, city, state, pin, total, items)
-			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+			INSERT INTO orders (customerName, email, phone, address, city, state, pin, total, items, status)
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'new')
 		`);
 		
 		const updateStock = db.prepare(`
@@ -209,11 +211,17 @@ app.get('/api/admin/orders', (req, res) => {
 				id: `${o.id}-${index}`, // composite ID for UI if needed, or just o.id
 				orderId: o.id,
 				customer: o.customerName,
+				email: o.email,
+				phone: o.phone,
+				address: o.address,
+				city: o.city,
+				state: o.state,
+				pin: o.pin,
 				item: item.title,
 				productId: item.id,
 				qty: item.quantity,
 				total: item.price * item.quantity,
-				status: o.status,
+				status: o.status === 'pending' ? 'new' : o.status,
 				time: o.createdAt
 			}));
 		});
@@ -307,11 +315,36 @@ app.put('/api/admin/products/:id', (req, res) => {
 			return res.status(400).json({ error: 'No fields provided for update' });
 		}
 
+		// Enforce price sanity regardless of which field shape is sent
+		const current = db.prepare('SELECT salePrice as price, mrp as offerPrice FROM products WHERE id = ?').get(id);
+		let nextPrice = current?.price ?? null;
+		let nextOffer = current?.offerPrice ?? null;
+		for (const [key, value] of Object.entries(updates)) {
+			let dbCol = key;
+			if (key === 'name') dbCol = 'title';
+			if (key === 'details') dbCol = 'subtitle';
+			if (key === 'category') dbCol = 'categoryId';
+			if (key === 'price') dbCol = 'salePrice';
+			if (key === 'offerPrice') dbCol = 'mrp';
+			if (dbCol === 'salePrice') nextPrice = value;
+			if (dbCol === 'mrp') nextOffer = value;
+		}
+		if (nextPrice != null && nextOffer != null && Number(nextPrice) > Number(nextOffer)) {
+			return res.status(400).json({ error: 'Sale price cannot be greater than MRP' });
+		}
+
 		// Dynamically construct SET clause
 		const fields = [];
 		const values = [];
+		let galleryImages = null;
 		
 		for (const [key, value] of Object.entries(updates)) {
+			// Handle gallery separately — it updates product_gallery, not a products column
+			if (key === 'galleryImages') {
+				galleryImages = value;
+				continue;
+			}
+
 			// map front-end keys to DB columns
 			let dbCol = key;
 			if (key === 'name') dbCol = 'title';
@@ -327,9 +360,22 @@ app.put('/api/admin/products/:id', (req, res) => {
 
 		values.push(id);
 		
-		const query = `UPDATE products SET ${fields.join(', ')} WHERE id = ?`;
-		db.prepare(query).run(...values);
+		const transaction = db.transaction(() => {
+			if (fields.length > 0) {
+				const query = `UPDATE products SET ${fields.join(', ')} WHERE id = ?`;
+				db.prepare(query).run(...values);
+			}
+
+			if (Array.isArray(galleryImages)) {
+				db.prepare('DELETE FROM product_gallery WHERE productId = ?').run(id);
+				const insertGallery = db.prepare('INSERT OR IGNORE INTO product_gallery (productId, imageId, displayOrder) VALUES (?, ?, ?)');
+				galleryImages.forEach((gImgId, index) => {
+					if (gImgId) insertGallery.run(id, gImgId, index);
+				});
+			}
+		});
 		
+		transaction();
 		res.json({ message: 'Product updated successfully' });
 	} catch (err) {
 		res.status(500).json({ error: err.message });
@@ -339,6 +385,10 @@ app.put('/api/admin/products/:id', (req, res) => {
 app.post('/api/admin/products', (req, res) => {
 	try {
 		const { id, title, subtitle, categoryId, color, stock, rating, mrp, salePrice, imageId, galleryImages } = req.body;
+
+		if (salePrice != null && mrp != null && Number(salePrice) > Number(mrp)) {
+			return res.status(400).json({ error: 'Sale price cannot be greater than MRP' });
+		}
 		
 		const transaction = db.transaction(() => {
 			const stmt = db.prepare(`
@@ -418,8 +468,9 @@ app.delete('/api/admin/images/:uid', (req, res) => {
 	try {
 		const uid = req.params.uid;
 		
-		// Unset this image from categories first if it is set
+		// Unset this image from categories and tiles first if it is set
 		db.prepare("UPDATE categories SET imageId = '' WHERE imageId = ?").run(uid);
+		db.prepare("UPDATE layout_tiles SET imageId = NULL WHERE imageId = ?").run(uid);
 
 		const prodCount = db.prepare('SELECT COUNT(*) as count FROM products WHERE imageId = ?').get(uid).count;
 		const galCount = db.prepare('SELECT COUNT(*) as count FROM product_gallery WHERE imageId = ?').get(uid).count;
@@ -537,6 +588,17 @@ app.delete('/api/admin/categories/:id', (req, res) => {
 	}
 });
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
 	console.log(`Backend server running on http://localhost:${PORT}`);
+});
+
+server.on('error', (err) => {
+	if (err.code === 'EADDRINUSE') {
+		console.error(`\nError: port ${PORT} is already in use.`);
+		console.error('Another backend instance is already running (check for a leftover terminal/`node server.js` process).');
+		console.error(`Stop it first, then start again, or use a different port:\n  PORT=3001 node server.js`);
+		process.exit(1);
+	}
+	console.error('Backend failed to start:', err);
+	process.exit(1);
 });

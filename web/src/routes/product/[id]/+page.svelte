@@ -170,7 +170,7 @@
 			<div class="listing__info">
 				<div class="listing__info-count">
 					<img src="/assets/stroke-2px-24px/star.svg" alt="" aria-hidden="true" width="18" height="18" />
-					<h3>{product.rating}</h3>
+					<h3>{product.stock}</h3>
 				</div>
 				<div class="listing__info-maxprice">
 					<p>MRP</p>
@@ -184,9 +184,7 @@
 
 			<div class="product__description">
 				<p>
-					Experience the elegance of our handwoven {product.subtitle.toLowerCase()}. 
-					Crafted with utmost precision, this drape is perfect for both casual gatherings and festive occasions. 
-					Each piece tells a story of tradition and artistry.
+					{product.details}
 				</p>
 				
 				
