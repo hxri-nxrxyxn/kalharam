@@ -24,6 +24,7 @@
 	import ImagePlusIcon from "@lucide/svelte/icons/image-plus";
 
 	import { productsState } from "$lib/stores/app.svelte";
+	import { API_BASE } from "$lib/config";
 
 	type LocalProduct = {
 		id: string;
@@ -78,8 +79,8 @@
 	async function loadData() {
 		try {
 			const [catRes, imgRes] = await Promise.all([
-				fetch('http://localhost:3000/api/admin/raw-categories'),
-				fetch('http://localhost:3000/api/admin/images')
+				fetch(`${API_BASE}/admin/raw-categories`),
+				fetch(`${API_BASE}/admin/images`)
 			]);
 			if (catRes.ok) allCategories = await catRes.json();
 			if (imgRes.ok) allImages = await imgRes.json();
@@ -179,7 +180,7 @@
 				formData.append('alt_text', `${pName} Image ${i + 1}`);
 				formData.append('type', 'product');
 
-				const res = await fetch('http://localhost:3000/api/admin/images/upload', {
+				const res = await fetch(`${API_BASE}/admin/images/upload`, {
 					method: 'POST',
 					body: formData
 				});
@@ -225,7 +226,7 @@
 		
 		try {
 			const method = editingId ? 'PUT' : 'POST';
-			const res = await fetch(`http://localhost:3000/api/admin/products${editingId ? '/' + editingId : ''}`, {
+			const res = await fetch(`${API_BASE}/admin/products${editingId ? '/' + editingId : ''}`, {
 				method,
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({

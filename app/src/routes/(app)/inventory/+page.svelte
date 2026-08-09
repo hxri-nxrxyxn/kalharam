@@ -14,6 +14,7 @@
 	import { onMount } from "svelte";
 	import PageHeading from "$lib/components/page-heading.svelte";
 	import { productsState, updateProduct } from "$lib/stores/app.svelte";
+	import { API_BASE } from "$lib/config";
 	import type { DeadStock } from "$lib/types";
 	import ChevronDownIcon from "@lucide/svelte/icons/chevron-down";
 	import CheckIcon from "@lucide/svelte/icons/check";
@@ -28,7 +29,7 @@
 
 	onMount(async () => {
 		try {
-			const res = await fetch('http://localhost:3000/api/admin/raw-categories');
+			const res = await fetch(`${API_BASE}/admin/raw-categories`);
 			if (res.ok) allCategories = await res.json();
 		} catch (e) {
 			console.error(e);

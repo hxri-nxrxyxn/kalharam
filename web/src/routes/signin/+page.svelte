@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Field from '$lib/components/Field.svelte';
 	import { toast } from '$lib/toast.svelte';
+	import { API_BASE } from '$lib/config';
 
 	let email = $state("");
 	let password = $state("");
@@ -15,7 +16,7 @@
 
 		isSubmitting = true;
 		try {
-			const res = await fetch('http://localhost:3000/api/auth/login', {
+			const res = await fetch(`${API_BASE}/auth/login`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ email, password })

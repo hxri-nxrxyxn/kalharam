@@ -1,6 +1,7 @@
 import type { Category, Product, FilterOptions } from './types';
+import { API_BASE, BACKEND_URL } from './config';
 
-const API_BASE = 'http://localhost:3000/api';
+export { API_BASE, BACKEND_URL };
 
 export async function getCategories(fetchFn: typeof fetch = fetch): Promise<Category[]> {
 	try {

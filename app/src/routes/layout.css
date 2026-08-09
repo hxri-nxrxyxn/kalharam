@@ -125,6 +125,7 @@
 	}
 	html {
 		@apply font-sans;
+		font-size: 12px;
 	}
 	/* hide the up/down spin arrows on number inputs */
 	input[type="number"]::-webkit-outer-spin-button,

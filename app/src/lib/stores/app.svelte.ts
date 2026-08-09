@@ -1,4 +1,5 @@
 import type { ActiveSession, Order, Product } from "$lib/types";
+import { API_BASE, BACKEND_URL } from "$lib/config";
 import {
 	type SessionUser,
 	type StorePatch,
@@ -147,8 +148,8 @@ function handleMessage(message: SyncMessage) {
 export async function loadBackendData() {
 	try {
 		const [prodRes, ordRes] = await Promise.all([
-			fetch('http://localhost:3000/api/admin/products'),
-			fetch('http://localhost:3000/api/admin/orders')
+			fetch(`${API_BASE}/admin/products`),
+			fetch(`${API_BASE}/admin/orders`)
 		]);
 		
 		if (prodRes.ok) {
@@ -170,7 +171,7 @@ export async function loadBackendData() {
 /** Lightweight poller that syncs new/customer-updated orders without disturbing products. */
 export async function refreshOrders() {
 	try {
-		const res = await fetch('http://localhost:3000/api/admin/orders');
+		const res = await fetch(`${API_BASE}/admin/orders`);
 		if (!res.ok) return;
 		const data = await res.json();
 		ordersState.length = 0;
@@ -238,7 +239,7 @@ export async function updateProduct(id: string, fields: Partial<Product>) {
 
 	// send to backend
 	try {
-		await fetch(`http://localhost:3000/api/admin/products/${id}`, {
+		await fetch(`${API_BASE}/admin/products/${id}`, {
 			method: 'PUT',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(fields)
@@ -256,7 +257,7 @@ export async function setOrderStatus(orderId: string, id: string, status: Order[
 	broadcast(patch);
 
 	try {
-		await fetch(`http://localhost:3000/api/admin/orders/${orderId}/status`, {
+		await fetch(`${API_BASE}/admin/orders/${orderId}/status`, {
 			method: 'PUT',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ status })

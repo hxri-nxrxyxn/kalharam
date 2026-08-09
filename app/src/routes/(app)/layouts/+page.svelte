@@ -7,6 +7,7 @@
 	import { toast } from "svelte-sonner";
 	import { onMount } from "svelte";
 	import XIcon from "@lucide/svelte/icons/x";
+	import { API_BASE } from "$lib/config";
 
 	type Tile = {
 		id: number;
@@ -28,14 +29,14 @@
 	async function loadData() {
 		try {
 			const [tilesRes, catRes] = await Promise.all([
-				fetch('http://localhost:3000/api/admin/tiles'),
-				fetch('http://localhost:3000/api/categories')
+				fetch(`${API_BASE}/admin/tiles`),
+				fetch(`${API_BASE}/categories`)
 			]);
 			
 			if (tilesRes.ok) tiles = await tilesRes.json();
 			
 			// Let's get raw categories
-			const rawCatRes = await fetch('http://localhost:3000/api/admin/raw-categories');
+			const rawCatRes = await fetch(`${API_BASE}/admin/raw-categories`);
 			if (rawCatRes.ok) allCategories = await rawCatRes.json();
 			
 		} catch (e) {
@@ -55,7 +56,7 @@
 			formData.append('alt_text', `${tile.title || 'Tile'} Image`);
 			formData.append('type', 'tile');
 
-			const res = await fetch('http://localhost:3000/api/admin/images/upload', {
+			const res = await fetch(`${API_BASE}/admin/images/upload`, {
 				method: 'POST',
 				body: formData
 			});
@@ -83,7 +84,7 @@
 	async function handleDeleteImage(uid: string) {
 		if (!uid) return;
 		try {
-			const res = await fetch(`http://localhost:3000/api/admin/images/${uid}`, {
+			const res = await fetch(`${API_BASE}/admin/images/${uid}`, {
 				method: 'DELETE'
 			});
 			const data = await res.json().catch(() => ({}));
@@ -103,7 +104,7 @@
 	async function saveTile(tile: Tile) {
 		isSaving = true;
 		try {
-			const res = await fetch(`http://localhost:3000/api/admin/tiles/${tile.id}`, {
+			const res = await fetch(`${API_BASE}/admin/tiles/${tile.id}`, {
 				method: 'PUT',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
@@ -135,7 +136,7 @@
 </script>
 
 <div class="flex flex-col gap-6">
-	<PageHeading title="Layouts" description="Configure the 8 category tiles on the storefront homepage" />
+	<PageHeading title="Layouts" description="Configure up to 18 category tiles on the storefront homepage" />
 
 	<div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
 		{#each tiles as tile}

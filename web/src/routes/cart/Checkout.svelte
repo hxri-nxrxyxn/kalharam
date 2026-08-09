@@ -3,6 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { cart } from '$lib/cart.svelte';
 	import { toast } from '$lib/toast.svelte';
+	import { API_BASE } from '$lib/config';
 	
 	let customerName = $state('');
 	let address = $state('');
@@ -25,7 +26,7 @@
 		isSubmitting = true;
 		
 		try {
-			const res = await fetch('http://localhost:3000/api/orders', {
+			const res = await fetch(`${API_BASE}/orders`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({

@@ -14,6 +14,25 @@
 	let tween = $state<gsap.core.Tween>();
 	let isTouching = $state(false);
 	let scrollTimeout = $state<ReturnType<typeof setTimeout>>();
+	let isExpanded = $state(false);
+
+	// Filter down to active categories configured in backend (has categoryIds assigned or non-default name)
+	let activeCategories = $derived(
+		categories.filter(
+			(c) => (c.categoryIds && c.categoryIds.length > 0) || (c.name && !c.name.startsWith('Tile '))
+		).slice(0, 18) // Hard limit 18
+	);
+
+	// Determine visible categories depending on active total & expanded state
+	let visibleCategories = $derived.by(() => {
+		if (activeCategories.length <= 7) {
+			return activeCategories;
+		}
+		if (!isExpanded) {
+			return activeCategories.slice(0, 7);
+		}
+		return activeCategories;
+	});
 
 	function handleTileClick(e: MouseEvent, categoryId: string) {
 		e.preventDefault();
@@ -138,7 +157,7 @@
 	onscroll={handleScroll}
 >
 	<div class="tiles-track" bind:this={trackRef}>
-		{#each categories as category (category.id)}
+		{#each visibleCategories as category (category.id)}
 			<a
 				href="/category/{category.id}"
 				class={['tile', selectedCategoryId === category.id && 'tile--selected']}
@@ -170,6 +189,25 @@
 				</div>
 			</a>
 		{/each}
+
+		{#if activeCategories.length >= 8 && !isExpanded}
+			<button
+				type="button"
+				class="tile tile--more"
+				onclick={() => isExpanded = true}
+				aria-label="Show more categories"
+			>
+				<div class="tile-inner">
+					<div class="tile-front tile-front--more">
+						<span class="tile-text">MORE</span>
+					</div>
+					<div class="tile-back" aria-hidden="true">
+						<div class="tile-overlay"></div>
+						<span class="tile-text">EXPLORE ALL</span>
+					</div>
+				</div>
+			</button>
+		{/if}
 	</div>
 </div>
 
@@ -187,18 +225,21 @@
 
 	.tiles-track {
 		display: flex;
-		justify-content: space-between;
-		height: 20vh;
+		flex-wrap: wrap;
 		gap: var(--spacing-md);
 		width: 100%;
 	}
 
 	.tile {
-		flex: 1;
+		flex: 0 0 calc(12.5% - (var(--spacing-md) * 7 / 8));
+		height: 20vh;
 		perspective: 1000px;
 		cursor: url('/assets/filled-shapes/cursor.svg') 0 0, pointer;
 		text-decoration: none;
 		display: block;
+		border: 0;
+		background: none;
+		padding: 0;
 	}
 
 	.tile-inner {
@@ -235,11 +276,18 @@
 		background-size: cover;
 		background-position: center;
 		background-repeat: no-repeat;
+		background-color: var(--color-primary);
+	}
+
+	.tile-front--more {
+		background-color: var(--color-primary);
+		border: 2px dashed var(--color-secondary);
 	}
 
 	.tile-back {
 		transform: rotateY(180deg);
 		border: var(--border) solid var(--color-primary);
+		background-color: var(--color-primary);
 	}
 
 	.tile-blur-bg {
@@ -283,6 +331,7 @@
 		}
 
 		.tiles-track {
+			flex-wrap: nowrap;
 			padding: var(--spacing-sm) var(--spacing-xl);
 			width: max-content;
 			height: auto;
