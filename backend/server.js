@@ -17,6 +17,13 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
+// API data is dynamic — never let browsers/tabs cache it so the storefront
+// and admin app always reflect the latest live edits.
+app.use('/api', (req, res, next) => {
+	res.set('Cache-Control', 'no-store');
+	next();
+});
+
 app.use('/assets/uploads', express.static(path.join(__dirname, '../web/static/assets/uploads')));
 
 const upload = multer({ storage: multer.memoryStorage() });
@@ -520,11 +527,53 @@ app.post('/api/admin/categories', (req, res) => {
 
 app.put('/api/admin/categories/:id', (req, res) => {
 	try {
-		const { name, imageId } = req.body;
-		const oldCat = db.prepare('SELECT imageId FROM categories WHERE id = ?').get(req.params.id);
+		const { name, imageId, id: newId } = req.body;
+		const oldId = req.params.id;
+
+		const oldCat = db.prepare('SELECT id, imageId FROM categories WHERE id = ?').get(oldId);
+		if (!oldCat) return res.status(404).json({ error: 'Category not found' });
 		const oldImageId = oldCat?.imageId;
 
-		db.prepare('UPDATE categories SET name = ?, imageId = ? WHERE id = ?').run(name, imageId, req.params.id);
+		// Resolve the final id: the front-end auto-generates a slug from the name,
+		// so editing the name may also change the id (slug).
+		const finalId = newId && newId !== oldId ? newId : oldId;
+
+		if (finalId !== oldId) {
+			const conflict = db.prepare('SELECT id FROM categories WHERE id = ?').get(finalId);
+			if (conflict) {
+				return res.status(400).json({ error: 'A category with this ID already exists' });
+			}
+			if (!/^[a-z0-9-]+$/.test(finalId)) {
+				return res.status(400).json({ error: 'Category ID may only contain lowercase letters, numbers and hyphens' });
+			}
+		}
+
+		const transaction = db.transaction(() => {
+			if (finalId !== oldId) {
+				// Insert a new row under the new id, repoint all references, then drop the old row.
+				// (Doing it this way keeps the SQLite foreign-key constraints satisfied.)
+				db.prepare('INSERT INTO categories (id, name, imageId) VALUES (?, ?, ?)').run(finalId, name, imageId);
+				db.prepare('UPDATE products SET categoryId = ? WHERE categoryId = ?').run(finalId, oldId);
+
+				// Repoint layout tiles that reference the old category id
+				const tiles = db.prepare('SELECT id, categoryIds FROM layout_tiles').all();
+				const updateTile = db.prepare('UPDATE layout_tiles SET categoryIds = ? WHERE id = ?');
+				for (const t of tiles) {
+					const cats = JSON.parse(t.categoryIds || '[]');
+					const idx = cats.indexOf(oldId);
+					if (idx !== -1) {
+						cats[idx] = finalId;
+						updateTile.run(JSON.stringify(cats), t.id);
+					}
+				}
+
+				db.prepare('DELETE FROM categories WHERE id = ?').run(oldId);
+			} else {
+				db.prepare('UPDATE categories SET name = ?, imageId = ? WHERE id = ?').run(name, imageId, oldId);
+			}
+		});
+
+		transaction();
 
 		// If oldImageId was replaced or removed, clean it up if no longer used anywhere
 		if (oldImageId && oldImageId !== imageId) {
@@ -545,7 +594,7 @@ app.put('/api/admin/categories/:id', (req, res) => {
 			}
 		}
 
-		res.json({ message: 'Category updated' });
+		res.json({ message: 'Category updated', id: finalId });
 	} catch (err) {
 		res.status(500).json({ error: err.message });
 	}

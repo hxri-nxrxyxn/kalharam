@@ -1,5 +1,11 @@
 export type StockStatus = "in-stock" | "low-stock" | "out-of-stock";
 
+export interface Category {
+	id: string;
+	name: string;
+	imageId: string;
+}
+
 export interface Product {
 	id: string;
 	name: string;

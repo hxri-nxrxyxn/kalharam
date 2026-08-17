@@ -11,10 +11,8 @@
 	import { Label } from "$lib/components/ui/label";
 	import { toast } from "svelte-sonner";
 	import { page } from "$app/state";
-	import { onMount } from "svelte";
 	import PageHeading from "$lib/components/page-heading.svelte";
-	import { productsState, updateProduct } from "$lib/stores/app.svelte";
-	import { API_BASE } from "$lib/config";
+	import { productsState, updateProduct, categoriesState } from "$lib/stores/app.svelte";
 	import type { DeadStock } from "$lib/types";
 	import ChevronDownIcon from "@lucide/svelte/icons/chevron-down";
 	import CheckIcon from "@lucide/svelte/icons/check";
@@ -24,17 +22,7 @@
 
 	const lowThreshold = 3;
 
-	let allCategories = $state<{id: string, name: string}[]>([]);
 	let filterCat = $state("Any Category");
-
-	onMount(async () => {
-		try {
-			const res = await fetch(`${API_BASE}/admin/raw-categories`);
-			if (res.ok) allCategories = await res.json();
-		} catch (e) {
-			console.error(e);
-		}
-	});
 
 	const validFilters = ["in-stock", "out-of-stock", "low-stock", "dead-stock"];
 
@@ -199,7 +187,7 @@
 				<DropdownMenu.Trigger>
 					{#snippet child({ props })}
 						<Button variant="outline" {...props} class="justify-between font-normal">
-							{allCategories.find(c => c.id === filterCat)?.name || filterCat}
+							{categoriesState.find(c => c.id === filterCat)?.name || filterCat}
 							<ChevronDownIcon class="size-4 opacity-60" />
 						</Button>
 					{/snippet}
@@ -209,7 +197,7 @@
 						{#if filterCat === "Any Category"}<CheckIcon class="size-4" />{:else}<span class="size-4"></span>{/if}
 						Any Category
 					</DropdownMenu.Item>
-					{#each allCategories as c}
+					{#each categoriesState as c}
 						<DropdownMenu.Item onSelect={() => (filterCat = c.id)}>
 							{#if c.id === filterCat}<CheckIcon class="size-4" />{:else}<span class="size-4"></span>{/if}
 							{c.name}
@@ -269,7 +257,7 @@
 				<Card.Description>
 					{filterCat === "Any Category"
 						? "On-hand units and status per category"
-						: `Products in the ${allCategories.find(c => c.id === filterCat)?.name || filterCat} category`}
+						: `Products in the ${categoriesState.find(c => c.id === filterCat)?.name || filterCat} category`}
 				</Card.Description>
 			</Card.Header>
 			<Card.Content class="p-0">
@@ -292,7 +280,7 @@
 								{@const status = stockStatus(t.units)}
 								<Table.Row>
 									<Table.Cell class="px-5">
-										<span class="block min-w-0 truncate font-medium" title={t.name}>{allCategories.find(c => c.id === t.name)?.name || t.name}</span>
+										<span class="block min-w-0 truncate font-medium" title={t.name}>{categoriesState.find(c => c.id === t.name)?.name || t.name}</span>
 										<span class="block text-xs text-muted-foreground">
 											{t.count} product{t.count > 1 ? "s" : ""}
 										</span>
@@ -334,7 +322,7 @@
 								<Table.Row>
 									<Table.Cell class="px-5">
 										<span class="block min-w-0 truncate font-medium" title={p.name}>{p.name}</span>
-										<span class="block text-xs text-muted-foreground">{allCategories.find(c => c.id === p.category)?.name || p.category}</span>
+										<span class="block text-xs text-muted-foreground">{categoriesState.find(c => c.id === p.category)?.name || p.category}</span>
 									</Table.Cell>
 									<Table.Cell class="px-5 text-center">
 										<span class="block min-w-0 font-semibold {p.stock === 0 ? 'text-destructive' : ''}">{p.stock}</span>

@@ -5,12 +5,12 @@
 	import BoxesIcon from "@lucide/svelte/icons/boxes";
 	import AlertTriangleIcon from "@lucide/svelte/icons/alert-triangle";
 	import PackageXIcon from "@lucide/svelte/icons/package-x";
-	import { productsState, ordersState } from "$lib/stores/app.svelte";
+	import { productsState, ordersState, categoriesState } from "$lib/stores/app.svelte";
 
 	import * as Card from "$lib/components/ui/card";
 	import * as Table from "$lib/components/ui/table";
 	import * as Chart from "$lib/components/ui/chart/index.js";
-	import { AreaChart, BarChart } from "layerchart";
+	import { AreaChart } from "layerchart";
 	import { scaleBand } from "d3-scale";
 	import { cubicInOut } from "svelte/easing";
 
@@ -65,26 +65,24 @@
 	// category demand summary
 	const catSummary = $derived(
 		[...productsState]
-			.reduce<Map<string, { sold: number; demand: number; revenue: number }>>((m, p) => {
-				const cur = m.get(p.category) ?? { sold: 0, demand: 0, revenue: 0 };
+			.reduce<Map<string, { sold: number; revenue: number }>>((m, p) => {
+				const cur = m.get(p.category) ?? { sold: 0, revenue: 0 };
 				cur.sold += p.sold;
-				cur.demand += p.demand;
 				cur.revenue += p.price * p.sold;
 				m.set(p.category, cur);
 				return m;
 			}, new Map())
 	);
 
-	const catRows = $derived(
+	const catTable = $derived(
 		[...catSummary.entries()]
-			.map(([name, v]) => ({ name, ...v }))
+			.map(([name, v]) => ({
+				name,
+				label: categoriesState.find((c) => c.id === name)?.name ?? name,
+				...v
+			}))
 			.sort((a, b) => b.revenue - a.revenue)
-			.slice(0, 5) // Top 5 categories for the chart
 	);
-
-	const catChartConfig = {
-		revenue: { label: "Revenue (₹)", color: "var(--chart-1)" }
-	} satisfies Chart.ChartConfig;
 </script>
 
 <div class="flex flex-col gap-6">
@@ -125,7 +123,7 @@
 		/>
 	</div>
 
-	<div class="grid gap-4 lg:grid-cols-2">
+	<div class="grid gap-4">
 		<Card.Root>
 			<Card.Header>
 				<Card.Title>Revenue & orders trend</Card.Title>
@@ -167,27 +165,33 @@
 
 		<Card.Root>
 			<Card.Header>
-				<Card.Title>Top Revenue by Category</Card.Title>
+				<Card.Title>Revenue by Category</Card.Title>
 				<Card.Description>Lifetime revenue contribution</Card.Description>
 			</Card.Header>
-			<Card.Content>
-				<Chart.Container config={catChartConfig} class="min-h-[200px] w-full">
-					<BarChart
-						data={catRows}
-						x="revenue"
-						y="name"
-						orientation="horizontal"
-						xScale={scaleBand().padding(0.2)}
-						series={[{ key: "revenue", label: catChartConfig.revenue.label, color: catChartConfig.revenue.color }]}
-						props={{
-							bars: { radius: 4 }
-						}}
-					>
-						{#snippet tooltip()}
-							<Chart.Tooltip hideLabel />
-						{/snippet}
-					</BarChart>
-				</Chart.Container>
+			<Card.Content class="p-0">
+				<Table.Root>
+					<Table.Header>
+						<Table.Row>
+							<Table.Head>Category</Table.Head>
+							<Table.Head class="text-right">Sold</Table.Head>
+							<Table.Head class="text-right">Revenue</Table.Head>
+						</Table.Row>
+					</Table.Header>
+					<Table.Body>
+						{#each catTable as row (row.name)}
+							<Table.Row>
+								<Table.Cell class="font-medium">{row.label}</Table.Cell>
+								<Table.Cell class="text-right">{row.sold}</Table.Cell>
+								<Table.Cell class="text-right">{formatMoney(row.revenue)}</Table.Cell>
+							</Table.Row>
+						{/each}
+						{#if catTable.length === 0}
+							<Table.Row>
+								<Table.Cell colspan={3} class="py-8 text-center text-muted-foreground">No category revenue data yet.</Table.Cell>
+							</Table.Row>
+						{/if}
+					</Table.Body>
+				</Table.Root>
 			</Card.Content>
 		</Card.Root>
 	</div>

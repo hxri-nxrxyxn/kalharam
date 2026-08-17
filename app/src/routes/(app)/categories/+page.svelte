@@ -12,6 +12,7 @@
 	import XIcon from "@lucide/svelte/icons/x";
 	import PlusIcon from "@lucide/svelte/icons/plus";
 	import { API_BASE } from "$lib/config";
+	import { categoriesState } from "$lib/stores/app.svelte";
 
 	type Category = {
 		id: string;
@@ -19,7 +20,7 @@
 		imageId: string;
 	};
 
-	let categories = $state<Category[]>([]);
+	const categories = $derived(categoriesState);
 	let allImages = $state<{uid: string, thumb_url: string, type: string, alt_text: string | null}[]>([]);
 
 	let isSaving = $state(false);
@@ -43,6 +44,7 @@
 	}
 
 	let editingCategory = $state<Category | null>(null);
+	let editingCategoryId = $derived(editingCategory ? generateSlug(editingCategory.name) : '');
 
 	let fileInputRef: HTMLInputElement | null = $state(null);
 	let isUploading = $state(false);
@@ -55,14 +57,8 @@
 
 	async function loadData() {
 		try {
-			const [catRes, imgRes] = await Promise.all([
-				fetch(`${API_BASE}/admin/raw-categories`),
-				fetch(`${API_BASE}/admin/images`)
-			]);
-			
-			if (catRes.ok) categories = await catRes.json();
+			const imgRes = await fetch(`${API_BASE}/admin/images`);
 			if (imgRes.ok) allImages = await imgRes.json();
-			
 		} catch (e) {
 			toast.error("Failed to load categories.");
 		}
@@ -146,6 +142,7 @@
 				showAddModal = false;
 				newCatName = "";
 				newCatImage = "";
+				window.dispatchEvent(new Event("reload-store"));
 				await loadData();
 			} else {
 				throw new Error(data.error || "API Error");
@@ -170,13 +167,15 @@
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					name: editingCategory.name,
-					imageId: editingCategory.imageId
+					imageId: editingCategory.imageId,
+					id: editingCategoryId
 				})
 			});
 			const data = await parseJson(res);
 			if (res.ok) {
 				toast.success("Category updated!");
 				editingCategory = null;
+				window.dispatchEvent(new Event("reload-store"));
 				await loadData();
 			} else {
 				throw new Error(data.error || "API Error");
@@ -198,6 +197,7 @@
 			const data = await parseJson(res);
 			if (res.ok) {
 				toast.success("Category deleted.");
+				window.dispatchEvent(new Event("reload-store"));
 				await loadData();
 			} else {
 				throw new Error(data.error || "Failed to delete category.");
@@ -328,6 +328,11 @@
 				<div class="grid gap-2">
 					<Label>Name</Label>
 					<Input bind:value={editingCategory.name} placeholder="Name" />
+				</div>
+				<div class="grid gap-2">
+					<Label>ID (Slug)</Label>
+					<Input value={editingCategoryId} disabled class="bg-muted text-muted-foreground" />
+					<p class="text-xs text-muted-foreground">Auto-generated from the name. Updating the name changes the slug and re-links existing products.</p>
 				</div>
 				<div class="grid gap-2">
 					<Label>Category Image</Label>

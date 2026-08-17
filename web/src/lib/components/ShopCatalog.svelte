@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import Banner from '$lib/components/Banner.svelte';
 	import CategoryTiles from '$lib/components/CategoryTiles.svelte';
@@ -27,6 +28,9 @@
 	let categories = $state<Category[]>([]);
 	let rawProducts = $state<Product[]>([]);
 
+	// Bumped when the tab regains focus so open tabs pick up admin edits
+	let refreshKey = $state(0);
+
 	// Default to the first tile when nothing specific matches (e.g. the home page)
 	let activeCategoryId = $derived(
 		categories.some((c) => c.id === currentCategoryId)
@@ -36,6 +40,7 @@
 
 	// Fetch categories globally for the catalog tiles
 	$effect(() => {
+		void refreshKey;
 		getCategories().then(res => {
 			categories = res;
 		});
@@ -43,9 +48,20 @@
 
 	// Reactively fetch products when category changes
 	$effect(() => {
+		void refreshKey;
 		getProducts({ tileId: activeCategoryId }).then(res => {
 			rawProducts = res;
 		});
+	});
+
+	// Re-fetch when the tab becomes visible again, so the storefront always
+	// reflects the latest changes made from the admin app.
+	onMount(() => {
+		const handleVisibility = () => {
+			if (document.visibilityState === 'visible') refreshKey++;
+		};
+		document.addEventListener('visibilitychange', handleVisibility);
+		return () => document.removeEventListener('visibilitychange', handleVisibility);
 	});
 
 	let currentCategory = $derived(

@@ -1,4 +1,4 @@
-import type { ActiveSession, Order, Product } from "$lib/types";
+import type { ActiveSession, Category, Order, Product } from "$lib/types";
 import { API_BASE, BACKEND_URL } from "$lib/config";
 import {
 	type SessionUser,
@@ -21,7 +21,7 @@ export type { SessionUser } from "$lib/sync/transport";
  */
 export const productsState = $state<Product[]>([]);
 export const ordersState = $state<Order[]>([]);
-export const categoriesState = $state<string[]>([]);
+export const categoriesState = $state<Category[]>([]);
 export const sessionsState = $state<ActiveSession[]>([]);
 
 /** Auth state — the account is shared; any device can sign in on it. */
@@ -68,6 +68,7 @@ function removeSession(deviceId: string) {
 function resetState() {
 	productsState.length = 0;
 	ordersState.length = 0;
+	categoriesState.length = 0;
 	sessionsState.length = 0;
 	sessionsState.push(selfSession());
 	auth.user = null;
@@ -147,9 +148,10 @@ function handleMessage(message: SyncMessage) {
 
 export async function loadBackendData() {
 	try {
-		const [prodRes, ordRes] = await Promise.all([
-			fetch(`${API_BASE}/admin/products`),
-			fetch(`${API_BASE}/admin/orders`)
+		const [prodRes, ordRes, catRes] = await Promise.all([
+			fetch(`${API_BASE}/admin/products`, { cache: 'no-store' }),
+			fetch(`${API_BASE}/admin/orders`, { cache: 'no-store' }),
+			fetch(`${API_BASE}/admin/raw-categories`, { cache: 'no-store' })
 		]);
 		
 		if (prodRes.ok) {
@@ -163,15 +165,34 @@ export async function loadBackendData() {
 			ordersState.length = 0;
 			ordersState.push(...data);
 		}
+		
+		if (catRes.ok) {
+			const data = await catRes.json();
+			categoriesState.length = 0;
+			categoriesState.push(...data);
+		}
 	} catch (err) {
 		console.error('Failed to load backend data:', err);
+	}
+}
+
+/** Refresh just the category list (e.g. after a rename) without disturbing other state. */
+export async function refreshCategories() {
+	try {
+		const res = await fetch(`${API_BASE}/admin/raw-categories`, { cache: 'no-store' });
+		if (!res.ok) return;
+		const data = await res.json();
+		categoriesState.length = 0;
+		categoriesState.push(...data);
+	} catch (err) {
+		console.error('Failed to refresh categories:', err);
 	}
 }
 
 /** Lightweight poller that syncs new/customer-updated orders without disturbing products. */
 export async function refreshOrders() {
 	try {
-		const res = await fetch(`${API_BASE}/admin/orders`);
+		const res = await fetch(`${API_BASE}/admin/orders`, { cache: 'no-store' });
 		if (!res.ok) return;
 		const data = await res.json();
 		ordersState.length = 0;
@@ -214,8 +235,9 @@ export function myDeviceId() {
 export function addCategory(name: string) {
 	const t = name.trim();
 	if (!t) return;
-	if (!categoriesState.includes(t)) {
-		categoriesState.push(t);
+	const slug = t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+	if (!categoriesState.some((c) => c.id === slug)) {
+		categoriesState.push({ id: slug, name: t, imageId: '' });
 		bump();
 	}
 }

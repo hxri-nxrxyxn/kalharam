@@ -5,7 +5,7 @@ export { API_BASE, BACKEND_URL };
 
 export async function getCategories(fetchFn: typeof fetch = fetch): Promise<Category[]> {
 	try {
-		const res = await fetchFn(`${API_BASE}/tiles`); // Fetch tiles instead of categories for UI slots
+		const res = await fetchFn(`${API_BASE}/tiles`, { cache: 'no-store' }); // Fetch tiles instead of categories for UI slots
 		if (!res.ok) throw new Error('Failed to fetch tiles');
 		return await res.json();
 	} catch (error) {
@@ -16,7 +16,7 @@ export async function getCategories(fetchFn: typeof fetch = fetch): Promise<Cate
 
 export async function getActualCategories(fetchFn: typeof fetch = fetch): Promise<{id: string, name: string}[]> {
 	try {
-		const res = await fetchFn(`${API_BASE}/categories`);
+		const res = await fetchFn(`${API_BASE}/categories`, { cache: 'no-store' });
 		if (!res.ok) throw new Error('Failed to fetch categories');
 		return await res.json();
 	} catch (error) {
@@ -32,7 +32,7 @@ export async function getProducts(options?: { categoryId?: string; tileId?: stri
 		if (options?.q) params.append('q', options.q);
 		if (options?.limit) params.append('limit', options.limit.toString());
 		
-		const res = await fetchFn(`${API_BASE}/products?${params.toString()}`);
+		const res = await fetchFn(`${API_BASE}/products?${params.toString()}`, { cache: 'no-store' });
 		if (!res.ok) throw new Error('Failed to fetch products');
 		return await res.json();
 	} catch (error) {
@@ -43,7 +43,7 @@ export async function getProducts(options?: { categoryId?: string; tileId?: stri
 
 export async function getProduct(id: string, fetchFn: typeof fetch = fetch): Promise<Product | null> {
 	try {
-		const res = await fetchFn(`${API_BASE}/products/${id}`);
+		const res = await fetchFn(`${API_BASE}/products/${id}`, { cache: 'no-store' });
 		if (!res.ok) return null;
 		return await res.json();
 	} catch (error) {

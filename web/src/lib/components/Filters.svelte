@@ -37,6 +37,13 @@
 	let localMaxPrice = $state(maxPrice);
 	let categories = $state<Category[]>([]);
 
+	// Only show tiles that are actually assigned to categories (skip empty default slots)
+	let activeCategories = $derived(
+		categories.filter(
+			(c) => (c.categoryIds && c.categoryIds.length > 0) || (c.name && !c.name.startsWith('Tile '))
+		).slice(0, 18)
+	);
+
 	$effect(() => {
 		getCategories().then(res => {
 			categories = res;
@@ -65,7 +72,7 @@
 			value={categoryId}
 			onchange={handleCategoryChange}
 		>
-			{#each categories as category (category.id)}
+			{#each activeCategories as category (category.id)}
 				<option value={category.id}>{category.name.toLowerCase()}</option>
 			{/each}
 		</select>

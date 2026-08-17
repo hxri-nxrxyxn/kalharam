@@ -8,6 +8,7 @@
 	import { onMount } from "svelte";
 	import XIcon from "@lucide/svelte/icons/x";
 	import { API_BASE } from "$lib/config";
+	import { categoriesState } from "$lib/stores/app.svelte";
 
 	type Tile = {
 		id: number;
@@ -18,7 +19,6 @@
 	};
 
 	let tiles = $state<Tile[]>([]);
-	let allCategories = $state<{id: string, name: string}[]>([]);
 
 	let isSaving = $state(false);
 
@@ -28,17 +28,8 @@
 
 	async function loadData() {
 		try {
-			const [tilesRes, catRes] = await Promise.all([
-				fetch(`${API_BASE}/admin/tiles`),
-				fetch(`${API_BASE}/categories`)
-			]);
-			
+			const tilesRes = await fetch(`${API_BASE}/admin/tiles`);
 			if (tilesRes.ok) tiles = await tilesRes.json();
-			
-			// Let's get raw categories
-			const rawCatRes = await fetch(`${API_BASE}/admin/raw-categories`);
-			if (rawCatRes.ok) allCategories = await rawCatRes.json();
-			
 		} catch (e) {
 			toast.error("Failed to load layout data.");
 		}
@@ -181,7 +172,7 @@
 					<div class="grid gap-2">
 						<Label>Assigned Categories</Label>
 						<div class="flex flex-col gap-1 border p-2 rounded-md h-32 overflow-y-auto">
-							{#each allCategories as cat}
+							{#each categoriesState as cat}
 								<label class="flex items-center gap-2 text-sm">
 									<input 
 										type="checkbox" 
@@ -191,7 +182,7 @@
 									{cat.name}
 								</label>
 							{/each}
-							{#if allCategories.length === 0}
+							{#if categoriesState.length === 0}
 								<span class="text-xs text-muted-foreground">No categories available.</span>
 							{/if}
 						</div>

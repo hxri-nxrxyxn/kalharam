@@ -13,7 +13,6 @@
 	import PageHeading from "$lib/components/page-heading.svelte";
 	import PlusIcon from "@lucide/svelte/icons/plus";
 	import SearchIcon from "@lucide/svelte/icons/search";
-	import MoreHorizontalIcon from "@lucide/svelte/icons/more-horizontal";
 	import PencilIcon from "@lucide/svelte/icons/pencil";
 	import CameraIcon from "@lucide/svelte/icons/camera";
 	import UploadCloudIcon from "@lucide/svelte/icons/upload-cloud";
@@ -23,7 +22,7 @@
 	import XIcon from "@lucide/svelte/icons/x";
 	import ImagePlusIcon from "@lucide/svelte/icons/image-plus";
 
-	import { productsState } from "$lib/stores/app.svelte";
+	import { productsState, categoriesState } from "$lib/stores/app.svelte";
 	import { API_BASE } from "$lib/config";
 
 	type LocalProduct = {
@@ -45,7 +44,6 @@
 	let open = $state(false);
 	let catOpen = $state(false);
 
-	let allCategories = $state<{id: string, name: string}[]>([]);
 	let allImages = $state<{uid: string, thumb_url: string, type: string, alt_text: string | null}[]>([]);
 
 	let query = $state("");
@@ -78,11 +76,7 @@
 
 	async function loadData() {
 		try {
-			const [catRes, imgRes] = await Promise.all([
-				fetch(`${API_BASE}/admin/raw-categories`),
-				fetch(`${API_BASE}/admin/images`)
-			]);
-			if (catRes.ok) allCategories = await catRes.json();
+			const imgRes = await fetch(`${API_BASE}/admin/images`);
 			if (imgRes.ok) allImages = await imgRes.json();
 		} catch (e) {
 			toast.error("Failed to load options");
@@ -127,7 +121,7 @@
 		editingId = null;
 		pName = "";
 		pSubtitle = "";
-		pCategory = allCategories.length > 0 ? allCategories[0].id : "";
+		pCategory = categoriesState.length > 0 ? categoriesState[0].id : "";
 		pColor = "";
 		pStock = 10;
 		pPrice = 0;
@@ -281,7 +275,7 @@
 			<DropdownMenu.Trigger>
 				{#snippet child({ props })}
 					<Button variant="outline" {...props} class="justify-between font-normal">
-						{allCategories.find(c => c.id === filterCat)?.name || filterCat}
+						{categoriesState.find(c => c.id === filterCat)?.name || filterCat}
 						<ChevronDownIcon class="size-4 opacity-60" />
 					</Button>
 				{/snippet}
@@ -291,7 +285,7 @@
 					{#if filterCat === "All"}<CheckIcon class="size-4" />{:else}<span class="size-4"></span>{/if}
 					All
 				</DropdownMenu.Item>
-				{#each allCategories as c}
+				{#each categoriesState as c}
 					<DropdownMenu.Item onSelect={() => (filterCat = c.id)}>
 						{#if c.id === filterCat}<CheckIcon class="size-4" />{:else}<span class="size-4"></span>{/if}
 						{c.name}
@@ -332,7 +326,7 @@
 					{#if p.image}
 						<img src={p.image} alt={p.name} class="size-full object-cover" />
 					{/if}
-					<Badge class="absolute left-2 top-2 bg-background/85 text-foreground backdrop-blur">{allCategories.find(c => c.id === p.category)?.name || p.category}</Badge>
+					<Badge class="absolute left-2 top-2 bg-background/85 text-foreground backdrop-blur">{categoriesState.find(c => c.id === p.category)?.name || p.category}</Badge>
 					{#if p.stock === 0}
 						<Badge variant="destructive" class="absolute right-2 top-2 bg-background/85 backdrop-blur">Out</Badge>
 					{/if}
@@ -340,22 +334,20 @@
 						<Badge class="absolute bottom-2 left-2 bg-emerald-500 text-white backdrop-blur">{discountPct(p)}% OFF</Badge>
 					{/if}
 				</div>
-				<Card.Header class="flex-row items-start justify-between gap-2">
-					<Card.Title class="truncate text-sm">{p.name}</Card.Title>
-					<DropdownMenu.Root>
-						<DropdownMenu.Trigger>
-							{#snippet child({ props })}
-								<Button variant="ghost" size="icon-sm" {...props} class="shrink-0 text-muted-foreground" aria-label={`Edit ${p.name}`}>
-									<MoreHorizontalIcon class="size-4" />
-								</Button>
-							{/snippet}
-						</DropdownMenu.Trigger>
-						<DropdownMenu.Content align="end">
-							<DropdownMenu.Item onSelect={() => openEdit(p)}>
-								<PencilIcon class="size-4" /> Edit
-							</DropdownMenu.Item>
-						</DropdownMenu.Content>
-					</DropdownMenu.Root>
+				<Card.Header>
+					<div class="flex items-center justify-between gap-2">
+						<Card.Title class="min-w-0 truncate text-sm">{p.name}</Card.Title>
+						<Button
+							variant="ghost"
+							size="sm"
+							class="shrink-0 text-muted-foreground"
+							onclick={() => openEdit(p)}
+							aria-label={`Edit ${p.name}`}
+						>
+							<PencilIcon class="size-4" />
+							Edit
+						</Button>
+					</div>
 				</Card.Header>
 				<Card.Content class="flex flex-col gap-2">
 					<Card.Description class="line-clamp-2 text-xs">{p.details}</Card.Description>
@@ -461,13 +453,13 @@
 					<DropdownMenu.Trigger>
 						{#snippet child({ props })}
 							<Button variant="outline" id="p-cat" {...props} class="w-full justify-between font-normal">
-								{allCategories.find(c => c.id === pCategory)?.name || "Select Category..."}
+								{categoriesState.find(c => c.id === pCategory)?.name || "Select Category..."}
 								<ChevronDownIcon class="size-4 opacity-60" />
 							</Button>
 						{/snippet}
 					</DropdownMenu.Trigger>
 					<DropdownMenu.Content align="start" class="w-full min-w-48">
-						{#each allCategories as c}
+						{#each categoriesState as c}
 							<DropdownMenu.Item onSelect={() => (pCategory = c.id)}>
 								{#if c.id === pCategory}<CheckIcon class="size-4" />{:else}<span class="size-4"></span>{/if}
 								{c.name}
