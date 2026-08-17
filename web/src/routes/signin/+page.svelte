@@ -94,7 +94,7 @@
 <style>
 	.auth {
 		display: flex;
-		justify-content: space-between;
+        gap: var(--spacing-xl);
 		padding-bottom: var(--spacing-xl);
 	}
 
@@ -124,7 +124,7 @@
 	}
 
 	.auth__form {
-		width: 40%;
+        width: 60%;
 	}
 
 	.auth__fieldset {

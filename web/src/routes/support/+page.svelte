@@ -90,10 +90,11 @@
 	}
 
 	.support__rows {
-		margin-bottom: calc(2 * var(--spacing-lg));
+		margin-top: calc(1 * var(--spacing-xl));
 	}
 
 	.support__row {
+        margin-bottom: var(--spacing-xl);
 		display: flex;
 	}
 
@@ -103,19 +104,13 @@
 
 	.support__row h3 {
 		color: var(--color-primary);
-		margin-bottom: calc(var(--spacing-sm) / 2);
+		margin-bottom: calc(var(--spacing-sm) / 1);
 	}
 
 	.support__row p {
 		color: var(--color-secondary);
 	}
 	
-	.support__small-text {
-		font-size: var(--font-sm);
-		opacity: 0.7;
-		margin-top: 4px;
-	}
-
 	.support__row:not(:first-child) {
 		margin-top: var(--spacing-lg);
 	}

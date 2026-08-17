@@ -53,14 +53,10 @@
 		margin-bottom: var(--spacing-sm);
 	}
 
-
-	
-	
 	.contact__list {
 		color: var(--color-secondary);
 		line-height: 1.6;
-		margin-bottom: var(--spacing-md);
-		padding-left: var(--spacing-lg);
+        padding: 20rem;
 	}
 
 	.contact__list-item {
