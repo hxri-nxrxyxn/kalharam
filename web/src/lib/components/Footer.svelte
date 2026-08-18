@@ -23,15 +23,15 @@
 	<div class="footer__media">
         <div class="footer__media-icon">
 			<img src="/assets/filled-shapes/instagram.svg" alt="instagram" />
-			<a href="#instagram">Instagram</a>
+			<a href="https://www.instagram.com/kalharamboutique/" target="_blank" rel="noopener noreferrer">Instagram</a>
 		</div>
 		<div class="footer__media-icon">
 			<img src="/assets/filled-shapes/youtube.svg" alt="youtube" />
-			<a href="#youtube">YouTube</a>
+			<a href="https://www.youtube.com/@kalharamboutique" target="_blank" rel="noopener noreferrer">YouTube</a>
 		</div>
 		<div class="footer__media-icon">
 			<img src="/assets/filled-shapes/facebook.svg" alt="facebook" />
-			<a href="#facebook">Facebook</a>
+			<a href="https://www.facebook.com/profile.php?id=61592591246290" target="_blank" rel="noopener noreferrer">Facebook</a>
 		</div>
 	</div>
 </footer>
