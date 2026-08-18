@@ -83,8 +83,8 @@
 {:else}
 	<div class="shop__listings">
 		<div class="grid" style="--grid-columns: {columns}" bind:this={gridRef}>
-			{#each products as product (product.id)}
-				<ProductCard {product} />
+			{#each products as product, i (product.id)}
+				<ProductCard {product} lazy={i >= 4} />
 			{/each}
 		</div>
 	</div>

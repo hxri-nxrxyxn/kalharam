@@ -3,7 +3,8 @@
 </script>
 
 <svelte:head>
-	<title>Privacy Policy - Kalharam Kalyani</title>
+	<title>Privacy Policy - Sarees | Kalharam Kalyani</title>
+	<link rel="canonical" href="https://kalharam.com/privacy" />
 	<meta name="description" content="Understand how we collect, use, and protect your personal information." />
 </svelte:head>
 

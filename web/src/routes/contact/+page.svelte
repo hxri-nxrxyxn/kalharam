@@ -3,7 +3,8 @@
 </script>
 
 <svelte:head>
-	<title>Contact Kalharam Kalyani - Kalharam Kalyani</title>
+	<title>Contact Sarees | Kalharam Kalyani - Kalharam Kalyani</title>
+	<link rel="canonical" href="https://kalharam.com/contact" />
 	<meta name="description" content="Get in touch with our team for inquiries and support." />
 </svelte:head>
 

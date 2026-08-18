@@ -18,7 +18,8 @@
 </script>
 
 <svelte:head>
-	<title>Kalharam - Customer Support</title>
+	<title>Sarees | Kalharam - Customer Support</title>
+	<link rel="canonical" href="https://kalharam.com/support" />
 	<meta name="description" content="Get in touch with Kalharam customer support." />
 	<link rel="canonical" href="https://kalharam.com/support" />
 </svelte:head>

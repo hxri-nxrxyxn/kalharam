@@ -44,7 +44,8 @@
 </script>
 
 <svelte:head>
-	<title>Kalharam - Sign In</title>
+	<title>Sarees | Kalharam - Sign In</title>
+	<link rel="canonical" href="https://kalharam.com/signin" />
 	<meta name="description" content="Sign in to your Kalharam account." />
 	<link rel="canonical" href="https://kalharam.com/signin" />
 </svelte:head>

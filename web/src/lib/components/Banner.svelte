@@ -36,6 +36,12 @@
 	});
 </script>
 
+
+<svelte:head>
+	<link rel="preload" as="image" href="/assets/types/banner-1.webp" media="(min-width: 769px)" fetchpriority="high" />
+	<link rel="preload" as="image" href="/assets/types/mobile-banner-1.webp" media="(max-width: 768px)" fetchpriority="high" />
+</svelte:head>
+
 <div class="banner-slider">
 	{#each banners as banner, index (banner)}
 		<div

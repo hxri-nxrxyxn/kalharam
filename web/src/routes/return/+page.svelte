@@ -3,7 +3,8 @@
 </script>
 
 <svelte:head>
-	<title>Return & Exchange Policy - Kalharam Kalyani</title>
+	<title>Return & Exchange Policy - Sarees | Kalharam Kalyani</title>
+	<link rel="canonical" href="https://kalharam.com/return" />
 	<meta name="description" content="Find out about our hassle-free return and exchange process." />
 </svelte:head>
 

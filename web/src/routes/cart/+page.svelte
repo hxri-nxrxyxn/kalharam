@@ -33,7 +33,8 @@
 </script>
 
 <svelte:head>
-	<title>Kalharam - Shopping Cart</title>
+	<title>Sarees | Kalharam - Shopping Cart</title>
+	<link rel="canonical" href="https://kalharam.com/cart" />
 	<meta name="description" content="View your shopping cart and selected sarees at Kalharam." />
 	<link rel="canonical" href="https://kalharam.com/cart" />
 </svelte:head>

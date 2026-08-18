@@ -45,4 +45,19 @@
 	{@html `<script type="application/ld+json">${websiteJsonLd}</script>`}
 </svelte:head>
 
+
+<h1 class="sr-only">Kalharam - Premium Handloom Sarees, Silk & Wedding Wear for Women</h1>
+<style>
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border-width: 0;
+	}
+</style>
 <ShopCatalog categoryId="mul-cotton" />

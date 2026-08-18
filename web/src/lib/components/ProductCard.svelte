@@ -3,14 +3,22 @@
 
 	interface Props {
 		product: Product;
+		lazy?: boolean;
 	}
 
-	let { product }: Props = $props();
+	let { product, lazy = true }: Props = $props();
 </script>
 
 <a href="/product/{product.id}" class="listing">
 	<div class="listing__image">
-		<img src={product.image} alt="{product.title} - {product.subtitle}" decoding="async" fetchpriority="high" width="300" height="400" />
+		<img 
+			src={product.image} 
+			alt="{product.title} - {product.subtitle}" 
+			decoding="async" 
+			fetchpriority={lazy ? "auto" : "high"}
+			loading={lazy ? "lazy" : "eager"}
+			width="300" height="400" 
+		/>
 	</div>
 	<div class="listing__title">
 		<h3>{product.title} <br> <span>{product.subtitle}</span></h3>

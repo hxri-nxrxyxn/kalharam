@@ -3,7 +3,8 @@
 </script>
 
 <svelte:head>
-	<title>Terms of Service - Kalharam Kalyani</title>
+	<title>Terms of Service - Sarees | Kalharam Kalyani</title>
+	<link rel="canonical" href="https://kalharam.com/terms" />
 	<meta name="description" content="Read the terms and conditions governing your use of Kalharam Kalyani." />
 </svelte:head>
 

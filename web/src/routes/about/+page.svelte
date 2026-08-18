@@ -3,7 +3,8 @@
 </script>
 
 <svelte:head>
-	<title>About Us - Kalharam Kalyani</title>
+	<title>About Us - Sarees | Kalharam Kalyani</title>
+	<link rel="canonical" href="https://kalharam.com/about" />
 	<meta name="description" content="Discover the story behind Kalharam Kalyani and our commitment to authentic handlooms." />
 </svelte:head>
 

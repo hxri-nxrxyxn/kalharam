@@ -3,7 +3,8 @@
 </script>
 
 <svelte:head>
-	<title>Shipping Policy - Kalharam Kalyani</title>
+	<title>Shipping Policy - Sarees | Kalharam Kalyani</title>
+	<link rel="canonical" href="https://kalharam.com/shipping" />
 	<meta name="description" content="Learn about our domestic and international shipping policies, delivery times, and rates." />
 </svelte:head>
 

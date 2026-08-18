@@ -3,7 +3,8 @@
 </script>
 
 <svelte:head>
-	<title>The Kalharam Blog - Kalharam Kalyani</title>
+	<title>The Sarees | Kalharam Blog - Kalharam Kalyani</title>
+	<link rel="canonical" href="https://kalharam.com/blog" />
 	<meta name="description" content="Read our latest stories about handloom heritage, styling tips, and artisan features." />
 </svelte:head>
 

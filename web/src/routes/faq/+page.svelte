@@ -3,7 +3,8 @@
 </script>
 
 <svelte:head>
-	<title>Frequently Asked Questions - Kalharam Kalyani</title>
+	<title>Frequently Asked Questions - Sarees | Kalharam Kalyani</title>
+	<link rel="canonical" href="https://kalharam.com/faq" />
 	<meta name="description" content="Answers to your questions about our sarees, orders, and services." />
 </svelte:head>
 
