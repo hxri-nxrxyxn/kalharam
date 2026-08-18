@@ -18,8 +18,24 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const allowedOrigins = process.env.CORS_ORIGINS 
+	? process.env.CORS_ORIGINS.split(',') 
+	: ['http://localhost:5173', 'http://localhost:5174'];
+
 app.use(cors({
-	origin: ['http://localhost:5173', 'http://localhost:5174'],
+	origin: function (origin, callback) {
+		// Allow requests with no origin (like mobile apps, curl, or server-to-server)
+		if (!origin) return callback(null, true);
+		
+		// If CORS_ORIGINS is set to '*', allow all origins (e.g. for a fully public API)
+		if (allowedOrigins.includes('*')) return callback(null, true);
+
+		if (allowedOrigins.indexOf(origin) === -1) {
+			const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+			return callback(new Error(msg), false);
+		}
+		return callback(null, true);
+	},
 	credentials: true
 }));
 app.use(express.json());
