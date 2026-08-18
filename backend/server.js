@@ -647,19 +647,30 @@ app.put('/api/admin/products/:id', (req, res) => {
 		}
 
 		// Enforce price sanity regardless of which field shape is sent
-		const current = db.prepare('SELECT salePrice as price, mrp as offerPrice FROM products WHERE id = ?').get(id);
-		let nextPrice = current?.price ?? null;
-		let nextOffer = current?.offerPrice ?? null;
+		const current = db.prepare('SELECT salePrice, mrp FROM products WHERE id = ?').get(id);
+		let nextPrice = current?.salePrice ?? null;
+		let nextOffer = current?.mrp ?? null;
+		
+		const allowedColumns = {
+			title: 'title',
+			subtitle: 'subtitle',
+			categoryId: 'categoryId',
+			color: 'color',
+			salePrice: 'salePrice',
+			mrp: 'mrp',
+			stock: 'stock',
+			sold: 'sold',
+			demand: 'demand',
+			deadStockDays: 'deadStockDays',
+			imageId: 'imageId'
+		};
+
 		for (const [key, value] of Object.entries(updates)) {
-			let dbCol = key;
-			if (key === 'name') dbCol = 'title';
-			if (key === 'details') dbCol = 'subtitle';
-			if (key === 'category') dbCol = 'categoryId';
-			if (key === 'price') dbCol = 'salePrice';
-			if (key === 'offerPrice') dbCol = 'mrp';
+			let dbCol = allowedColumns[key];
 			if (dbCol === 'salePrice') nextPrice = value;
 			if (dbCol === 'mrp') nextOffer = value;
 		}
+		
 		if (nextPrice != null && nextOffer != null && Number(nextPrice) > Number(nextOffer)) {
 			return res.status(400).json({ error: 'Sale price cannot be greater than MRP' });
 		}
@@ -670,25 +681,10 @@ app.put('/api/admin/products/:id', (req, res) => {
 		let galleryImages = null;
 		
 		for (const [key, value] of Object.entries(updates)) {
-			// Handle gallery separately — it updates product_gallery, not a products column
 			if (key === 'galleryImages') {
 				galleryImages = value;
 				continue;
 			}
-
-			// map front-end keys to DB columns with STRICT WHITELIST to prevent SQLi
-			const allowedColumns = {
-				name: 'title',
-				details: 'subtitle',
-				category: 'categoryId',
-				price: 'salePrice',
-				offerPrice: 'mrp',
-				stock: 'stock',
-				sold: 'sold',
-				demand: 'demand',
-				deadStockDays: 'deadStockDays',
-				imageId: 'imageId'
-			};
 
 			if (!(key in allowedColumns)) continue;
 			
