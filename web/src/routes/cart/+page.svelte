@@ -45,7 +45,7 @@
 			<p>Take a moment to review your chosen drapes before proceeding to secure checkout. These handcrafted treasures are almost yours.</p>
 			<br>
 			<div class="cart__row-info">
-				<img src="/assets/stroke-3px-24px/info.svg" alt="info" width="24" height="24" />
+				<img src="/assets/stroke-3px-24px/info.svg" alt="info" width="12" height="12" />
 				<h3>Quality Promise</h3>
 			</div>
 			<p>
@@ -53,7 +53,7 @@
 			</p>
 			<br>
 			<div class="cart__row-info">
-				<img src="/assets/stroke-3px-24px/circle-check.svg" alt="circle-check" width="24" height="24" />
+				<img src="/assets/stroke-3px-24px/circle-check.svg" alt="circle-check" width="12" height="12" />
 				<h3>Shipping & Support</h3>
 			</div>
 			<p>

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import type { Category } from '$lib/types';
+	import { gsap } from 'gsap';
 
 	interface Props {
 		categories: Category[];
@@ -8,6 +9,12 @@
 	}
 
 	let { categories, selectedCategoryId }: Props = $props();
+	let viewportRef = $state<HTMLElement>();
+	let trackRef = $state<HTMLElement>();
+	let tween = $state<gsap.core.Tween>();
+	let isTouching = $state(false);
+	let isResuming = $state(false);
+	let scrollTimeout = $state<ReturnType<typeof setTimeout>>();
 	let isExpanded = $state(false);
 
 	// Filter down to active categories configured in backend (has categoryIds assigned or non-default name)
@@ -34,6 +41,118 @@
 			goto(`/category/${categoryId}`, { keepFocus: true, noScroll: true, replaceState: true, state: { preserveScroll: true } });
 		}
 	}
+
+	$effect(() => {
+		if (!viewportRef || !trackRef) return;
+		void visibleCategories;
+
+		let mm = gsap.matchMedia();
+
+		mm.add("(max-width: 900px)", () => {
+			const initMarquee = () => {
+				if (isTouching || !viewportRef || !trackRef) return;
+
+				const maxScroll = viewportRef.scrollWidth - viewportRef.clientWidth;
+				if (maxScroll <= 0) return;
+
+				const currentScroll = viewportRef.scrollLeft;
+				let startingProgress = 0;
+
+				if (currentScroll > 0) {
+					viewportRef.scrollLeft = 0;
+					gsap.set(trackRef, { x: -currentScroll });
+					startingProgress = currentScroll / maxScroll;
+				} else {
+					const currentX = gsap.getProperty(trackRef, "x") as number;
+					startingProgress = Math.abs(currentX) / maxScroll;
+				}
+
+				if (tween) tween.kill();
+
+				// 30 pixels per second for 60fps smooth cinematic motion
+				const duration = maxScroll / 30;
+
+				tween = gsap.fromTo(trackRef,
+					{ x: 0 },
+					{
+						x: -maxScroll,
+						duration: duration,
+						ease: 'none',
+						repeat: -1,
+						yoyo: true,
+						paused: true
+					}
+				);
+
+				tween.progress(startingProgress);
+				tween.play();
+			};
+
+			let marqueeTimeout = setTimeout(initMarquee, 100);
+			window.addEventListener('resize', initMarquee);
+
+			return () => {
+				clearTimeout(marqueeTimeout);
+				window.removeEventListener('resize', initMarquee);
+				if (tween) tween.kill();
+				if (trackRef) gsap.set(trackRef, { clearProps: "all" });
+			};
+		});
+
+		return () => mm.revert();
+	});
+
+	function pauseAndConvertToScroll() {
+		if (!tween || !viewportRef || !trackRef) return;
+		if (!tween.isActive()) return;
+
+		const currentX = gsap.getProperty(trackRef, "x") as number;
+		tween.pause();
+		if (currentX !== 0) {
+			gsap.set(trackRef, { x: 0 });
+			viewportRef.scrollLeft += Math.abs(currentX);
+		}
+	}
+
+	function handlePointerDown() {
+		isTouching = true;
+		clearTimeout(scrollTimeout);
+		pauseAndConvertToScroll();
+	}
+
+	function handlePointerUp() {
+		isTouching = false;
+		clearTimeout(scrollTimeout);
+		scrollTimeout = setTimeout(resumeMarquee, 1000);
+	}
+
+	function handleScroll() {
+		clearTimeout(scrollTimeout);
+		if (isTouching || isResuming) return;
+
+		pauseAndConvertToScroll();
+		scrollTimeout = setTimeout(resumeMarquee, 1000);
+	}
+
+	function resumeMarquee() {
+		if (isTouching || !viewportRef || !trackRef || !tween) return;
+
+		const maxScroll = viewportRef.scrollWidth - viewportRef.clientWidth;
+		if (maxScroll <= 0) return;
+
+		const currentScroll = viewportRef.scrollLeft;
+
+		isResuming = true;
+		if (currentScroll > 0) {
+			viewportRef.scrollLeft = 0;
+			gsap.set(trackRef, { x: -currentScroll });
+			tween.progress(currentScroll / maxScroll);
+			tween.play();
+		} else if (!tween.isActive()) {
+			tween.play();
+		}
+		setTimeout(() => { isResuming = false; }, 50);
+	}
 </script>
 
 <div
@@ -41,8 +160,14 @@
 	role="region"
 	aria-label="Category Tiles"
 	data-lenis-prevent
+	bind:this={viewportRef}
+	onpointerdown={handlePointerDown}
+	onpointerup={handlePointerUp}
+	onpointercancel={handlePointerUp}
+	onpointerleave={handlePointerUp}
+	onscroll={handleScroll}
 >
-	<div class="tiles-track">
+	<div class="tiles-track" bind:this={trackRef}>
 		{#each visibleCategories as category (category.id)}
 			<a
 				href="/category/{category.id}"

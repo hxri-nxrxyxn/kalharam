@@ -1,19 +1,38 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	const banners = [
+	const desktopBanners = [
 		'/assets/types/banner-1.webp',
 		'/assets/types/banner-2.webp'
 	];
 
+	const mobileBanners = [
+		'/assets/types/mobile-banner-1.webp',
+		'/assets/types/mobile-banner-2.webp'
+	];
+
+	let isMobile = $state(false);
 	let currentIndex = $state(0);
+	let banners = $derived(isMobile ? mobileBanners : desktopBanners);
 
 	onMount(() => {
+		const mql = window.matchMedia('(max-width: 768px)');
+		isMobile = mql.matches;
+
+		const onMediaChange = (e: MediaQueryListEvent) => {
+			isMobile = e.matches;
+			currentIndex = 0;
+		};
+		mql.addEventListener('change', onMediaChange);
+
 		const interval = setInterval(() => {
 			currentIndex = (currentIndex + 1) % banners.length;
 		}, 5000);
 
-		return () => clearInterval(interval);
+		return () => {
+			mql.removeEventListener('change', onMediaChange);
+			clearInterval(interval);
+		};
 	});
 </script>
 

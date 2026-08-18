@@ -114,4 +114,32 @@
 	.support__row:not(:first-child) {
 		margin-top: var(--spacing-lg);
 	}
+
+	@media (max-width: 900px) {
+		.support {
+			flex-direction: column;
+			gap: var(--spacing-lg);
+		}
+
+		.support__image,
+		.support__text {
+			width: 100%;
+		}
+	}
+
+	@media (max-width: 768px) {
+		.support__row {
+			flex-direction: column;
+			margin-bottom: var(--spacing-lg);
+		}
+
+		.support__column {
+			width: 100%;
+			margin-bottom: var(--spacing-lg);
+		}
+
+		.support__column:last-child {
+			margin-bottom: 0;
+		}
+	}
 </style>
