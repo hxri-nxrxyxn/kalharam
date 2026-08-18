@@ -1,4 +1,4 @@
-FROM node:22-bullseye-slim AS builder
+FROM node:22-bookworm-slim AS builder
 WORKDIR /app/web
 
 COPY package*.json ./
@@ -7,7 +7,7 @@ RUN npm ci || npm install
 COPY . .
 RUN npm run build
 
-FROM node:22-bullseye-slim AS runner
+FROM node:22-bookworm-slim AS runner
 WORKDIR /app/web
 
 COPY --from=builder /app/web/build ./build
