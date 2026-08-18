@@ -44,6 +44,7 @@ html {
     --font-lg: 2rem;
     --font-md: 1rem;
     --font-sm: 1.25rem;
+    --font-xs: 0.8rem;
 
     --border: .25rem;
 
@@ -64,6 +65,7 @@ html {
         --font-lg: 1.75rem;
         --font-md: 1.1rem;
         --font-sm: 1.0rem;
+        --font-xs: 0.75rem;
 
         --card-image-height: 45vh;
     }
@@ -92,6 +94,7 @@ html {
         --font-lg: 1.4rem;
         --font-md: 1.0rem;
         --font-sm: 0.95rem;
+        --font-xs: 0.7rem;
 
         --card-image-height: 25vh;
     }
