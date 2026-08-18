@@ -57,8 +57,15 @@ db.exec(`
 		id INTEGER PRIMARY KEY CHECK (id >= 1 AND id <= 18),
 		title TEXT NOT NULL,
 		imageId TEXT,
-		categoryIds TEXT NOT NULL DEFAULT '[]', -- JSON array of category IDs this tile pulls from
 		FOREIGN KEY(imageId) REFERENCES images(uid)
+	);
+
+	CREATE TABLE IF NOT EXISTS layout_tile_categories (
+		tileId INTEGER NOT NULL,
+		categoryId TEXT NOT NULL,
+		PRIMARY KEY (tileId, categoryId),
+		FOREIGN KEY(tileId) REFERENCES layout_tiles(id) ON DELETE CASCADE,
+		FOREIGN KEY(categoryId) REFERENCES categories(id) ON DELETE CASCADE
 	);
 
 	CREATE TABLE IF NOT EXISTS orders (
@@ -71,40 +78,30 @@ db.exec(`
 		state TEXT NOT NULL,
 		pin TEXT NOT NULL,
 		total REAL NOT NULL,
-		items TEXT NOT NULL, -- JSON string of cart items
 		status TEXT DEFAULT 'pending',
 		createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
 	);
+
+	CREATE TABLE IF NOT EXISTS order_items (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		orderId INTEGER NOT NULL,
+		productId TEXT NOT NULL,
+		productName TEXT NOT NULL,
+		quantity INTEGER NOT NULL,
+		price REAL NOT NULL,
+		FOREIGN KEY(orderId) REFERENCES orders(id) ON DELETE CASCADE
+	);
 `);
 
-// Migration helper to expand layout_tiles limit from 8 to 18 if needed
-try {
-	const tableSql = db.prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='layout_tiles'").get()?.sql;
-	if (tableSql && tableSql.includes('<= 8')) {
-		db.exec(`
-			CREATE TABLE layout_tiles_new (
-				id INTEGER PRIMARY KEY CHECK (id >= 1 AND id <= 18),
-				title TEXT NOT NULL,
-				imageId TEXT,
-				categoryIds TEXT NOT NULL DEFAULT '[]',
-				FOREIGN KEY(imageId) REFERENCES images(uid)
-			);
-			INSERT INTO layout_tiles_new SELECT * FROM layout_tiles;
-			DROP TABLE layout_tiles;
-			ALTER TABLE layout_tiles_new RENAME TO layout_tiles;
-		`);
-	}
-} catch (e) {
-	// Table already updated or fresh
-}
+// Migration logic removed
 
 // Simple seeding function if tables are empty
 function seedData() {
 	const tileCount = db.prepare('SELECT COUNT(*) as count FROM layout_tiles').get();
 	if (tileCount.count < 18) {
-		const insertTile = db.prepare('INSERT OR IGNORE INTO layout_tiles (id, title, imageId, categoryIds) VALUES (?, ?, NULL, ?)');
+		const insertTile = db.prepare('INSERT OR IGNORE INTO layout_tiles (id, title, imageId) VALUES (?, ?, NULL)');
 		for (let i = 1; i <= 18; i++) {
-			insertTile.run(i, `Tile ${i}`, '[]');
+			insertTile.run(i, `Tile ${i}`);
 		}
 	}
 

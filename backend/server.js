@@ -119,16 +119,17 @@ function relocateProductImages(product) {
 app.get('/api/tiles', (req, res) => {
 	try {
 		const tiles = db.prepare(`
-			SELECT t.id, t.title as name, i.thumb_url as image, t.categoryIds
+			SELECT t.id, t.title as name, i.thumb_url as image
 			FROM layout_tiles t
 			LEFT JOIN images i ON t.imageId = i.uid
 			ORDER BY t.id ASC
 		`).all();
 		
-		// parse JSON
+		const getCats = db.prepare('SELECT categoryId FROM layout_tile_categories WHERE tileId = ?');
+		
 		tiles.forEach(t => {
 			t.id = String(t.id); // Web expects string ID
-			t.categoryIds = JSON.parse(t.categoryIds || '[]');
+			t.categoryIds = getCats.all(t.id).map(c => c.categoryId);
 		});
 		res.json(tiles);
 	} catch (err) {
@@ -167,17 +168,14 @@ app.get('/api/products', (req, res) => {
 		}
 
 		if (tileId) {
-			const tile = db.prepare('SELECT categoryIds FROM layout_tiles WHERE id = ?').get(tileId);
-			if (tile) {
-				const cats = JSON.parse(tile.categoryIds || '[]');
-				if (cats.length > 0) {
-					const placeholders = cats.map(() => '?').join(',');
-					query += ` AND p.categoryId IN (${placeholders})`;
-					params.push(...cats);
-				} else {
-					// No categories assigned to this tile, return empty
-					query += ' AND 1=0';
-				}
+			const cats = db.prepare('SELECT categoryId FROM layout_tile_categories WHERE tileId = ?').all(tileId).map(c => c.categoryId);
+			if (cats.length > 0) {
+				const placeholders = cats.map(() => '?').join(',');
+				query += ` AND p.categoryId IN (${placeholders})`;
+				params.push(...cats);
+			} else {
+				// No categories assigned to this tile, return empty
+				query += ' AND 1=0';
 			}
 		}
 
@@ -232,12 +230,17 @@ app.post('/api/orders', (req, res) => {
 		const { customerName, email, phone, address, city, state, pin, total, items } = req.body;
 		
 		const insertOrder = db.prepare(`
-			INSERT INTO orders (customerName, email, phone, address, city, state, pin, total, items, status)
-			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'new')
+			INSERT INTO orders (customerName, email, phone, address, city, state, pin, total, status)
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'new')
+		`);
+		
+		const insertItem = db.prepare(`
+			INSERT INTO order_items (orderId, productId, productName, quantity, price)
+			VALUES (?, ?, ?, ?, ?)
 		`);
 	
 		const getStock = db.prepare(`
-			SELECT id, title, stock FROM products WHERE id = ?
+			SELECT id, title, stock, salePrice FROM products WHERE id = ?
 		`);
 
 		const updateStock = db.prepare(`
@@ -246,7 +249,7 @@ app.post('/api/orders', (req, res) => {
 			WHERE id = ?
 		`);
 
-		// Reject orders for out-of-stock products or quantities exceeding available stock
+		const productsMeta = {};
 		for (const item of items) {
 			const product = getStock.get(item.id);
 			if (!product) {
@@ -255,17 +258,20 @@ app.post('/api/orders', (req, res) => {
 			if (product.stock < item.quantity) {
 				return res.status(400).json({ error: `Insufficient stock for ${product.title} (only ${product.stock} left)` });
 			}
+			productsMeta[item.id] = { title: product.title, price: product.salePrice };
 		}
 
 		const transaction = db.transaction(() => {
-			const result = insertOrder.run(customerName, email, phone, address, city, state, pin, total, JSON.stringify(items));
+			const result = insertOrder.run(customerName, email, phone, address, city, state, pin, total);
+			const orderId = result.lastInsertRowid;
 		
-			// Deduct stock for each item
+			// Deduct stock for each item and log order items
 			for (const item of items) {
 				updateStock.run(item.quantity, item.quantity, item.id);
+				insertItem.run(orderId, item.id, productsMeta[item.id].title, item.quantity, productsMeta[item.id].price);
 			}
 		
-			return result.lastInsertRowid;
+			return orderId;
 		});
 
 		const orderId = transaction();
@@ -310,11 +316,12 @@ app.post('/api/auth/signup', (req, res) => {
 
 app.get('/api/admin/orders', (req, res) => {
 	try {
-		const rawOrders = db.prepare('SELECT id, customerName, email, phone, address, city, state, pin, total, items, status, createdAt FROM orders ORDER BY createdAt DESC').all();
+		const rawOrders = db.prepare('SELECT id, customerName, email, phone, address, city, state, pin, total, status, createdAt FROM orders ORDER BY createdAt DESC').all();
+		const getItems = db.prepare('SELECT productId, productName, quantity, price FROM order_items WHERE orderId = ?');
 		
 		// Map backend orders to app expected format
 		const orders = rawOrders.flatMap(o => {
-			const items = JSON.parse(o.items || '[]');
+			const items = getItems.all(o.id);
 			return items.map((item, index) => ({
 				id: `${o.id}-${index}`, // composite ID for UI if needed, or just o.id
 				orderId: o.id,
@@ -325,8 +332,8 @@ app.get('/api/admin/orders', (req, res) => {
 				city: o.city,
 				state: o.state,
 				pin: o.pin,
-				item: item.title,
-				productId: item.id,
+				item: item.productName,
+				productId: item.productId,
 				qty: item.quantity,
 				total: item.price * item.quantity,
 				status: o.status === 'pending' ? 'new' : o.status,
@@ -345,15 +352,15 @@ app.put('/api/admin/orders/:id/status', (req, res) => {
 		const { status } = req.body;
 		
 		const transaction = db.transaction(() => {
-			const order = db.prepare('SELECT items, status FROM orders WHERE id = ?').get(req.params.id);
+			const order = db.prepare('SELECT status FROM orders WHERE id = ?').get(req.params.id);
 			if (!order) throw new Error('Order not found');
 			
 			// If moving to cancelled, refund stock
 			if (status === 'cancelled' && order.status !== 'cancelled') {
-				const items = JSON.parse(order.items || '[]');
+				const items = db.prepare('SELECT productId, quantity FROM order_items WHERE orderId = ?').all(req.params.id);
 				const updateStock = db.prepare('UPDATE products SET stock = stock + ?, sold = MAX(0, sold - ?) WHERE id = ?');
 				for (const item of items) {
-					updateStock.run(item.quantity, item.quantity, item.id);
+					updateStock.run(item.quantity, item.quantity, item.productId);
 				}
 			}
 			
@@ -390,12 +397,13 @@ app.get('/api/admin/products', (req, res) => {
 app.get('/api/admin/tiles', (req, res) => {
 	try {
 		const tiles = db.prepare(`
-			SELECT t.id, t.title, t.imageId, t.categoryIds, i.thumb_url as image
+			SELECT t.id, t.title, t.imageId, i.thumb_url as image
 			FROM layout_tiles t
 			LEFT JOIN images i ON t.imageId = i.uid
 			ORDER BY t.id ASC
 		`).all();
-		tiles.forEach(t => t.categoryIds = JSON.parse(t.categoryIds || '[]'));
+		const getCats = db.prepare('SELECT categoryId FROM layout_tile_categories WHERE tileId = ?');
+		tiles.forEach(t => t.categoryIds = getCats.all(t.id).map(c => c.categoryId));
 		res.json(tiles);
 	} catch (err) {
 		res.status(500).json({ error: err.message });
@@ -405,9 +413,14 @@ app.get('/api/admin/tiles', (req, res) => {
 app.put('/api/admin/tiles/:id', (req, res) => {
 	try {
 		const { title, imageId, categoryIds } = req.body;
-		db.prepare('UPDATE layout_tiles SET title = ?, imageId = ?, categoryIds = ? WHERE id = ?').run(
-			title, imageId || null, JSON.stringify(categoryIds || []), req.params.id
+		db.prepare('UPDATE layout_tiles SET title = ?, imageId = ? WHERE id = ?').run(
+			title, imageId || null, req.params.id
 		);
+		db.prepare('DELETE FROM layout_tile_categories WHERE tileId = ?').run(req.params.id);
+		const insertCat = db.prepare('INSERT INTO layout_tile_categories (tileId, categoryId) VALUES (?, ?)');
+		for (const catId of categoryIds || []) {
+			insertCat.run(req.params.id, catId);
+		}
 		relocateImage(imageId, safeFolder(`tile-${req.params.id}`), 'example');
 		res.json({ message: 'Tile updated successfully' });
 	} catch (err) {
@@ -685,16 +698,8 @@ app.put('/api/admin/categories/:id', (req, res) => {
 				db.prepare('UPDATE products SET categoryId = ? WHERE categoryId = ?').run(finalId, oldId);
 
 				// Repoint layout tiles that reference the old category id
-				const tiles = db.prepare('SELECT id, categoryIds FROM layout_tiles').all();
-				const updateTile = db.prepare('UPDATE layout_tiles SET categoryIds = ? WHERE id = ?');
-				for (const t of tiles) {
-					const cats = JSON.parse(t.categoryIds || '[]');
-					const idx = cats.indexOf(oldId);
-					if (idx !== -1) {
-						cats[idx] = finalId;
-						updateTile.run(JSON.stringify(cats), t.id);
-					}
-				}
+				db.prepare('INSERT OR IGNORE INTO layout_tile_categories (tileId, categoryId) SELECT tileId, ? FROM layout_tile_categories WHERE categoryId = ?').run(finalId, oldId);
+				db.prepare('DELETE FROM layout_tile_categories WHERE categoryId = ?').run(oldId);
 
 				db.prepare('DELETE FROM categories WHERE id = ?').run(oldId);
 			} else {
