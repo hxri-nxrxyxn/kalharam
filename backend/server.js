@@ -86,6 +86,73 @@ function relocateImage(uid, targetDir, base) {
 
 // Rewrites every image URL whose path starts with oldPrefix to start with newPrefix.
 // Used after a folder rename so DB paths follow the moved files.
+
+// Deletes any image records (and their files) that are no longer referenced by
+// any products, categories, or layout tiles, unless they were uploaded in the last hour.
+function cleanOrphanImages() {
+	try {
+		const orphans = db.prepare(`
+			SELECT uid, high_res_url, thumb_url 
+			FROM images i
+			LEFT JOIN products p ON i.uid = p.imageId
+			LEFT JOIN product_gallery pg ON i.uid = pg.imageId
+			LEFT JOIN categories c ON i.uid = c.imageId
+			LEFT JOIN layout_tiles lt ON i.uid = lt.imageId
+			WHERE p.id IS NULL 
+			  AND pg.productId IS NULL 
+			  AND c.id IS NULL 
+			  AND lt.id IS NULL
+		`).all();
+		
+		const delStmt = db.prepare('DELETE FROM images WHERE uid = ?');
+		
+		for (const img of orphans) {
+			const highresDisk = path.join(__dirname, '../web/static', img.high_res_url);
+			const thumbDisk = path.join(__dirname, '../web/static', img.thumb_url);
+			
+			// If file exists, check its age. We keep recent uploads (e.g. < 1 hr) so we 
+			// don't delete images mid-form-submission.
+			if (fs.existsSync(highresDisk)) {
+				const stats = fs.statSync(highresDisk);
+				const ageHours = (Date.now() - stats.mtimeMs) / (1000 * 60 * 60);
+				if (ageHours < 1) continue; 
+				fs.unlinkSync(highresDisk);
+			}
+			if (fs.existsSync(thumbDisk)) {
+				fs.unlinkSync(thumbDisk);
+			}
+			
+			// Execute delete after disk cleanup
+			delStmt.run(img.uid);
+		}
+	} catch (e) {
+		console.error('Orphan image cleanup failed:', e);
+	}
+}
+
+// Recursively removes empty directories within a target directory
+function removeEmptyDirectories(dir) {
+    if (!fs.existsSync(dir)) return;
+    if (dir === UPLOADS_ROOT) return; // Don't delete the root
+    
+    const files = fs.readdirSync(dir);
+    if (files.length > 0) {
+        files.forEach(file => {
+            const fullPath = path.join(dir, file);
+            if (fs.statSync(fullPath).isDirectory()) {
+                removeEmptyDirectories(fullPath);
+            }
+        });
+    }
+    
+    // Re-check if it's empty after cleaning children
+    if (fs.readdirSync(dir).length === 0) {
+        try {
+            fs.rmdirSync(dir);
+        } catch (err) {}
+    }
+}
+
 function rewriteImageUrlsPrefix(oldPrefix, newPrefix) {
 	const images = db.prepare('SELECT uid, high_res_url, thumb_url FROM images').all();
 	const update = db.prepare('UPDATE images SET high_res_url = ?, thumb_url = ? WHERE uid = ?');
@@ -422,6 +489,9 @@ app.put('/api/admin/tiles/:id', (req, res) => {
 			insertCat.run(req.params.id, catId);
 		}
 		relocateImage(imageId, safeFolder(`tile-${req.params.id}`), 'example');
+		
+		cleanOrphanImages();
+		removeEmptyDirectories(UPLOADS_ROOT);
 		res.json({ message: 'Tile updated successfully' });
 	} catch (err) {
 		res.status(500).json({ error: err.message });
@@ -518,6 +588,9 @@ app.put('/api/admin/products/:id', (req, res) => {
 		// Relocate any staged/new images into the product's slug folder
 		relocateProductImages(product);
 
+		
+		cleanOrphanImages();
+		removeEmptyDirectories(UPLOADS_ROOT);
 		res.json({ message: 'Product updated successfully' });
 	} catch (err) {
 		res.status(500).json({ error: err.message });
@@ -724,21 +797,8 @@ app.put('/api/admin/categories/:id', (req, res) => {
 
 		// If oldImageId was replaced or removed, clean it up if no longer used anywhere
 		if (oldImageId && oldImageId !== imageId) {
-			const catCount = db.prepare('SELECT COUNT(*) as count FROM categories WHERE imageId = ?').get(oldImageId).count;
-			const prodCount = db.prepare('SELECT COUNT(*) as count FROM products WHERE imageId = ?').get(oldImageId).count;
-			const galCount = db.prepare('SELECT COUNT(*) as count FROM product_gallery WHERE imageId = ?').get(oldImageId).count;
-			const tileCount = db.prepare('SELECT COUNT(*) as count FROM layout_tiles WHERE imageId = ?').get(oldImageId).count;
-
-			if (catCount === 0 && prodCount === 0 && galCount === 0 && tileCount === 0) {
-				const img = db.prepare('SELECT uid, high_res_url, thumb_url, alt_text, type FROM images WHERE uid = ?').get(oldImageId);
-				if (img) {
-					db.prepare('DELETE FROM images WHERE uid = ?').run(oldImageId);
-					const highresDisk = path.join(__dirname, '../web/static', img.high_res_url);
-					const thumbDisk = path.join(__dirname, '../web/static', img.thumb_url);
-					if (fs.existsSync(highresDisk)) fs.unlinkSync(highresDisk);
-					if (fs.existsSync(thumbDisk)) fs.unlinkSync(thumbDisk);
-				}
-			}
+			cleanOrphanImages();
+			removeEmptyDirectories(UPLOADS_ROOT);
 		}
 
 		// Move the (possibly new) cover into its slug folder
@@ -764,21 +824,8 @@ app.delete('/api/admin/categories/:id', (req, res) => {
 
 		// Clean up category image if no longer used anywhere else
 		if (imageId) {
-			const catCount = db.prepare('SELECT COUNT(*) as count FROM categories WHERE imageId = ?').get(imageId).count;
-			const prodCount = db.prepare('SELECT COUNT(*) as count FROM products WHERE imageId = ?').get(imageId).count;
-			const galCount = db.prepare('SELECT COUNT(*) as count FROM product_gallery WHERE imageId = ?').get(imageId).count;
-			const tileCount = db.prepare('SELECT COUNT(*) as count FROM layout_tiles WHERE imageId = ?').get(imageId).count;
-
-			if (catCount === 0 && prodCount === 0 && galCount === 0 && tileCount === 0) {
-				const img = db.prepare('SELECT uid, high_res_url, thumb_url, alt_text, type FROM images WHERE uid = ?').get(imageId);
-				if (img) {
-					db.prepare('DELETE FROM images WHERE uid = ?').run(imageId);
-					const highresDisk = path.join(__dirname, '../web/static', img.high_res_url);
-					const thumbDisk = path.join(__dirname, '../web/static', img.thumb_url);
-					if (fs.existsSync(highresDisk)) fs.unlinkSync(highresDisk);
-					if (fs.existsSync(thumbDisk)) fs.unlinkSync(thumbDisk);
-				}
-			}
+			cleanOrphanImages();
+			removeEmptyDirectories(UPLOADS_ROOT);
 		}
 
 		res.json({ message: 'Category deleted' });
