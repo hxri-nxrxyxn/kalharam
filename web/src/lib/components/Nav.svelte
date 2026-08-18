@@ -10,9 +10,9 @@
 	</a>
 	<div class="nav__links">
 		{#if auth.isAuthenticated}
-			<a href="#" class="nav__link" onclick={(e) => { e.preventDefault(); auth.logout(); window.location.href = '/'; }}>
-				<img src="/assets/stroke-4px-32px/signin.svg" alt="signout" />
-				<span>Sign Out</span>
+			<a href="/orders" class={['nav__link', page.url.pathname === '/orders' && 'nav__link--active']}>
+				<img src="/assets/stroke-4px-32px/signin.svg" alt="orders" />
+				<span>My Orders</span>
 			</a>
 		{:else}
 			<a href="/signin" class={['nav__link', page.url.pathname === '/signin' && 'nav__link--active']}>

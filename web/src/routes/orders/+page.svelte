@@ -1,0 +1,181 @@
+<script lang="ts">
+	import type { PageData } from './$types';
+	import CartProducts from './CartProducts.svelte';
+	import ProductGrid from '$lib/components/ProductGrid.svelte';
+
+	import { cart } from '$lib/cart.svelte';
+	import { auth } from '$lib/auth.svelte';
+	
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
+	let { recommendedProducts } = $derived(data);
+
+	let cartItems = $derived(cart.items);
+
+	function increaseQuantity(id: string) {
+		cart.increase(id);
+	}
+
+	function decreaseQuantity(id: string) {
+		cart.decrease(id);
+	}
+
+	function removeItem(id: string) {
+		cart.remove(id);
+	}
+
+	let cartTotal = $derived(cart.total);
+</script>
+
+<svelte:head>
+	<title>Sarees | Kalharam - My Orders</title>
+	<link rel="canonical" href="https://kalharam.com/orders" />
+	<meta name="description" content="View your orders at Kalharam." />
+	<link rel="canonical" href="https://kalharam.com/cart" />
+</svelte:head>
+
+<main class="cart">
+	<div class="cart__content">
+		<div class="cart__text">
+			<h1>MY ORDERS</h1>
+			<p>View your recent orders and track their progress here. Your handcrafted treasures are on their way to your wardrobe.</p>
+			<br>
+			<div class="cart__row-info">
+				<img src="/assets/stroke-3px-24px/circle-check.svg" alt="circle-check" width="12" height="12" />
+				<h3>Order Status</h3>
+			</div>
+			<p>
+				You can track the progress of your orders or cancel them if they haven't shipped yet. 
+			</p>
+			
+			<div class="desktop-btns">
+				{@render cartActions()}
+			</div>
+		</div>
+		
+		<div class="cart__right">
+			<CartProducts 
+				{cartItems} 
+				{cartTotal} 
+				{increaseQuantity} 
+				{decreaseQuantity} 
+				{removeItem} 
+			/>
+			<div class="mobile-btns">
+				{@render cartActions()}
+			</div>
+		</div>
+	</div>
+
+	{#snippet cartActions()}
+		<div class="btns">
+			<a href="/" class="btn--secondary btn">
+				<img src="/assets/stroke-3px-24px/shopping-basket.svg" alt="shopping" width="24" height="24" />
+				Shop More
+			</a>
+			<button class="btn--primary btn" onclick={() => { auth.logout(); window.location.href='/'; }}>
+				Sign Out
+			</button>
+		</div>
+	{/snippet}
+
+	<div class="cart__similar">
+		<h2>You May Also Like</h2>
+		<ProductGrid products={recommendedProducts} columns={5} />
+	</div>
+</main>
+
+<style>
+	.cart {
+		padding-bottom: var(--spacing-xl);
+	}
+
+	.cart__content {
+		display: flex;
+		gap: var(--spacing-xl);
+	}
+
+	.cart__text {
+		width: 40%;
+	}
+
+	.cart__right {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+	}
+	
+	.cart__text h1 {
+		color: var(--color-primary);
+	}
+
+	.cart__text h3 {
+		color: var(--color-primary);
+	}
+
+	.cart__text p {
+		color: var(--color-secondary);
+		margin: var(--spacing-md) 0;
+	}
+
+	.btns {
+		margin-top: var(--spacing-lg);
+		gap: var(--spacing-md);
+	}
+
+	.btns a {
+		text-decoration: none;
+		display: inline-flex;
+	}
+
+	.desktop-btns {
+		display: block;
+	}
+
+	.mobile-btns {
+		display: none;
+	}
+
+	.cart__row-info {
+		color: var(--color-secondary);
+		display: flex;
+		gap: var(--spacing-md);
+		margin: var(--spacing-md) 0;
+	}
+
+	.cart__row-info > img {
+		filter: var(--filter-primary);
+	}
+
+	.cart__similar {
+		margin-top: calc(2 * var(--spacing-xl));
+	}
+
+	.cart__similar h2 {
+		color: var(--color-primary);
+		margin-bottom: var(--spacing-lg);
+	}
+
+	@media (max-width: 768px) {
+		.cart__content {
+			flex-direction: column;
+		}
+		.cart__text {
+			width: 100%;
+		}
+		.desktop-btns {
+			display: none;
+		}
+		.mobile-btns {
+			display: block;
+			margin-top: var(--spacing-lg);
+		}
+		.mobile-btns .btns {
+			margin-top: 0;
+			flex-direction: column;
+		}
+	}
+</style>
