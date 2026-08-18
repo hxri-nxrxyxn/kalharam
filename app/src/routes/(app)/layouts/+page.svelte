@@ -7,8 +7,8 @@
 	import { toast } from "svelte-sonner";
 	import { onMount } from "svelte";
 	import XIcon from "@lucide/svelte/icons/x";
-	import { API_BASE } from "$lib/config";
-	import { categoriesState } from "$lib/stores/app.svelte";
+	import { API_BASE, apiFetch } from "$lib/config";
+	import { categoriesState} from "$lib/stores/app.svelte";
 
 	type Tile = {
 		id: number;
@@ -28,7 +28,7 @@
 
 	async function loadData() {
 		try {
-			const tilesRes = await fetch(`${API_BASE}/admin/tiles`);
+			const tilesRes = await apiFetch(`${API_BASE}/admin/tiles`);
 			if (tilesRes.ok) tiles = await tilesRes.json();
 		} catch (e) {
 			toast.error("Failed to load layout data.");
@@ -47,7 +47,7 @@
 			formData.append('alt_text', `${tile.title || 'Tile'} Image`);
 			formData.append('type', 'tile');
 
-			const res = await fetch(`${API_BASE}/admin/images/upload`, {
+			const res = await apiFetch(`${API_BASE}/admin/images/upload`, {
 				method: 'POST',
 				body: formData
 			});
@@ -75,7 +75,7 @@
 	async function handleDeleteImage(uid: string) {
 		if (!uid) return;
 		try {
-			const res = await fetch(`${API_BASE}/admin/images/${uid}`, {
+			const res = await apiFetch(`${API_BASE}/admin/images/${uid}`, {
 				method: 'DELETE'
 			});
 			const data = await res.json().catch(() => ({}));
@@ -95,7 +95,7 @@
 	async function saveTile(tile: Tile) {
 		isSaving = true;
 		try {
-			const res = await fetch(`${API_BASE}/admin/tiles/${tile.id}`, {
+			const res = await apiFetch(`${API_BASE}/admin/tiles/${tile.id}`, {
 				method: 'PUT',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({

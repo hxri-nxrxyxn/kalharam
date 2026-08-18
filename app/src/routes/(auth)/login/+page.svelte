@@ -14,18 +14,31 @@
 	let password = $state("demo1234");
 	let busy = $state(false);
 
-	function submit() {
+	async function submit() {
 		if (!email.trim() || !password) {
 			toast.error("Enter email and password");
 			return;
 		}
 		busy = true;
-		setTimeout(() => {
-			signIn({ name: "Rohith", email, role: "admin" });
-			busy = false;
+		try {
+			const res = await fetch('http://localhost:3000/api/auth/login', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ email, password })
+			});
+			const data = await res.json();
+			if (!res.ok) throw new Error(data.error || 'Login failed');
+			
+			localStorage.setItem('admin_token', data.token);
+			
+			signIn({ name: "Admin", email, role: "admin" });
 			toast.success("Signed in");
 			goto("/");
-		}, 500);
+		} catch (err) {
+			toast.error(err instanceof Error ? err.message : String(err));
+		} finally {
+			busy = false;
+		}
 	}
 </script>
 

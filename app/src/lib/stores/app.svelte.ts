@@ -1,5 +1,5 @@
 import type { ActiveSession, Category, Order, Product } from "$lib/types";
-import { API_BASE, BACKEND_URL } from "$lib/config";
+import { API_BASE, apiFetch } from "$lib/config";
 import {
 	type SessionUser,
 	type StorePatch,
@@ -149,9 +149,9 @@ function handleMessage(message: SyncMessage) {
 export async function loadBackendData() {
 	try {
 		const [prodRes, ordRes, catRes] = await Promise.all([
-			fetch(`${API_BASE}/admin/products`, { cache: 'no-store' }),
-			fetch(`${API_BASE}/admin/orders`, { cache: 'no-store' }),
-			fetch(`${API_BASE}/admin/raw-categories`, { cache: 'no-store' })
+			apiFetch(`${API_BASE}/admin/products`, { cache: 'no-store' }),
+			apiFetch(`${API_BASE}/admin/orders`, { cache: 'no-store' }),
+			apiFetch(`${API_BASE}/admin/raw-categories`, { cache: 'no-store' })
 		]);
 		
 		if (prodRes.ok) {
@@ -179,7 +179,7 @@ export async function loadBackendData() {
 /** Refresh just the category list (e.g. after a rename) without disturbing other state. */
 export async function refreshCategories() {
 	try {
-		const res = await fetch(`${API_BASE}/admin/raw-categories`, { cache: 'no-store' });
+		const res = await apiFetch(`${API_BASE}/admin/raw-categories`, { cache: 'no-store' });
 		if (!res.ok) return;
 		const data = await res.json();
 		categoriesState.length = 0;
@@ -192,7 +192,7 @@ export async function refreshCategories() {
 /** Lightweight poller that syncs new/customer-updated orders without disturbing products. */
 export async function refreshOrders() {
 	try {
-		const res = await fetch(`${API_BASE}/admin/orders`, { cache: 'no-store' });
+		const res = await apiFetch(`${API_BASE}/admin/orders`, { cache: 'no-store' });
 		if (!res.ok) return;
 		const data = await res.json();
 		ordersState.length = 0;
@@ -261,7 +261,7 @@ export async function updateProduct(id: string, fields: Partial<Product>) {
 
 	// send to backend
 	try {
-		await fetch(`${API_BASE}/admin/products/${id}`, {
+		await apiFetch(`${API_BASE}/admin/products/${id}`, {
 			method: 'PUT',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(fields)
@@ -279,7 +279,7 @@ export async function setOrderStatus(orderId: string, id: string, status: Order[
 	broadcast(patch);
 
 	try {
-		await fetch(`${API_BASE}/admin/orders/${orderId}/status`, {
+		await apiFetch(`${API_BASE}/admin/orders/${orderId}/status`, {
 			method: 'PUT',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ status })

@@ -11,8 +11,8 @@
 	import { onMount } from "svelte";
 	import XIcon from "@lucide/svelte/icons/x";
 	import PlusIcon from "@lucide/svelte/icons/plus";
-	import { API_BASE } from "$lib/config";
-	import { categoriesState } from "$lib/stores/app.svelte";
+	import { API_BASE, apiFetch } from "$lib/config";
+	import { categoriesState} from "$lib/stores/app.svelte";
 
 	type Category = {
 		id: string;
@@ -57,7 +57,7 @@
 
 	async function loadData() {
 		try {
-			const imgRes = await fetch(`${API_BASE}/admin/images`);
+			const imgRes = await apiFetch(`${API_BASE}/admin/images`);
 			if (imgRes.ok) allImages = await imgRes.json();
 		} catch (e) {
 			toast.error("Failed to load categories.");
@@ -75,7 +75,7 @@
 
 		isUploading = true;
 		try {
-			const res = await fetch(`${API_BASE}/admin/images/upload`, {
+			const res = await apiFetch(`${API_BASE}/admin/images/upload`, {
 				method: 'POST',
 				body: formData
 			});
@@ -100,7 +100,7 @@
 	async function handleDeleteImage(uid: string) {
 		if (!uid) return;
 		try {
-			const res = await fetch(`${API_BASE}/admin/images/${uid}`, {
+			const res = await apiFetch(`${API_BASE}/admin/images/${uid}`, {
 				method: 'DELETE'
 			});
 			const data = await parseJson(res);
@@ -127,7 +127,7 @@
 
 		isSaving = true;
 		try {
-			const res = await fetch(`${API_BASE}/admin/categories`, {
+			const res = await apiFetch(`${API_BASE}/admin/categories`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
@@ -162,7 +162,7 @@
 
 		isSaving = true;
 		try {
-			const res = await fetch(`${API_BASE}/admin/categories/${editingCategory.id}`, {
+			const res = await apiFetch(`${API_BASE}/admin/categories/${editingCategory.id}`, {
 				method: 'PUT',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
@@ -191,7 +191,7 @@
 
 	async function handleDelete(id: string) {
 		try {
-			const res = await fetch(`${API_BASE}/admin/categories/${id}`, {
+			const res = await apiFetch(`${API_BASE}/admin/categories/${id}`, {
 				method: 'DELETE'
 			});
 			const data = await parseJson(res);

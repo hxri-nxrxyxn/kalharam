@@ -22,8 +22,8 @@
 	import XIcon from "@lucide/svelte/icons/x";
 	import ImagePlusIcon from "@lucide/svelte/icons/image-plus";
 
-	import { productsState, categoriesState } from "$lib/stores/app.svelte";
-	import { API_BASE } from "$lib/config";
+	import { productsState, categoriesState} from "$lib/stores/app.svelte";
+	import { API_BASE, apiFetch } from "$lib/config";
 
 	type LocalProduct = {
 		id: string;
@@ -76,7 +76,7 @@
 
 	async function loadData() {
 		try {
-			const imgRes = await fetch(`${API_BASE}/admin/images`);
+			const imgRes = await apiFetch(`${API_BASE}/admin/images`);
 			if (imgRes.ok) allImages = await imgRes.json();
 		} catch (e) {
 			toast.error("Failed to load options");
@@ -174,7 +174,7 @@
 				formData.append('alt_text', `${pName} Image ${i + 1}`);
 				formData.append('type', 'product');
 
-				const res = await fetch(`${API_BASE}/admin/images/upload`, {
+				const res = await apiFetch(`${API_BASE}/admin/images/upload`, {
 					method: 'POST',
 					body: formData
 				});
@@ -220,7 +220,7 @@
 		
 		try {
 			const method = editingId ? 'PUT' : 'POST';
-			const res = await fetch(`${API_BASE}/admin/products${editingId ? '/' + editingId : ''}`, {
+			const res = await apiFetch(`${API_BASE}/admin/products${editingId ? '/' + editingId : ''}`, {
 				method,
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
