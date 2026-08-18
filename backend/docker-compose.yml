@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  backend:
+    build: 
+      context: .
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - CORS_ORIGINS=http://203.57.85.59:5173,http://203.57.85.59:5174,http://localhost:5173,http://localhost:5174
+      - JWT_SECRET=super-secret-docker-key
+    volumes:
+      - uploads_data:/app/web/static/assets/uploads
+      - db_data:/app/backend/kalharam.db
+    restart: always
+
+volumes:
+  uploads_data:
+  db_data:

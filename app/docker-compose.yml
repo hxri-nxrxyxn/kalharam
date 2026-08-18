@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  admin:
+    build: 
+      context: .
+    ports:
+      - "5174:5174"
+    restart: always
