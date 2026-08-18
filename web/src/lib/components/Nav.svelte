@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { auth } from '$lib/auth.svelte';
 </script>
 
 <nav class="nav">
@@ -8,10 +9,17 @@
 		<img src="/assets/filled-shapes/branding.svg" alt="branding" />
 	</a>
 	<div class="nav__links">
-		<a href="/signin" class={['nav__link', page.url.pathname === '/signin' && 'nav__link--active']}>
-			<img src="/assets/stroke-4px-32px/signin.svg" alt="signin" />
-			<span>Sign In</span>
-		</a>
+		{#if auth.isAuthenticated}
+			<a href="#" class="nav__link" onclick={(e) => { e.preventDefault(); auth.logout(); window.location.href = '/'; }}>
+				<img src="/assets/stroke-4px-32px/signin.svg" alt="signout" />
+				<span>Sign Out</span>
+			</a>
+		{:else}
+			<a href="/signin" class={['nav__link', page.url.pathname === '/signin' && 'nav__link--active']}>
+				<img src="/assets/stroke-4px-32px/signin.svg" alt="signin" />
+				<span>Sign In</span>
+			</a>
+		{/if}
 		<a href="/support" class={['nav__link', page.url.pathname === '/support' && 'nav__link--active']}>
 			<img src="/assets/stroke-4px-32px/support.svg" alt="support" />
 			<span>Support</span>

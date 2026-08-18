@@ -2,6 +2,7 @@
 	import Field from '$lib/components/Field.svelte';
 	import SimilarProducts from '$lib/components/SimilarProducts.svelte';
 	import { toast } from '$lib/toast.svelte';
+	import { auth } from '$lib/auth.svelte';
 	import { API_BASE } from '$lib/config';
 
 	let name = $state("");
@@ -28,11 +29,13 @@
 			if (!res.ok) {
 				throw new Error(data.error || "Failed to sign up.");
 			}
+			auth.login(data.token);
 			toast.show("Account created successfully!");
 			// In a real app, redirect or login
 			name = "";
 			email = "";
 			password = "";
+			window.location.href = '/';
 		} catch (err: unknown) {
 			if (err instanceof Error) {
 				toast.show(err.message);

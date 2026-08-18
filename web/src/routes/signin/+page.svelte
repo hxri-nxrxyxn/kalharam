@@ -2,6 +2,7 @@
 	import Field from '$lib/components/Field.svelte';
 	import SimilarProducts from '$lib/components/SimilarProducts.svelte';
 	import { toast } from '$lib/toast.svelte';
+	import { auth } from '$lib/auth.svelte';
 	import { API_BASE } from '$lib/config';
 
 	let email = $state("");
@@ -27,10 +28,12 @@
 			if (!res.ok) {
 				throw new Error(data.error || "Failed to sign in.");
 			}
+			auth.login(data.token);
 			toast.show("Successfully signed in!");
 			// In a real app, redirect to dashboard or save token
 			email = "";
 			password = "";
+			window.location.href = '/';
 		} catch (err: unknown) {
 			if (err instanceof Error) {
 				toast.show(err.message);
