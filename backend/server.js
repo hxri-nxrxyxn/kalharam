@@ -11,6 +11,7 @@ import { rateLimit } from 'express-rate-limit';
 import { z } from 'zod';
 import { authenticateAdmin, JWT_SECRET } from './middleware/auth.js';
 import { fileURLToPath } from 'url';
+import bcrypt from 'bcryptjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -415,9 +416,20 @@ app.post('/api/auth/login', authLimiter, (req, res) => {
 		if (email === 'admin@kalharam.example' && password === 'demo1234') {
 			const token = jwt.sign({ name: 'Admin', email, role: 'admin' }, JWT_SECRET, { expiresIn: '12h' });
 			return res.json({ token, message: 'Logged in successfully' });
-		} else {
+		}
+		
+		const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
+		if (!user) {
 			return res.status(401).json({ error: 'Invalid credentials. Please try again.' });
 		}
+		
+		const isMatch = bcrypt.compareSync(password, user.password);
+		if (!isMatch) {
+			return res.status(401).json({ error: 'Invalid credentials. Please try again.' });
+		}
+		
+		const token = jwt.sign({ id: user.id, name: user.name, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '12h' });
+		return res.json({ token, message: 'Logged in successfully' });
 	} catch (err) {
 		res.status(500).json({ error: err.message });
 	}
@@ -432,7 +444,18 @@ app.post('/api/auth/signup', (req, res) => {
 		if (password.length < 8) {
 			return res.status(400).json({ error: 'Password must be at least 8 characters long' });
 		}
-		res.json({ token: 'mock-jwt-token', message: 'Account created successfully' });
+		
+		const existingUser = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
+		if (existingUser) {
+			return res.status(400).json({ error: 'An account with this email already exists' });
+		}
+		
+		const hashedPassword = bcrypt.hashSync(password, 10);
+		const stmt = db.prepare('INSERT INTO users (name, email, password) VALUES (?, ?, ?)');
+		const info = stmt.run(name, email, hashedPassword);
+		
+		const token = jwt.sign({ id: info.lastInsertRowid, name, email, role: 'user' }, JWT_SECRET, { expiresIn: '12h' });
+		res.json({ token, message: 'Account created successfully' });
 	} catch (err) {
 		res.status(500).json({ error: err.message });
 	}
