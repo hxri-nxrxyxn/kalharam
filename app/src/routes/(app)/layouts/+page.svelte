@@ -7,7 +7,7 @@
 	import { toast } from "svelte-sonner";
 	import { onMount } from "svelte";
 	import XIcon from "@lucide/svelte/icons/x";
-	import { API_BASE, apiFetch } from "$lib/config";
+	import { API_BASE, apiFetch, imageUrl } from "$lib/config";
 	import { categoriesState, auth } from "$lib/stores/app.svelte";
 
 	type Tile = {
@@ -147,7 +147,7 @@
 						</div>
 						<div class="relative">
 							{#if tile.image}
-								<img src={tile.image} alt="Tile preview" class="w-full h-32 object-cover rounded-md mt-2" />
+								<img src={imageUrl(tile.image)} alt="Tile preview" class="w-full h-32 object-cover rounded-md mt-2" />
 							{:else}
 								<div class="mt-2 flex h-32 w-full items-center justify-center rounded-md border bg-muted text-xs text-muted-foreground">No image yet</div>
 							{/if}

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import ShopCatalog from '$lib/components/ShopCatalog.svelte';
+	import { imageUrl } from '$lib/config';
 
 	interface Props {
 		data: PageData;
@@ -53,7 +54,7 @@
 		property="og:description"
 		content="Explore the finest {currentCategory.name} sarees for women at Kalharam. Beautiful traditional design, perfect for wedding, party wear, and festive occasions."
 	/>
-	<meta property="og:image" content="https://kalharam.com{currentCategory.image}" />
+	<meta property="og:image" content="{imageUrl(currentCategory.image)}" />
 
 	<!-- Twitter -->
 	<meta name="twitter:card" content="summary_large_image" />
@@ -63,7 +64,7 @@
 		name="twitter:description"
 		content="Explore the finest {currentCategory.name} sarees for women at Kalharam. Beautiful traditional design, perfect for wedding, party wear, and festive occasions."
 	/>
-	<meta name="twitter:image" content="https://kalharam.com{currentCategory.image}" />
+	<meta name="twitter:image" content="{imageUrl(currentCategory.image)}" />
 
 	{@html `<script type="application/ld+json">${collectionJsonLd}</script>`}
 </svelte:head>

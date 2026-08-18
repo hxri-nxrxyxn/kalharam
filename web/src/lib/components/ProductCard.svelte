@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Product } from '$lib/types';
+	import { imageUrl } from '$lib/config';
 
 	interface Props {
 		product: Product;
@@ -12,7 +13,7 @@
 <a href="/product/{product.id}" class="listing">
 	<div class="listing__image">
 		<img 
-			src={product.image} 
+			src={imageUrl(product.image)} 
 			alt="{product.title} - {product.subtitle}" 
 			decoding="async" 
 			fetchpriority={lazy ? "auto" : "high"}

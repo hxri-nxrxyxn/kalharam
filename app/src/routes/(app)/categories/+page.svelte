@@ -11,7 +11,7 @@
 	import { onMount } from "svelte";
 	import XIcon from "@lucide/svelte/icons/x";
 	import PlusIcon from "@lucide/svelte/icons/plus";
-	import { API_BASE, apiFetch } from "$lib/config";
+	import { API_BASE, apiFetch, imageUrl } from "$lib/config";
 	import { categoriesState, auth } from "$lib/stores/app.svelte";
 
 	type Category = {
@@ -243,7 +243,7 @@
 								{#if c.imageId}
 									{@const img = allImages.find(i => i.uid === c.imageId)}
 									{#if img}
-										<img src={img.thumb_url} alt="cat" class="w-12 h-12 object-cover rounded" />
+										<img src={imageUrl(img.thumb_url)} alt="cat" class="w-12 h-12 object-cover rounded" />
 									{/if}
 								{/if}
 							</Table.Cell>
@@ -293,7 +293,7 @@
 					{@const img = allImages.find(i => i.uid === newCatImage)}
 					{#if img}
 						<div class="relative mt-2 w-32 h-32 border rounded-md overflow-hidden bg-muted">
-							<img src={img.thumb_url} alt="preview" class="w-full h-full object-cover" />
+							<img src={imageUrl(img.thumb_url)} alt="preview" class="w-full h-full object-cover" />
 							<button 
 								type="button"
 								class="absolute top-1 right-1 bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-full p-1.5 shadow-md transition-colors cursor-pointer z-10" 
@@ -346,7 +346,7 @@
 						{@const img = allImages.find(i => i.uid === editingCategory?.imageId)}
 						{#if img}
 							<div class="mt-2 w-32 h-32 border rounded-md overflow-hidden bg-muted">
-								<img src={img.thumb_url} alt="preview" class="w-full h-full object-cover" />
+								<img src={imageUrl(img.thumb_url)} alt="preview" class="w-full h-full object-cover" />
 							</div>
 						{/if}
 					{/if}

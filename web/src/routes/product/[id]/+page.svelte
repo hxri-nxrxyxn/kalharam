@@ -5,6 +5,7 @@
 	import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 	import { toast } from '$lib/toast.svelte';
 	import { cart } from '$lib/cart.svelte';
+	import { imageUrl } from '$lib/config';
 	
 	interface Props {
 		data: PageData;
@@ -18,7 +19,7 @@
 			'@context': 'https://schema.org/',
 			'@type': 'Product',
 			name: product.title,
-			image: [`https://kalharam.com${product.image}`],
+			image: [imageUrl(product.image)],
 			description: `Buy ${product.title} ${product.subtitle}. Beautiful saree for women, perfect for weddings, parties, or traditional events. Shop the latest collection at Kalharam.`,
 			brand: {
 				'@type': 'Brand',
@@ -47,7 +48,7 @@
 	let outOfStock = $derived(product.stock <= 0);
 
 	let activeImageIndex = $state(0);
-	let galleryImages = $derived(product.gallery && product.gallery.length > 0 ? product.gallery : [{url: product.highResImage || product.image, thumb_url: product.image, alt: product.title}]);
+	let galleryImages = $derived((product.gallery && product.gallery.length > 0 ? product.gallery : [{url: product.highResImage || product.image, thumb_url: product.image, alt: product.title}]).map(img => ({ ...img, url: imageUrl(img.url), thumb_url: imageUrl(img.thumb_url) })));
 	let currentImage = $derived(galleryImages[activeImageIndex]);
 
 	function increaseQuantity() {
@@ -131,7 +132,7 @@
 		property="og:description"
 		content="Buy {product.title} {product.subtitle}. Beautiful saree for women, perfect for weddings, parties, or traditional events."
 	/>
-	<meta property="og:image" content="https://kalharam.com{product.image}" />
+	<meta property="og:image" content="{imageUrl(product.image)}" />
 	<meta property="product:price:amount" content="{product.salePrice.toString()}" />
 	<meta property="product:price:currency" content="INR" />
 
@@ -143,7 +144,7 @@
 		name="twitter:description"
 		content="Buy {product.title} {product.subtitle}. Beautiful saree for women, perfect for weddings, parties, or traditional events."
 	/>
-	<meta name="twitter:image" content="https://kalharam.com{product.image}" />
+	<meta name="twitter:image" content="{imageUrl(product.image)}" />
 
 	{@html `<script type="application/ld+json">${productJsonLd}</script>`}
 </svelte:head>

@@ -23,7 +23,7 @@
 	import ImagePlusIcon from "@lucide/svelte/icons/image-plus";
 
 	import { productsState, categoriesState, auth } from "$lib/stores/app.svelte";
-	import { API_BASE, apiFetch } from "$lib/config";
+	import { API_BASE, apiFetch, imageUrl } from "$lib/config";
 
 	type LocalProduct = {
 		id: string;
@@ -325,7 +325,7 @@
 			>
 				<div class="relative aspect-[4/3] w-full overflow-hidden bg-muted">
 					{#if p.image}
-						<img src={p.image} alt={p.name} class="size-full object-cover" />
+						<img src={imageUrl(p.image)} alt={p.name} class="size-full object-cover" />
 					{/if}
 					<Badge class="absolute left-2 top-2 bg-background/85 text-foreground backdrop-blur">{categoriesState.find(c => c.id === p.category)?.name || p.category}</Badge>
 					{#if p.stock === 0}
@@ -390,7 +390,7 @@
 							{@const img = allImages.find(x => x.uid === photoUid)}
 							<div class="relative aspect-square overflow-hidden rounded-lg border {photoUid === pImageId ? 'ring-2 ring-primary' : ''}">
 								{#if img}
-									<img src={img.thumb_url} alt={`photo ${i + 1}`} class="size-full object-cover" />
+									<img src={imageUrl(img.thumb_url)} alt={`photo ${i + 1}`} class="size-full object-cover" />
 								{/if}
 								<Button
 									type="button"

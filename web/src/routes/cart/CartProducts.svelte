@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { CartItem } from '$lib/types';
+	import { imageUrl } from '$lib/config';
 
 	let {
 		cartItems,
@@ -29,7 +30,7 @@
 				<div class="cart__row">
 					<div class="cart__row-notaction">
 						<a href="/product/{item.id}" class="cart__row-image">
-							<img src={item.image} alt={item.title}>
+							<img src={imageUrl(item.image)} alt={item.title}>
 						</a>
 						<div class="cart__row-details">
 							<div class="cart__row-details--top">

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import type { Category } from '$lib/types';
+	import { imageUrl } from '$lib/config';
 	import { gsap } from 'gsap';
 
 	interface Props {
@@ -177,7 +178,7 @@
 				<div class="tile-inner">
 					<div
 						class="tile-front"
-						style:background-image="linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.3)), url('{category.image}')"
+						style:background-image="linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.3)), url('{imageUrl(category.image)}')"
 					>
 						<span class="tile-text">
 							{#each category.name.split(' ') as word, idx (idx)}
@@ -188,7 +189,7 @@
 					<div class="tile-back" aria-hidden="true">
 						<div
 							class="tile-blur-bg"
-							style:background-image="url('{category.image}')"
+							style:background-image="url('{imageUrl(category.image)}')"
 						></div>
 						<div class="tile-overlay"></div>
 						<span class="tile-text">
