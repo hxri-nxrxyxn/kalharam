@@ -12,7 +12,7 @@
 	import XIcon from "@lucide/svelte/icons/x";
 	import PlusIcon from "@lucide/svelte/icons/plus";
 	import { API_BASE, apiFetch } from "$lib/config";
-	import { categoriesState} from "$lib/stores/app.svelte";
+	import { categoriesState, auth } from "$lib/stores/app.svelte";
 
 	type Category = {
 		id: string;
@@ -56,6 +56,7 @@
 	}
 
 	async function loadData() {
+		if (!auth.user) return;
 		try {
 			const imgRes = await apiFetch(`${API_BASE}/admin/images`);
 			if (imgRes.ok) allImages = await imgRes.json();

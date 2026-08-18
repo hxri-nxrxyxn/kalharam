@@ -191,6 +191,7 @@ export async function refreshCategories() {
 
 /** Lightweight poller that syncs new/customer-updated orders without disturbing products. */
 export async function refreshOrders() {
+	if (!auth.user) return; // don't poll if not logged in
 	try {
 		const res = await apiFetch(`${API_BASE}/admin/orders`, { cache: 'no-store' });
 		if (!res.ok) return;

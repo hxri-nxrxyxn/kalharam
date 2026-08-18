@@ -8,7 +8,7 @@
 	import { onMount } from "svelte";
 	import XIcon from "@lucide/svelte/icons/x";
 	import { API_BASE, apiFetch } from "$lib/config";
-	import { categoriesState} from "$lib/stores/app.svelte";
+	import { categoriesState, auth } from "$lib/stores/app.svelte";
 
 	type Tile = {
 		id: number;
@@ -27,6 +27,7 @@
 	let uploadTarget = $state<Tile | null>(null);
 
 	async function loadData() {
+		if (!auth.user) return;
 		try {
 			const tilesRes = await apiFetch(`${API_BASE}/admin/tiles`);
 			if (tilesRes.ok) tiles = await tilesRes.json();

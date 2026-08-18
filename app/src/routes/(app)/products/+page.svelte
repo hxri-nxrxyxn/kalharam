@@ -22,7 +22,7 @@
 	import XIcon from "@lucide/svelte/icons/x";
 	import ImagePlusIcon from "@lucide/svelte/icons/image-plus";
 
-	import { productsState, categoriesState} from "$lib/stores/app.svelte";
+	import { productsState, categoriesState, auth } from "$lib/stores/app.svelte";
 	import { API_BASE, apiFetch } from "$lib/config";
 
 	type LocalProduct = {
@@ -75,6 +75,7 @@
 	let cameraInputRef: HTMLInputElement | null = $state(null);
 
 	async function loadData() {
+		if (!auth.user) return;
 		try {
 			const imgRes = await apiFetch(`${API_BASE}/admin/images`);
 			if (imgRes.ok) allImages = await imgRes.json();
