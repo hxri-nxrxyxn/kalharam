@@ -15,11 +15,37 @@
 	let email = $state('');
 	let isSubmitting = $state(false);
 
+	const indianStates = [
+		'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh',
+		'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Karnataka',
+		'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram',
+		'Nagaland', 'Odisha', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana',
+		'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal', 'Andaman and Nicobar Islands',
+		'Chandigarh', 'Dadra and Nagar Haveli and Daman and Diu', 'Delhi', 'Jammu and Kashmir',
+		'Ladakh', 'Lakshadweep', 'Puducherry'
+	];
+
 	async function handleProceed() {
 		if (cart.items.length === 0) return;
 		
-		if (!customerName || !email || !phone || !address || !city || !pin) {
+		if (!customerName || !email || !phone || !address || !city || !pin || !userState) {
 			toast.show("Please fill out all required delivery and contact fields.");
+			return;
+		}
+
+		const phoneDigits = phone.replace(/\D/g, '');
+		if (phoneDigits.length < 10) {
+			toast.show("Please enter a valid 10-digit phone number.");
+			return;
+		}
+
+		if (!/^\d{6}$/.test(pin.trim())) {
+			toast.show("Please enter a valid 6-digit PIN code.");
+			return;
+		}
+
+		if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+			toast.show("Please enter a valid email address.");
 			return;
 		}
 
@@ -36,7 +62,7 @@
 					address: `${address} ${apt}`.trim(),
 					city,
 					state: userState,
-					pin,
+					pin: pin.trim(),
 					total: cart.total,
 					items: cart.items
 				})
@@ -83,7 +109,12 @@
 				</Field>
 
 				<Field label="State">
-					<input type="text" placeholder="e.g. Tamil Nadu" aria-label="State" autocomplete="off" bind:value={userState} />
+					<select aria-label="State" bind:value={userState}>
+						<option value="" disabled selected>Select State</option>
+						{#each indianStates as s}
+							<option value={s}>{s}</option>
+						{/each}
+					</select>
 				</Field>
 
 				<Field label="PIN">
