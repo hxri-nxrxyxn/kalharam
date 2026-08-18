@@ -1,22 +1,18 @@
-const state = $state({
-	message: '',
-	visible: false
-});
+class ToastState {
+	message = $state('');
+	visible = $state(false);
+	private timeoutId?: ReturnType<typeof setTimeout>;
 
-let timeoutId: ReturnType<typeof setTimeout>;
-
-export const toast = {
-	get state() {
-		return state;
-	},
 	show(msg: string, duration: number = 3000) {
-		state.message = msg;
-		state.visible = true;
+		this.message = msg;
+		this.visible = true;
 		
-		if (timeoutId) clearTimeout(timeoutId);
+		if (this.timeoutId) clearTimeout(this.timeoutId);
 		
-		timeoutId = setTimeout(() => {
-			state.visible = false;
+		this.timeoutId = setTimeout(() => {
+			this.visible = false;
 		}, duration);
 	}
-};
+}
+
+export const toast = new ToastState();

@@ -66,7 +66,7 @@ function moveFileSync(src, dest) {
 // <base>-thumb.webp, then rewrites its stored URLs. No-op if already in place.
 function relocateImage(uid, targetDir, base) {
 	if (!uid) return;
-	const img = db.prepare('SELECT * FROM images WHERE uid = ?').get(uid);
+	const img = db.prepare('SELECT uid, high_res_url, thumb_url, alt_text, type FROM images WHERE uid = ?').get(uid);
 	if (!img) return;
 
 	const highName = `${base}.webp`;
@@ -310,7 +310,7 @@ app.post('/api/auth/signup', (req, res) => {
 
 app.get('/api/admin/orders', (req, res) => {
 	try {
-		const rawOrders = db.prepare('SELECT * FROM orders ORDER BY createdAt DESC').all();
+		const rawOrders = db.prepare('SELECT id, customerName, email, phone, address, city, state, pin, total, items, status, createdAt FROM orders ORDER BY createdAt DESC').all();
 		
 		// Map backend orders to app expected format
 		const orders = rawOrders.flatMap(o => {
@@ -552,7 +552,7 @@ app.post('/api/admin/products', (req, res) => {
 
 app.get('/api/admin/images', (req, res) => {
 	try {
-		const images = db.prepare('SELECT * FROM images ORDER BY uid DESC').all();
+		const images = db.prepare('SELECT uid, high_res_url, thumb_url, alt_text, type FROM images ORDER BY uid DESC').all();
 		res.json(images);
 	} catch (err) {
 		res.status(500).json({ error: err.message });
@@ -615,7 +615,7 @@ app.delete('/api/admin/images/:uid', (req, res) => {
 			return res.status(400).json({ error: 'Cannot delete image that is currently in use by products or tiles.' });
 		}
 
-		const img = db.prepare('SELECT * FROM images WHERE uid = ?').get(uid);
+		const img = db.prepare('SELECT uid, high_res_url, thumb_url, alt_text, type FROM images WHERE uid = ?').get(uid);
 		if (!img) {
 			return res.status(404).json({ error: 'Image not found' });
 		}
@@ -725,7 +725,7 @@ app.put('/api/admin/categories/:id', (req, res) => {
 			const tileCount = db.prepare('SELECT COUNT(*) as count FROM layout_tiles WHERE imageId = ?').get(oldImageId).count;
 
 			if (catCount === 0 && prodCount === 0 && galCount === 0 && tileCount === 0) {
-				const img = db.prepare('SELECT * FROM images WHERE uid = ?').get(oldImageId);
+				const img = db.prepare('SELECT uid, high_res_url, thumb_url, alt_text, type FROM images WHERE uid = ?').get(oldImageId);
 				if (img) {
 					db.prepare('DELETE FROM images WHERE uid = ?').run(oldImageId);
 					const highresDisk = path.join(__dirname, '../web/static', img.high_res_url);
@@ -765,7 +765,7 @@ app.delete('/api/admin/categories/:id', (req, res) => {
 			const tileCount = db.prepare('SELECT COUNT(*) as count FROM layout_tiles WHERE imageId = ?').get(imageId).count;
 
 			if (catCount === 0 && prodCount === 0 && galCount === 0 && tileCount === 0) {
-				const img = db.prepare('SELECT * FROM images WHERE uid = ?').get(imageId);
+				const img = db.prepare('SELECT uid, high_res_url, thumb_url, alt_text, type FROM images WHERE uid = ?').get(imageId);
 				if (img) {
 					db.prepare('DELETE FROM images WHERE uid = ?').run(imageId);
 					const highresDisk = path.join(__dirname, '../web/static', img.high_res_url);

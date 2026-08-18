@@ -33,8 +33,12 @@
 			name = "";
 			email = "";
 			password = "";
-		} catch (err: any) {
-			toast.show(err.message);
+		} catch (err: unknown) {
+			if (err instanceof Error) {
+				toast.show(err.message);
+			} else {
+				toast.show("An unknown error occurred.");
+			}
 		} finally {
 			isSubmitting = false;
 		}

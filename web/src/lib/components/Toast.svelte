@@ -3,13 +3,13 @@
 	import { toast } from '$lib/toast.svelte';
 </script>
 
-{#if toast.state.visible}
+{#if toast.visible}
 	<div 
 		class="toast"
 		transition:fly={{ y: 50, duration: 400 }}
 	>
 		<img src="/assets/stroke-3px-24px/circle-check.svg" alt="success" width="20" height="20" />
-		<p>{toast.state.message}</p>
+		<p>{toast.message}</p>
 	</div>
 {/if}
 

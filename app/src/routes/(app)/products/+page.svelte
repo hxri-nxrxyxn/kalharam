@@ -189,8 +189,8 @@
 				}
 			}
 			await loadData();
-		} catch (err: any) {
-			toast.error(err.message);
+		} catch (err: unknown) {
+			toast.error(err instanceof Error ? err.message : String(err));
 		} finally {
 			isUploadingImage = false;
 			if (fileInputRef) fileInputRef.value = '';
@@ -243,8 +243,8 @@
 			} else {
 				throw new Error("Failed to save product");
 			}
-		} catch (e: any) {
-			toast.error(e.message);
+		} catch (e: unknown) {
+			toast.error(e instanceof Error ? e.message : String(e));
 		} finally {
 			submitting = false;
 			open = false;

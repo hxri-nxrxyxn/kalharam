@@ -49,9 +49,12 @@
 			
 			cart.clear();
 			goto('/success');
-		} catch (error: any) {
-			console.error(error);
-			toast.show(error.message || 'Failed to process order. Please try again.');
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				toast.show(error.message || 'Failed to process order. Please try again.');
+			} else {
+				toast.show('Failed to process order. Please try again.');
+			}
 		} finally {
 			isSubmitting = false;
 		}

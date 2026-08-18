@@ -89,8 +89,8 @@
 			} else {
 				throw new Error(data.error || "Upload failed");
 			}
-		} catch (err: any) {
-			toast.error(err.message);
+		} catch (err: unknown) {
+			toast.error(err instanceof Error ? err.message : String(err));
 		} finally {
 			isUploading = false;
 			if (fileInputRef) fileInputRef.value = '';
@@ -112,8 +112,8 @@
 			} else {
 				throw new Error(data.error || "Delete failed");
 			}
-		} catch (err: any) {
-			toast.error(err.message);
+		} catch (err: unknown) {
+			toast.error(err instanceof Error ? err.message : String(err));
 		}
 	}
 
@@ -147,8 +147,8 @@
 			} else {
 				throw new Error(data.error || "API Error");
 			}
-		} catch (e: any) {
-			toast.error(e.message || "Failed to create category.");
+		} catch (e: unknown) {
+			toast.error(e instanceof Error ? e.message : String(e) || "Failed to create category.");
 		} finally {
 			isSaving = false;
 		}
@@ -180,8 +180,8 @@
 			} else {
 				throw new Error(data.error || "API Error");
 			}
-		} catch (e: any) {
-			toast.error(e.message || "Failed to update category.");
+		} catch (e: unknown) {
+			toast.error(e instanceof Error ? e.message : String(e) || "Failed to update category.");
 		} finally {
 			isSaving = false;
 		}
@@ -202,8 +202,8 @@
 			} else {
 				throw new Error(data.error || "Failed to delete category.");
 			}
-		} catch (e: any) {
-			toast.error(e.message || "Failed to delete category.");
+		} catch (e: unknown) {
+			toast.error(e instanceof Error ? e.message : String(e) || "Failed to delete category.");
 		}
 	}
 

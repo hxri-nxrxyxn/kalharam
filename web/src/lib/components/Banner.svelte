@@ -40,7 +40,7 @@
 	{#each banners as banner, index (banner)}
 		<div
 			class={['slide', index === currentIndex && 'active']}
-			style="background-image: url('{banner}')"
+			style:background-image="url('{banner}')"
 		></div>
 	{/each}
 </div>

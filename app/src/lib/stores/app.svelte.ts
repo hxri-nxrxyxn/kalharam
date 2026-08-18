@@ -172,7 +172,7 @@ export async function loadBackendData() {
 			categoriesState.push(...data);
 		}
 	} catch (err) {
-		console.error('Failed to load backend data:', err);
+		// handle or swallow error
 	}
 }
 
@@ -185,7 +185,7 @@ export async function refreshCategories() {
 		categoriesState.length = 0;
 		categoriesState.push(...data);
 	} catch (err) {
-		console.error('Failed to refresh categories:', err);
+		// handle or swallow error
 	}
 }
 
@@ -198,7 +198,7 @@ export async function refreshOrders() {
 		ordersState.length = 0;
 		ordersState.push(...data);
 	} catch (err) {
-		console.error('Failed to refresh orders:', err);
+		// handle or swallow error
 	}
 }
 
@@ -267,7 +267,7 @@ export async function updateProduct(id: string, fields: Partial<Product>) {
 			body: JSON.stringify(fields)
 		});
 	} catch (e) {
-		console.error("Failed to sync product update:", e);
+		// handle or swallow error
 	}
 }
 
@@ -285,7 +285,7 @@ export async function setOrderStatus(orderId: string, id: string, status: Order[
 			body: JSON.stringify({ status })
 		});
 	} catch (e) {
-		console.error("Failed to sync order status:", e);
+		// handle or swallow error
 	}
 }
 
