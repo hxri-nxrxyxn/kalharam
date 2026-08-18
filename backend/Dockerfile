@@ -1,12 +1,16 @@
 FROM node:22-bookworm-slim AS base
-WORKDIR /app/backend
-# better-sqlite3 requires python, build tools
+WORKDIR /app
 RUN apt-get update && apt-get install -y python3 build-essential && rm -rf /var/lib/apt/lists/*
 
-COPY package*.json ./
-RUN rm -f package-lock.json && npm install --ignore-scripts=false
+# Install backend dependencies (rebuild native modules for this OS)
+COPY backend/package.json ./backend/
+RUN cd backend && npm install --ignore-scripts=false
 
-COPY . .
+# Copy source
+COPY backend/ ./backend/
+
+# Create the uploads directory that server.js references via ../web/static/assets/uploads
+RUN mkdir -p ./web/static/assets/uploads
 
 EXPOSE 3000
-CMD ["node", "server.js"]
+CMD ["node", "backend/server.js"]
