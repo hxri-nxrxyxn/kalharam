@@ -207,9 +207,6 @@ export function initSync() {
 	if (typeof window === "undefined" || syncStarted) return;
 	syncStarted = true;
 	
-	// Fetch real data on init
-	loadBackendData();
-	
 	if (typeof window !== "undefined") {
 		window.addEventListener('reload-store', loadBackendData);
 		// Keep an eye out for orders placed on the storefront

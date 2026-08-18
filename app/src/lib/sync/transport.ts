@@ -51,11 +51,23 @@ const CHANNEL_NAME = "kalharam-sync";
 const DEVICE_KEY = "kalharam-device-id";
 
 /** Stable per-tab id, persisted in sessionStorage so reloads keep the same identity. */
+/** crypto.randomUUID requires a secure context (HTTPS). Fall back to Math.random on plain HTTP. */
+function generateId(): string {
+	if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+		return crypto.randomUUID();
+	}
+	// Fallback for non-secure HTTP contexts
+	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+		const r = (Math.random() * 16) | 0;
+		return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
+	});
+}
+
 export function getOrCreateDeviceId(): string {
-	if (typeof sessionStorage === "undefined") return crypto.randomUUID();
+	if (typeof sessionStorage === 'undefined') return generateId();
 	let id = sessionStorage.getItem(DEVICE_KEY);
 	if (!id) {
-		id = crypto.randomUUID();
+		id = generateId();
 		sessionStorage.setItem(DEVICE_KEY, id);
 	}
 	return id;

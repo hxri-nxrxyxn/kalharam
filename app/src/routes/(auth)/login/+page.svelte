@@ -6,7 +6,8 @@
 	import * as Card from "$lib/components/ui/card";
 	import { Separator } from "$lib/components/ui/separator";
 	import { toast } from "svelte-sonner";
-	import { signIn } from "$lib/stores/app.svelte";
+	import { signIn, loadBackendData } from "$lib/stores/app.svelte";
+	import { BACKEND_URL } from "$lib/config";
 	import GemIcon from "@lucide/svelte/icons/gem";
 	import MonitorSmartphoneIcon from "@lucide/svelte/icons/monitor-smartphone";
 
@@ -21,7 +22,7 @@
 		}
 		busy = true;
 		try {
-			const res = await fetch('http://localhost:3000/api/auth/login', {
+			const res = await fetch(`${BACKEND_URL}/api/auth/login`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ email, password })
@@ -30,8 +31,11 @@
 			if (!res.ok) throw new Error(data.error || 'Login failed');
 			
 			localStorage.setItem('admin_token', data.token);
-			
 			signIn({ name: "Admin", email, role: "admin" });
+
+			// Load backend data now that we have a token
+			await loadBackendData();
+
 			toast.success("Signed in");
 			goto("/");
 		} catch (err) {
