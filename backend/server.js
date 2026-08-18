@@ -28,6 +28,92 @@ app.use('/assets/uploads', express.static(path.join(__dirname, '../web/static/as
 
 const upload = multer({ storage: multer.memoryStorage() });
 
+// --- Image storage helpers ---
+// Uploads are staged under uploads/_staging/ and relocated into their slug-based
+// tree when the owning entity (category/product/tile) is saved. This keeps the
+// folder structure aligned with slugs, and lets a slug rename move a whole
+// subtree without orphaning files.
+const UPLOADS_ROOT = path.join(__dirname, '../web/static/assets/uploads');
+const WEB_STATIC = path.join(__dirname, '../web/static');
+
+function safeFolder(name) {
+	const clean = String(name || '').toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/(^-|-$)+/g, '');
+	if (!clean || clean === '.' || clean === '..') {
+		throw new Error('Invalid folder slug');
+	}
+	return clean;
+}
+
+function ensureDir(dir) {
+	fs.mkdirSync(dir, { recursive: true });
+}
+
+function moveFileSync(src, dest) {
+	const absSrc = path.resolve(src);
+	const absDest = path.resolve(dest);
+	if (absSrc === absDest) return;
+	if (!fs.existsSync(absSrc)) return;
+	ensureDir(path.dirname(absDest));
+	try {
+		fs.renameSync(absSrc, absDest);
+	} catch (err) {
+		fs.copyFileSync(absSrc, absDest);
+		fs.unlinkSync(absSrc);
+	}
+}
+
+// Moves an image (highres + thumb) into targetDir naming it <base>.webp /
+// <base>-thumb.webp, then rewrites its stored URLs. No-op if already in place.
+function relocateImage(uid, targetDir, base) {
+	if (!uid) return;
+	const img = db.prepare('SELECT * FROM images WHERE uid = ?').get(uid);
+	if (!img) return;
+
+	const highName = `${base}.webp`;
+	const thumbName = `${base}-thumb.webp`;
+	const highTarget = path.join(UPLOADS_ROOT, targetDir, highName);
+	const thumbTarget = path.join(UPLOADS_ROOT, targetDir, thumbName);
+
+	moveFileSync(path.join(WEB_STATIC, img.high_res_url), highTarget);
+	moveFileSync(path.join(WEB_STATIC, img.thumb_url), thumbTarget);
+
+	const highUrl = `/assets/uploads/${targetDir}/${highName}`;
+	const thumbUrl = `/assets/uploads/${targetDir}/${thumbName}`;
+	if (img.high_res_url !== highUrl || img.thumb_url !== thumbUrl) {
+		db.prepare('UPDATE images SET high_res_url = ?, thumb_url = ? WHERE uid = ?').run(highUrl, thumbUrl, uid);
+	}
+}
+
+// Rewrites every image URL whose path starts with oldPrefix to start with newPrefix.
+// Used after a folder rename so DB paths follow the moved files.
+function rewriteImageUrlsPrefix(oldPrefix, newPrefix) {
+	const images = db.prepare('SELECT uid, high_res_url, thumb_url FROM images').all();
+	const update = db.prepare('UPDATE images SET high_res_url = ?, thumb_url = ? WHERE uid = ?');
+	for (const img of images) {
+		const high = img.high_res_url.startsWith(oldPrefix) ? newPrefix + img.high_res_url.slice(oldPrefix.length) : img.high_res_url;
+		const thumb = img.thumb_url.startsWith(oldPrefix) ? newPrefix + img.thumb_url.slice(oldPrefix.length) : img.thumb_url;
+		if (high !== img.high_res_url || thumb !== img.thumb_url) {
+			update.run(high, thumb, img.uid);
+		}
+	}
+}
+
+// Moves a product's cover + gallery images into uploads/<category>/<productId>/,
+// with the cover named example.webp and gallery images under listing/.
+function relocateProductImages(product) {
+	const folder = `${safeFolder(product.categoryId)}/${safeFolder(product.id)}`;
+	const gallery = db.prepare('SELECT imageId FROM product_gallery WHERE productId = ? ORDER BY displayOrder ASC').all(product.id);
+	const imageIds = [];
+	if (product.imageId) imageIds.push(product.imageId);
+	for (const g of gallery) {
+		if (g.imageId && !imageIds.includes(g.imageId)) imageIds.push(g.imageId);
+	}
+	for (const uid of imageIds) {
+		const isCover = uid === product.imageId;
+		relocateImage(uid, isCover ? folder : `${folder}/listing`, isCover ? 'example' : uid);
+	}
+}
+
 // --- Public Endpoints (for Web) ---
 
 app.get('/api/tiles', (req, res) => {
@@ -322,6 +408,7 @@ app.put('/api/admin/tiles/:id', (req, res) => {
 		db.prepare('UPDATE layout_tiles SET title = ?, imageId = ?, categoryIds = ? WHERE id = ?').run(
 			title, imageId || null, JSON.stringify(categoryIds || []), req.params.id
 		);
+		relocateImage(imageId, safeFolder(`tile-${req.params.id}`), 'example');
 		res.json({ message: 'Tile updated successfully' });
 	} catch (err) {
 		res.status(500).json({ error: err.message });
@@ -381,7 +468,9 @@ app.put('/api/admin/products/:id', (req, res) => {
 		}
 
 		values.push(id);
-		
+
+		const oldProduct = db.prepare('SELECT categoryId FROM products WHERE id = ?').get(id);
+
 		const transaction = db.transaction(() => {
 			if (fields.length > 0) {
 				const query = `UPDATE products SET ${fields.join(', ')} WHERE id = ?`;
@@ -398,6 +487,24 @@ app.put('/api/admin/products/:id', (req, res) => {
 		});
 		
 		transaction();
+
+		const product = db.prepare('SELECT id, categoryId, imageId FROM products WHERE id = ?').get(id);
+
+		// If the product moved to another category, relocate its folder tree
+		if (oldProduct && oldProduct.categoryId !== product.categoryId) {
+			const oldFolder = `${safeFolder(oldProduct.categoryId)}/${safeFolder(product.id)}`;
+			const newFolder = `${safeFolder(product.categoryId)}/${safeFolder(product.id)}`;
+			const oldDir = path.join(UPLOADS_ROOT, oldFolder);
+			const newDir = path.join(UPLOADS_ROOT, newFolder);
+			if (fs.existsSync(oldDir) && !fs.existsSync(newDir)) {
+				fs.renameSync(oldDir, newDir);
+				rewriteImageUrlsPrefix(`/assets/uploads/${oldFolder}/`, `/assets/uploads/${newFolder}/`);
+			}
+		}
+
+		// Relocate any staged/new images into the product's slug folder
+		relocateProductImages(product);
+
 		res.json({ message: 'Product updated successfully' });
 	} catch (err) {
 		res.status(500).json({ error: err.message });
@@ -433,6 +540,10 @@ app.post('/api/admin/products', (req, res) => {
 		});
 
 		transaction();
+
+		// Relocate staged uploads into the product's slug folder
+		relocateProductImages(db.prepare('SELECT id, categoryId, imageId FROM products WHERE id = ?').get(id));
+
 		res.json({ message: 'Product created successfully' });
 	} catch (err) {
 		res.status(500).json({ error: err.message });
@@ -459,8 +570,10 @@ app.post('/api/admin/images/upload', upload.single('image'), async (req, res) =>
 		const uid = 'img_' + crypto.randomBytes(8).toString('hex');
 		const filename = `${uid}.webp`;
 
-		const highresPath = path.join(__dirname, '../web/static/assets/uploads/highres', filename);
-		const thumbPath = path.join(__dirname, '../web/static/assets/uploads/thumbnails', filename);
+		const stagingDir = path.join(UPLOADS_ROOT, '_staging');
+		ensureDir(stagingDir);
+		const highresPath = path.join(stagingDir, filename);
+		const thumbPath = path.join(stagingDir, `${uid}-thumb.webp`);
 
 		// Convert to webp and save highres (max 1600x1600)
 		await sharp(req.file.buffer)
@@ -474,8 +587,8 @@ app.post('/api/admin/images/upload', upload.single('image'), async (req, res) =>
 			.webp({ quality: 75 })
 			.toFile(thumbPath);
 
-		const highresUrl = `/assets/uploads/highres/${filename}`;
-		const thumbUrl = `/assets/uploads/thumbnails/${filename}`;
+		const highresUrl = `/assets/uploads/_staging/${filename}`;
+		const thumbUrl = `/assets/uploads/_staging/${uid}-thumb.webp`;
 
 		db.prepare('INSERT INTO images (uid, high_res_url, thumb_url, alt_text, type) VALUES (?, ?, ?, ?, ?)')
 		  .run(uid, highresUrl, thumbUrl, altText, imgType);
@@ -534,6 +647,7 @@ app.post('/api/admin/categories', (req, res) => {
 	try {
 		const { id, name, imageId } = req.body;
 		db.prepare('INSERT INTO categories (id, name, imageId) VALUES (?, ?, ?)').run(id, name, imageId);
+		relocateImage(imageId, safeFolder(id), 'example');
 		res.json({ message: 'Category created' });
 	} catch (err) {
 		res.status(500).json({ error: err.message });
@@ -590,6 +704,19 @@ app.put('/api/admin/categories/:id', (req, res) => {
 
 		transaction();
 
+		// If the slug changed, move the whole slug folder (category cover plus every
+		// nested product folder) so nothing is orphaned, then point image URLs at it.
+		if (finalId !== oldId) {
+			const oldFolder = safeFolder(oldId);
+			const newFolder = safeFolder(finalId);
+			const oldDir = path.join(UPLOADS_ROOT, oldFolder);
+			const newDir = path.join(UPLOADS_ROOT, newFolder);
+			if (fs.existsSync(oldDir) && !fs.existsSync(newDir)) {
+				fs.renameSync(oldDir, newDir);
+				rewriteImageUrlsPrefix(`/assets/uploads/${oldFolder}/`, `/assets/uploads/${newFolder}/`);
+			}
+		}
+
 		// If oldImageId was replaced or removed, clean it up if no longer used anywhere
 		if (oldImageId && oldImageId !== imageId) {
 			const catCount = db.prepare('SELECT COUNT(*) as count FROM categories WHERE imageId = ?').get(oldImageId).count;
@@ -608,6 +735,9 @@ app.put('/api/admin/categories/:id', (req, res) => {
 				}
 			}
 		}
+
+		// Move the (possibly new) cover into its slug folder
+		relocateImage(imageId, safeFolder(finalId), 'example');
 
 		res.json({ message: 'Category updated', id: finalId });
 	} catch (err) {

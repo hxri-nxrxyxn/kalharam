@@ -71,7 +71,7 @@ Backend server running on http://localhost:3000
     {
       "id": "1",
       "name": "Mul Cotton",
-      "image": "/assets/uploads/thumbnails/img_sample.webp",
+      "image": "/assets/uploads/mul/example-thumb.webp",
       "categoryIds": ["mul"]
     }
   ]
@@ -91,7 +91,7 @@ Backend server running on http://localhost:3000
     {
       "id": "mul",
       "name": "Mul",
-      "image": "/assets/uploads/thumbnails/img_sample.webp"
+      "image": "/assets/uploads/mul/example-thumb.webp"
     }
   ]
   ```
@@ -123,7 +123,7 @@ Backend server running on http://localhost:3000
       "mrp": 999,
       "salePrice": 699,
       "stock": 10,
-      "image": "/assets/uploads/thumbnails/img_sample.webp"
+      "image": "/assets/uploads/mul/mul-prod-1786286910224/example-thumb.webp"
     }
   ]
   ```
@@ -149,12 +149,12 @@ Backend server running on http://localhost:3000
     "mrp": 999,
     "salePrice": 699,
     "stock": 10,
-    "image": "/assets/uploads/thumbnails/img_sample.webp",
-    "highResImage": "/assets/uploads/highres/img_sample.webp",
+    "image": "/assets/uploads/mul/mul-prod-1786286910224/example-thumb.webp",
+    "highResImage": "/assets/uploads/mul/mul-prod-1786286910224/example.webp",
     "gallery": [
       {
-        "url": "/assets/uploads/highres/img_sample.webp",
-        "thumb_url": "/assets/uploads/thumbnails/img_sample.webp",
+        "url": "/assets/uploads/mul/mul-prod-1786286910224/listing/img_sample.webp",
+        "thumb_url": "/assets/uploads/mul/mul-prod-1786286910224/listing/img_sample-thumb.webp",
         "alt": "Photo 1"
       }
     ]
@@ -317,7 +317,7 @@ Backend server running on http://localhost:3000
       "demand": 0,
       "deadStockDays": null,
       "imageId": "img_sample",
-      "image": "/assets/uploads/thumbnails/img_sample.webp",
+      "image": "/assets/uploads/mul/mul-prod-1786286910224/example-thumb.webp",
       "images": ["img_sample"]
     }
   ]
@@ -422,8 +422,8 @@ Backend server running on http://localhost:3000
   [
     {
       "uid": "img_sample",
-      "high_res_url": "/assets/uploads/highres/img_sample.webp",
-      "thumb_url": "/assets/uploads/thumbnails/img_sample.webp",
+      "high_res_url": "/assets/uploads/mul/example.webp",
+      "thumb_url": "/assets/uploads/mul/example-thumb.webp",
       "alt_text": "Sample Photo",
       "type": "product"
     }
@@ -445,8 +445,8 @@ Backend server running on http://localhost:3000
   ```json
   {
     "uid": "img_a1b2c3d4e5f67890",
-    "high_res_url": "/assets/uploads/highres/img_a1b2c3d4e5f67890.webp",
-    "thumb_url": "/assets/uploads/thumbnails/img_a1b2c3d4e5f67890.webp",
+    "high_res_url": "/assets/uploads/_staging/img_a1b2c3d4e5f67890.webp",
+    "thumb_url": "/assets/uploads/_staging/img_a1b2c3d4e5f67890-thumb.webp",
     "alt_text": "Handloom Silk Saree",
     "type": "product"
   }
