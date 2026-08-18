@@ -47,6 +47,7 @@
 										<p>Qty: </p>
 										<h3>{item.quantity}</h3>
 									</div>
+								</div>
 							</div>
 							<div class="cart__row-details--bottom">
 								<div class="cart__row-info">
@@ -91,7 +92,6 @@
 		color: inherit;
 	}
 
-	.cart__row-info--quantity img,
 	.cart__row-action img {
 		filter: var(--filter-secondary);
 		cursor: pointer;
@@ -111,7 +111,6 @@
 		opacity: 1;
 	}
 
-	.cart__row-info--quantity img:hover,
 	.cart__row-action img:hover {
 		opacity: 0.7;
 	}
