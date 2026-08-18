@@ -97,15 +97,19 @@
 				{#each orders as order}
 					<div class="order-summary">
 						<div class="order-header">
-							<h3>Order #{order.id}</h3>
-							<p>Status: <strong style="text-transform: uppercase;">{order.status}</strong></p>
+							<div>
+								<h3>Order #{order.id}</h3>
+								<p>Status: <strong style="text-transform: uppercase; color: {order.status === 'pending' ? 'var(--color-primary)' : 'inherit'};">{order.status}</strong></p>
+							</div>
+							{#if order.status === 'pending'}
+								<button type="button" class="btn btn--secondary" style="padding: var(--spacing-sm) var(--spacing-md); display: flex; align-items: center; gap: var(--spacing-sm); border: 1px solid var(--color-primary); background: transparent; color: var(--color-primary);" onclick={() => cancelOrder(order.id)}>
+									Cancel Order
+								</button>
+							{/if}
 						</div>
 						<CartProducts 
 							cartItems={order.items} 
 							cartTotal={order.total}
-							orderId={order.id}
-							status={order.status}
-							{cancelOrder}
 						/>
 					</div>
 				{/each}
@@ -206,18 +210,14 @@
 	}
 
 	.order-summary {
-		background-color: var(--color-surface);
-		padding: var(--spacing-lg);
-		margin-bottom: var(--spacing-xl);
-		border: 1px solid var(--color-input);
+		margin-bottom: calc(2 * var(--spacing-xl));
 	}
 
 	.order-header {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		padding-bottom: var(--spacing-md);
-		border-bottom: 1px solid var(--color-input);
+		margin-bottom: var(--spacing-md);
 		color: var(--color-primary);
 	}
 
