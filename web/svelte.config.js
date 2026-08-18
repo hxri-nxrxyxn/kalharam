@@ -12,8 +12,11 @@ const config = {
 		adapter: adapter(),
 		prerender: {
 			handleMissingId: 'ignore',
+			handleHttpError: 'warn',
+			handleUnseenRoutes: 'ignore',
 			entries: [
 				'*',
+				'/robots.txt',
 				'/signin',
 				'/signup',
 				'/support',
