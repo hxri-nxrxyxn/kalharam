@@ -9,7 +9,7 @@ import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import { rateLimit } from 'express-rate-limit';
 import { z } from 'zod';
-import { authenticateAdmin, JWT_SECRET } from './middleware/auth.js';
+import { authenticateAdmin, authenticateUser, JWT_SECRET } from './middleware/auth.js';
 import { fileURLToPath } from 'url';
 import bcrypt from 'bcryptjs';
 
@@ -401,6 +401,63 @@ app.post('/api/orders', (req, res) => {
 
 		const orderId = transaction();
 		res.json({ id: orderId, message: 'Order created successfully' });
+	} catch (err) {
+		res.status(500).json({ error: err.message });
+	}
+});
+
+app.get('/api/orders', authenticateUser, (req, res) => {
+	try {
+		const rawOrders = db.prepare('SELECT * FROM orders WHERE email = ? ORDER BY createdAt DESC').all(req.user.email);
+		const getItems = db.prepare(`
+			SELECT oi.productId as id, oi.productName as title, oi.quantity, oi.price, 
+			       p.subtitle, p.mrp, i.thumb_url as image, p.stock
+			FROM order_items oi
+			LEFT JOIN products p ON oi.productId = p.id
+			LEFT JOIN images i ON p.imageId = i.uid
+			WHERE oi.orderId = ?
+		`);
+		
+		const orders = rawOrders.map(o => {
+			const items = getItems.all(o.id);
+			return {
+				id: o.id,
+				total: o.total,
+				status: o.status,
+				createdAt: o.createdAt,
+				items: items
+			};
+		});
+		res.json(orders);
+	} catch (err) {
+		res.status(500).json({ error: err.message });
+	}
+});
+
+app.post('/api/orders/:id/cancel', authenticateUser, (req, res) => {
+	try {
+		const { id } = req.params;
+		const order = db.prepare('SELECT * FROM orders WHERE id = ? AND email = ?').get(id, req.user.email);
+		if (!order) {
+			return res.status(404).json({ error: 'Order not found' });
+		}
+		if (order.status !== 'pending') {
+			return res.status(400).json({ error: 'Cannot cancel an order that is already ' + order.status });
+		}
+		
+		db.prepare('UPDATE orders SET status = "cancelled" WHERE id = ?').run(id);
+		
+		// Optionally restore stock
+		const items = db.prepare('SELECT productId, quantity FROM order_items WHERE orderId = ?').all(id);
+		const updateStock = db.prepare('UPDATE products SET stock = stock + ? WHERE id = ?');
+		const transaction = db.transaction(() => {
+			for (const item of items) {
+				updateStock.run(item.quantity, item.productId);
+			}
+		});
+		transaction();
+
+		res.json({ message: 'Order cancelled successfully' });
 	} catch (err) {
 		res.status(500).json({ error: err.message });
 	}

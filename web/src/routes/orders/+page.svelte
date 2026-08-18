@@ -13,21 +13,53 @@
 	let { data }: Props = $props();
 	let { recommendedProducts } = $derived(data);
 
-	let cartItems = $derived(cart.items);
+	import { onMount } from 'svelte';
+	import { API_BASE } from '$lib/config';
+	import { toast } from '$lib/toast.svelte';
 
-	function increaseQuantity(id: string) {
-		cart.increase(id);
+	let orders = $state<any[]>([]);
+	let loading = $state(true);
+
+	onMount(async () => {
+		if (auth.token) {
+			await fetchOrders();
+		} else {
+			loading = false;
+		}
+	});
+
+	async function fetchOrders() {
+		try {
+			const res = await fetch(`${API_BASE}/orders`, {
+				headers: { Authorization: `Bearer ${auth.token}` }
+			});
+			if (res.ok) {
+				orders = await res.json();
+			}
+		} catch (e) {
+			toast.show("Failed to load orders");
+		} finally {
+			loading = false;
+		}
 	}
 
-	function decreaseQuantity(id: string) {
-		cart.decrease(id);
+	async function cancelOrder(id: string) {
+		try {
+			const res = await fetch(`${API_BASE}/orders/${id}/cancel`, {
+				method: 'POST',
+				headers: { Authorization: `Bearer ${auth.token}` }
+			});
+			if (res.ok) {
+				toast.show("Order cancelled");
+				await fetchOrders();
+			} else {
+				const err = await res.json();
+				toast.show(err.error || "Failed to cancel");
+			}
+		} catch (e) {
+			toast.show("Failed to cancel");
+		}
 	}
-
-	function removeItem(id: string) {
-		cart.remove(id);
-	}
-
-	let cartTotal = $derived(cart.total);
 </script>
 
 <svelte:head>
@@ -57,13 +89,27 @@
 		</div>
 		
 		<div class="cart__right">
-			<CartProducts 
-				{cartItems} 
-				{cartTotal} 
-				{increaseQuantity} 
-				{decreaseQuantity} 
-				{removeItem} 
-			/>
+			{#if loading}
+				<p style="color: var(--color-secondary);">Loading your orders...</p>
+			{:else if orders.length === 0}
+				<p style="color: var(--color-secondary);">You have no recent orders.</p>
+			{:else}
+				{#each orders as order}
+					<div class="order-summary">
+						<div class="order-header">
+							<h3>Order #{order.id}</h3>
+							<p>Status: <strong style="text-transform: uppercase;">{order.status}</strong></p>
+						</div>
+						<CartProducts 
+							cartItems={order.items} 
+							cartTotal={order.total}
+							orderId={order.id}
+							status={order.status}
+							{cancelOrder}
+						/>
+					</div>
+				{/each}
+			{/if}
 			<div class="mobile-btns">
 				{@render cartActions()}
 			</div>
@@ -157,6 +203,22 @@
 	.cart__similar h2 {
 		color: var(--color-primary);
 		margin-bottom: var(--spacing-lg);
+	}
+
+	.order-summary {
+		background-color: var(--color-surface);
+		padding: var(--spacing-lg);
+		margin-bottom: var(--spacing-xl);
+		border: 1px solid var(--color-input);
+	}
+
+	.order-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding-bottom: var(--spacing-md);
+		border-bottom: 1px solid var(--color-input);
+		color: var(--color-primary);
 	}
 
 	@media (max-width: 768px) {
