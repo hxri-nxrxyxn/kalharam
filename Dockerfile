@@ -1,4 +1,4 @@
-FROM node:24-bullseye-slim AS base
+FROM node:22-bullseye-slim AS base
 WORKDIR /app
 # better-sqlite3 and sharp require python, build tools, and related libs
 RUN apt-get update && apt-get install -y python3 build-essential libvips-dev && rm -rf /var/lib/apt/lists/*
@@ -8,7 +8,7 @@ WORKDIR /app
 COPY . .
 
 # Build Backend
-RUN cd backend && npm ci || npm install
+RUN cd backend && npm install --ignore-scripts=false
 
 # Build Web (Storefront)
 RUN cd web && npm ci || npm install
