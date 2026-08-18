@@ -149,21 +149,36 @@ app.post('/api/orders', (req, res) => {
 			INSERT INTO orders (customerName, email, phone, address, city, state, pin, total, items, status)
 			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'new')
 		`);
-		
+	
+		const getStock = db.prepare(`
+			SELECT id, title, stock FROM products WHERE id = ?
+		`);
+
 		const updateStock = db.prepare(`
 			UPDATE products 
 			SET stock = MAX(0, stock - ?), sold = sold + ? 
 			WHERE id = ?
 		`);
 
+		// Reject orders for out-of-stock products or quantities exceeding available stock
+		for (const item of items) {
+			const product = getStock.get(item.id);
+			if (!product) {
+				return res.status(400).json({ error: `Product not found: ${item.id}` });
+			}
+			if (product.stock < item.quantity) {
+				return res.status(400).json({ error: `Insufficient stock for ${product.title} (only ${product.stock} left)` });
+			}
+		}
+
 		const transaction = db.transaction(() => {
 			const result = insertOrder.run(customerName, email, phone, address, city, state, pin, total, JSON.stringify(items));
-			
+		
 			// Deduct stock for each item
 			for (const item of items) {
 				updateStock.run(item.quantity, item.quantity, item.id);
 			}
-			
+		
 			return result.lastInsertRowid;
 		});
 

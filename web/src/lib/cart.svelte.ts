@@ -12,10 +12,12 @@ class CartState {
 	}
 
 	add(product: Product, quantity: number = 1) {
+		if (product.stock <= 0) return;
+		const qty = Math.min(quantity, product.stock);
 		const existingItem = this.items.find((item) => item.id === product.id);
 		
 		if (existingItem) {
-			existingItem.quantity += quantity;
+			existingItem.quantity = Math.min(existingItem.quantity + qty, existingItem.stock);
 		} else {
 			this.items.push({
 				id: product.id,
@@ -26,14 +28,14 @@ class CartState {
 				stock: product.stock,
 				mrp: product.mrp,
 				price: product.salePrice,
-				quantity
+				quantity: qty
 			});
 		}
 	}
 
 	increase(id: string) {
 		const item = this.items.find((i) => i.id === id);
-		if (item) item.quantity += 1;
+		if (item && item.quantity < item.stock) item.quantity += 1;
 	}
 
 	decrease(id: string) {

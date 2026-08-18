@@ -18,7 +18,11 @@
 	<div class="listing__info">
 		<div class="listing__info-count">
 			<img src="/assets/stroke-2px-24px/star.svg" alt="" aria-hidden="true" width="18" height="18" />
-			<h3>{product.stock}</h3>
+			{#if product.stock === 0}
+				<h3 class="listing__info-count--out">Out of Stock</h3>
+			{:else}
+				<h3>{product.stock}</h3>
+			{/if}
 		</div>
 		<div class="listing__info-maxprice">
 			<p>MRP</p>
@@ -90,6 +94,13 @@
 	.listing__info-count img {
 		height: var(--height-icon);
 		filter: var(--filter-secondary);
+	}
+
+	.listing__info-count--out {
+		font-size: var(--font-xs);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: var(--color-secondary);
 	}
 
 	.listing__info-saleprice {

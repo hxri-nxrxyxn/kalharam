@@ -29,7 +29,7 @@
 				url: `https://kalharam.com/product/${product.id}`,
 				priceCurrency: 'INR',
 				price: product.salePrice,
-				availability: 'https://schema.org/InStock',
+				availability: product.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
 				itemCondition: 'https://schema.org/NewCondition'
 			},
 			aggregateRating: {
@@ -44,12 +44,16 @@
 	let detailsRef = $state<HTMLElement>();
 	let similarRef = $state<HTMLElement>();
 
+	let outOfStock = $derived(product.stock <= 0);
+
 	let activeImageIndex = $state(0);
 	let galleryImages = $derived(product.gallery && product.gallery.length > 0 ? product.gallery : [{url: product.highResImage || product.image, thumb_url: product.image, alt: product.title}]);
 	let currentImage = $derived(galleryImages[activeImageIndex]);
 
 	function increaseQuantity() {
-		quantity += 1;
+		if (quantity < product.stock) {
+			quantity += 1;
+		}
 	}
 
 	function decreaseQuantity() {
@@ -57,10 +61,15 @@
 			quantity -= 1;
 		}
 	}
-	
+
 	function addToCart() {
-		cart.add(product, quantity);
-		toast.show(`Added ${quantity} ${quantity === 1 ? 'piece' : 'pieces'} of ${product.title} to your collection.`);
+		if (outOfStock) {
+			toast.show(`${product.title} is out of stock.`);
+			return;
+		}
+		const qty = Math.min(quantity, product.stock);
+		cart.add(product, qty);
+		toast.show(`Added ${qty} ${qty === 1 ? 'piece' : 'pieces'} of ${product.title} to your collection.`);
 	}
 
 	$effect(() => {
@@ -170,7 +179,11 @@
 			<div class="listing__info">
 				<div class="listing__info-count">
 					<img src="/assets/stroke-2px-24px/star.svg" alt="" aria-hidden="true" width="18" height="18" />
-					<h3>{product.stock}</h3>
+					{#if outOfStock}
+						<h3 class="listing__info-count--out">Out of Stock</h3>
+					{:else}
+						<h3>{product.stock}</h3>
+					{/if}
 				</div>
 				<div class="listing__info-maxprice">
 					<p>MRP</p>
@@ -192,18 +205,18 @@
 
 			<div class="product__actions">
 				<div class="product__quantity">
-					<button class="quantity-btn" aria-label="Decrease quantity" onclick={decreaseQuantity}>
+					<button class="quantity-btn" aria-label="Decrease quantity" onclick={decreaseQuantity} disabled={quantity <= 1}>
 						<img src="/assets/stroke-3px-24px/minus.svg" alt="minus" width="20" height="20" />
 					</button>
 					<span class="quantity-value">{quantity}</span>
-					<button class="quantity-btn" aria-label="Increase quantity" onclick={increaseQuantity}>
+					<button class="quantity-btn" aria-label="Increase quantity" onclick={increaseQuantity} disabled={outOfStock || quantity >= product.stock}>
 						<img src="/assets/stroke-3px-24px/plus.svg" alt="plus" width="20" height="20" />
 					</button>
 				</div>
 
-				<button class="btn btn--primary add-to-cart-btn" onclick={addToCart}>
+				<button class="btn btn--primary add-to-cart-btn" onclick={addToCart} disabled={outOfStock}>
 					<img src="/assets/stroke-4px-32px/cart.svg" alt="cart" width="24" height="24" />
-					ADD TO CART
+					{outOfStock ? 'OUT OF STOCK' : 'ADD TO CART'}
 				</button>
 			</div>
 		</div>
@@ -387,8 +400,19 @@
 		filter: var(--filter-secondary);
 	}
 
-	.quantity-btn:hover {
+	.quantity-btn:disabled {
+		opacity: 0.35;
+		cursor: not-allowed;
+	}
+
+	.quantity-btn:hover:not(:disabled) {
 		opacity: 0.7;
+	}
+
+	.listing__info-count--out {
+		font-size: var(--font-xs);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
 	}
 
 	.quantity-value {

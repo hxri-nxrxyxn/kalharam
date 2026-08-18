@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import type { Category } from '$lib/types';
-	import { gsap } from 'gsap';
 
 	interface Props {
 		categories: Category[];
@@ -9,11 +8,6 @@
 	}
 
 	let { categories, selectedCategoryId }: Props = $props();
-	let viewportRef = $state<HTMLElement>();
-	let trackRef = $state<HTMLElement>();
-	let tween = $state<gsap.core.Tween>();
-	let isTouching = $state(false);
-	let scrollTimeout = $state<ReturnType<typeof setTimeout>>();
 	let isExpanded = $state(false);
 
 	// Filter down to active categories configured in backend (has categoryIds assigned or non-default name)
@@ -40,123 +34,15 @@
 			goto(`/category/${categoryId}`, { keepFocus: true, noScroll: true, replaceState: true, state: { preserveScroll: true } });
 		}
 	}
-
-	$effect(() => {
-		if (!viewportRef || !trackRef) return;
-
-		let mm = gsap.matchMedia();
-
-		mm.add("(max-width: 900px)", () => {
-			const initMarquee = () => {
-				if (isTouching || !viewportRef || !trackRef) return;
-				
-				const maxScroll = viewportRef.scrollWidth - viewportRef.clientWidth;
-				if (maxScroll <= 0) return;
-
-				const currentScroll = viewportRef.scrollLeft;
-				let startingProgress = 0;
-
-				if (currentScroll > 0) {
-					viewportRef.scrollLeft = 0;
-					gsap.set(trackRef, { x: -currentScroll });
-					startingProgress = currentScroll / maxScroll;
-				} else {
-					const currentX = gsap.getProperty(trackRef, "x") as number;
-					startingProgress = Math.abs(currentX) / maxScroll;
-				}
-
-				viewportRef.style.overflowX = 'hidden';
-
-				if (tween) tween.kill();
-				
-				// 30 pixels per second for 60fps smooth cinematic motion
-				const duration = maxScroll / 30;
-				
-				tween = gsap.fromTo(trackRef, 
-					{ x: 0 }, 
-					{
-						x: -maxScroll,
-						duration: duration,
-						ease: 'none',
-						repeat: -1,
-						yoyo: true,
-						paused: true
-					}
-				);
-				
-				tween.progress(startingProgress);
-				tween.play();
-			};
-
-			setTimeout(initMarquee, 100);
-			window.addEventListener('resize', initMarquee);
-
-			return () => {
-				window.removeEventListener('resize', initMarquee);
-				if (tween) tween.kill();
-				if (viewportRef) viewportRef.style.overflowX = '';
-				if (trackRef) gsap.set(trackRef, { clearProps: "all" });
-			};
-		});
-
-		return () => mm.revert();
-	});
-
-	function handlePointerDown() {
-		isTouching = true;
-		clearTimeout(scrollTimeout);
-		if (tween && viewportRef && trackRef) {
-			tween.pause();
-			const currentX = gsap.getProperty(trackRef, "x") as number;
-			if (currentX !== 0) {
-				gsap.set(trackRef, { x: 0 });
-				viewportRef.style.overflowX = 'auto';
-				viewportRef.scrollLeft = Math.abs(currentX);
-			}
-		}
-	}
-
-	function handlePointerUp() {
-		isTouching = false;
-		clearTimeout(scrollTimeout);
-		scrollTimeout = setTimeout(resumeMarquee, 1000);
-	}
-
-	function handleScroll() {
-		if (!isTouching && (!tween || !tween.isActive())) {
-			clearTimeout(scrollTimeout);
-			scrollTimeout = setTimeout(resumeMarquee, 1000);
-		}
-	}
-
-	function resumeMarquee() {
-		if (isTouching || !viewportRef || !trackRef || !tween) return;
-        
-		const maxScroll = viewportRef.scrollWidth - viewportRef.clientWidth;
-		if (maxScroll <= 0) return;
-
-		const currentScroll = viewportRef.scrollLeft;
-		viewportRef.scrollLeft = 0;
-		gsap.set(trackRef, { x: -currentScroll });
-		viewportRef.style.overflowX = 'hidden';
-
-		tween.progress(currentScroll / maxScroll);
-		tween.play();
-	}
 </script>
 
-<div 
-	class="tiles-viewport" 
+<div
+	class="tiles-viewport"
 	role="region"
 	aria-label="Category Tiles"
-	bind:this={viewportRef}
-	onpointerdown={handlePointerDown}
-	onpointerup={handlePointerUp}
-	onpointercancel={handlePointerUp}
-	onpointerleave={handlePointerUp}
-	onscroll={handleScroll}
+	data-lenis-prevent
 >
-	<div class="tiles-track" bind:this={trackRef}>
+	<div class="tiles-track">
 		{#each visibleCategories as category (category.id)}
 			<a
 				href="/category/{category.id}"
@@ -322,12 +208,14 @@
 		line-height: 120%;
 		text-transform: uppercase;
 		text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+		width: 100%;
 	}
 
 	@media (max-width: 900px) {
 		.tiles-viewport {
 			height: auto;
 			-webkit-overflow-scrolling: touch;
+			scroll-snap-type: x proximity;
 		}
 
 		.tiles-track {
@@ -340,10 +228,17 @@
 		.tile {
 			flex: 0 0 150px;
 			height: 130px;
+			scroll-snap-align: start;
 		}
 
 		.tile-text {
 			font-size: var(--font-sm);
+		}
+
+		/* No flip on touch: tapping a tile navigates instead */
+		.tile:hover .tile-inner,
+		.tile:focus-visible .tile-inner {
+			transform: none;
 		}
 	}
 

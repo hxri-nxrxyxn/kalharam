@@ -52,11 +52,11 @@
 								</div>
 								<div class="cart__row-info">
 									<div class="cart__row-info--quantity">
-										<button type="button" class="icon-btn" onclick={() => decreaseQuantity(item.id)} aria-label="Decrease quantity">
+										<button type="button" class="icon-btn" onclick={() => decreaseQuantity(item.id)} aria-label="Decrease quantity" disabled={item.quantity <= 1}>
 											<img src="/assets/stroke-3px-24px/minus.svg" alt="" width="18" height="18" />
 										</button>
 										<h3>{item.quantity}</h3>
-										<button type="button" class="icon-btn" onclick={() => increaseQuantity(item.id)} aria-label="Increase quantity">
+										<button type="button" class="icon-btn" onclick={() => increaseQuantity(item.id)} aria-label="Increase quantity" disabled={item.quantity >= item.stock}>
 											<img src="/assets/stroke-3px-24px/plus.svg" alt="" width="18" height="18" />
 										</button>
 									</div>
@@ -115,6 +115,19 @@
 		filter: var(--filter-secondary);
 		cursor: pointer;
 		transition: opacity 0.2s;
+	}
+
+	.icon-btn:disabled {
+		opacity: 0.35;
+		cursor: not-allowed;
+	}
+
+	.icon-btn:disabled img {
+		cursor: not-allowed;
+	}
+
+	.icon-btn:disabled:hover img {
+		opacity: 1;
 	}
 
 	.cart__row-info--quantity img:hover,
