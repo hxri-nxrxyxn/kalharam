@@ -4,7 +4,7 @@ WORKDIR /app/backend
 RUN apt-get update && apt-get install -y python3 build-essential && rm -rf /var/lib/apt/lists/*
 
 COPY package*.json ./
-RUN npm install --ignore-scripts=false
+RUN rm -f package-lock.json && npm install --ignore-scripts=false
 
 COPY . .
 
