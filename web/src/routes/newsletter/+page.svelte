@@ -28,7 +28,7 @@
 			<p class="newsletter__paragraph">Enter your email address below. We promise to only send you beautiful things.</p>
 			
 			<Field label="EMAIL ADDRESS">
-				<input type="email" placeholder="you@email.com" bind:value={email} />
+				<input type="email" placeholder="you@email.com" autocomplete="off" bind:value={email} />
 			</Field>
 
 			<button class="btn btn--primary newsletter__btn" onclick={handleSubscribe} disabled={!email}>Subscribe</button>

@@ -55,12 +55,13 @@
 		</div>
 	</div>
 	<div class="auth__form">
-		<form class="auth__fieldset" onsubmit={handleSubmit}>
+		<form class="auth__fieldset" onsubmit={handleSubmit} autocomplete="off">
 			<Field label="EMAIL">
 				<input
 					type="email"
 					placeholder="e.g. parvathy.n@example.com"
 					aria-label="Email"
+					autocomplete="off"
 					bind:value={email}
 				/>
 			</Field>
@@ -70,6 +71,7 @@
 					type="password"
 					placeholder="e.g. ••••••••"
 					aria-label="Password"
+					autocomplete="off"
 					bind:value={password}
 				/>
 			</Field>

@@ -36,6 +36,7 @@
 	// svelte-ignore state_referenced_locally
 	let localMaxPrice = $state(maxPrice);
 	let categories = $state<Category[]>([]);
+	let showFilters = $state(false);
 
 	// Only show tiles that are actually assigned to categories (skip empty default slots)
 	let activeCategories = $derived(
@@ -66,9 +67,15 @@
 </script>
 
 <div class="shop__filters">
-	<Field label="CATEGORY" icon="/assets/stroke-2px-24px/search.svg">
+	<button class="btn btn--secondary filters__toggle" onclick={() => (showFilters = !showFilters)} aria-expanded={showFilters}>
+		<img src="/assets/stroke-3px-24px/funnel.svg" alt="funnel" />
+		{showFilters ? 'HIDE FILTERS' : 'SHOW FILTERS'}
+	</button>
+	<div class="shop__filters-fields" class:open={showFilters}>
+		<Field label="CATEGORY" icon="/assets/stroke-2px-24px/search.svg">
 		<select
 			aria-label="Select category"
+			autocomplete="off"
 			value={categoryId}
 			onchange={handleCategoryChange}
 		>
@@ -83,6 +90,7 @@
 			type="text"
 			placeholder="Search for a drape..."
 			aria-label="Search products"
+			autocomplete="off"
 			bind:value={localSearchQuery}
 		/>
 	</Field>
@@ -90,6 +98,7 @@
 	<Field label="SORT BY" icon="/assets/stroke-2px-24px/sort.svg">
 		<select
 			aria-label="Sort products by"
+			autocomplete="off"
 			bind:value={localSortBy}
 		>
 			<option value="featured">Featured</option>
@@ -105,6 +114,7 @@
 			type="number"
 			placeholder="Min"
 			aria-label="Minimum price"
+			autocomplete="off"
 			bind:value={localMinPrice}
 		/>
 		<p>TO</p>
@@ -112,15 +122,21 @@
 			type="number"
 			placeholder="Max"
 			aria-label="Maximum price"
+			autocomplete="off"
 			bind:value={localMaxPrice}
 		/>
 	</Field>
 	
 	<button class="btn btn--primary" onclick={handleApply}>UPDATE</button>
+	</div>
 </div>
 
 <style>
 	.shop__filters {
+		width: 100%;
+	}
+
+	.shop__filters-fields {
 		width: 100%;
 		padding: var(--spacing-lg);
 		background-color: var(--color-surface);
@@ -132,5 +148,29 @@
 
 	.shop__filters :global(.btn) {
 		width: 100%;
+	}
+
+	.filters__toggle {
+		display: none;
+	}
+
+	.filters__toggle img {
+		width: 12px;
+		height: 12px;
+	}
+
+	@media (max-width: 768px) {
+		.filters__toggle {
+			display: flex;
+			margin-bottom: var(--spacing-lg);
+		}
+
+		.shop__filters-fields {
+			display: none;
+		}
+
+		.shop__filters-fields.open {
+			display: block;
+		}
 	}
 </style>

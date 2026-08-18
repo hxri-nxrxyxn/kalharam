@@ -63,28 +63,28 @@
 		<h3>Delivery</h3>
 		<div class="checkout__fieldset">
 			<Field label="Name">
-				<input type="text" placeholder="e.g. Lakshmi Narayanan" aria-label="Full Name" bind:value={customerName} />
+				<input type="text" placeholder="e.g. Lakshmi Narayanan" aria-label="Full Name" autocomplete="off" bind:value={customerName} />
 			</Field>
 
 			<Field label="Address">
-				<input type="text" placeholder="e.g. 12/4, Temple Road, Mylapore" aria-label="Address" bind:value={address} />
+				<input type="text" placeholder="e.g. 12/4, Temple Road, Mylapore" aria-label="Address" autocomplete="off" bind:value={address} />
 			</Field>
 
 			<Field label="Apartment/Suite">
-				<input type="text" placeholder="e.g. Flat 3B, Krishna Apartments" aria-label="Apartment or Suite" bind:value={apt} />
+				<input type="text" placeholder="e.g. Flat 3B, Krishna Apartments" aria-label="Apartment or Suite" autocomplete="off" bind:value={apt} />
 			</Field>
 
 			<div class="checkout__row">
 				<Field label="City">
-					<input type="text" placeholder="e.g. Chennai" aria-label="City" bind:value={city} />
+					<input type="text" placeholder="e.g. Chennai" aria-label="City" autocomplete="off" bind:value={city} />
 				</Field>
 
 				<Field label="State">
-					<input type="text" placeholder="e.g. Tamil Nadu" aria-label="State" bind:value={userState} />
+					<input type="text" placeholder="e.g. Tamil Nadu" aria-label="State" autocomplete="off" bind:value={userState} />
 				</Field>
 
 				<Field label="PIN">
-					<input type="text" placeholder="e.g. 600004" aria-label="PIN Code" bind:value={pin} />
+					<input type="text" placeholder="e.g. 600004" aria-label="PIN Code" autocomplete="off" bind:value={pin} />
 				</Field>
 			</div>
 		</div>
@@ -94,11 +94,11 @@
 		<h3>Contact</h3>
 		<div class="checkout__fieldset">
 			<Field label="Phone">
-				<input type="tel" placeholder="e.g. +91 98765 43210" aria-label="Phone Number" bind:value={phone} />
+				<input type="tel" placeholder="e.g. +91 98765 43210" aria-label="Phone Number" autocomplete="off" bind:value={phone} />
 			</Field>
 
 			<Field label="Email">
-				<input type="email" placeholder="e.g. lakshmi.n@example.com" aria-label="Email Address" bind:value={email} />
+				<input type="email" placeholder="e.g. lakshmi.n@example.com" aria-label="Email Address" autocomplete="off" bind:value={email} />
 			</Field>
 		</div>
 	</div>
