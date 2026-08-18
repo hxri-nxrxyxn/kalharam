@@ -4,10 +4,16 @@
 
 	let {
 		cartItems,
-		cartTotal
+		cartTotal,
+		orderId,
+		status,
+		cancelOrder
 	} = $props<{
 		cartItems: any[];
 		cartTotal: number;
+		orderId: string;
+		status: string;
+		cancelOrder: (id: string) => void;
 	}>();
 </script>
 
@@ -47,6 +53,10 @@
 										<p>Qty: </p>
 										<h3>{item.quantity}</h3>
 									</div>
+									<div class="cart__row-info--count">
+										<img src="/assets/stroke-3px-24px/circle-check.svg" alt="status" aria-hidden="true" width="18" height="18" />
+										<h3 style="text-transform: capitalize;">{status}</h3>
+									</div>
 								</div>
 							</div>
 							<div class="cart__row-details--bottom">
@@ -59,6 +69,13 @@
 								</div>	
 							</div>
 						</div>
+					</div>
+					<div class="cart__row-action">
+						{#if status === 'pending'}
+							<button type="button" class="icon-btn" onclick={() => cancelOrder(orderId)} aria-label="Cancel order">
+								<img src="/assets/stroke-3px-24px/delete.svg" alt="" width="24" height="24" />
+							</button>
+						{/if}
 					</div>
 				</div>
 			{/each}
@@ -128,12 +145,6 @@
 	.cart__row {
 		display: flex;
 		margin-top: var(--spacing-lg);
-	}
-
-	.cart__header {
-		color: var(--color-primary);
-		display: flex;
-		justify-content: space-between;
 	}
 
 	.cart__row-action {

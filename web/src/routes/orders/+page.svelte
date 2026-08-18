@@ -50,7 +50,7 @@
 				headers: { Authorization: `Bearer ${auth.token}` }
 			});
 			if (res.ok) {
-				toast.show("Order cancelled");
+				toast.show("A mail has been sent to confirm cancellation!");
 				await fetchOrders();
 			} else {
 				const err = await res.json();
@@ -98,18 +98,15 @@
 					<div class="order-summary">
 						<div class="order-header">
 							<div>
-								<h3>Order #{order.id}</h3>
-								<p>Status: <strong style="text-transform: uppercase; color: {order.status === 'pending' ? 'var(--color-primary)' : 'inherit'};">{order.status}</strong></p>
+								<h3 style="color: var(--color-secondary);">Order #{order.id}</h3>
 							</div>
-							{#if order.status === 'pending'}
-								<button type="button" class="btn btn--secondary" style="padding: var(--spacing-sm) var(--spacing-md); display: flex; align-items: center; gap: var(--spacing-sm); border: 1px solid var(--color-primary); background: transparent; color: var(--color-primary);" onclick={() => cancelOrder(order.id)}>
-									Cancel Order
-								</button>
-							{/if}
 						</div>
 						<CartProducts 
 							cartItems={order.items} 
 							cartTotal={order.total}
+							orderId={order.id}
+							status={order.status}
+							{cancelOrder}
 						/>
 					</div>
 				{/each}
@@ -122,13 +119,13 @@
 
 	{#snippet cartActions()}
 		<div class="btns">
+			<button class="btn--primary btn" onclick={() => { auth.logout(); window.location.href='/'; }}>
+				Sign Out
+			</button>
 			<a href="/" class="btn--secondary btn">
 				<img src="/assets/stroke-3px-24px/shopping-basket.svg" alt="shopping" width="24" height="24" />
 				Shop More
 			</a>
-			<button class="btn--primary btn" onclick={() => { auth.logout(); window.location.href='/'; }}>
-				Sign Out
-			</button>
 		</div>
 	{/snippet}
 
