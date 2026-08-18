@@ -7,11 +7,14 @@
 	import Nav from '$lib/components/Nav.svelte';
 	import Footer from '$lib/components/Footer.svelte';
 	import Toast from '$lib/components/Toast.svelte';
+	import Preloader from '$lib/components/Preloader.svelte';
 	import '../app.css';
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 
 	let { children } = $props();
+
+	let preloaderDone = $state(false);
 
 	const jsonLd = JSON.stringify({
 		'@context': 'https://schema.org',
@@ -80,8 +83,24 @@
 
 <Nav />
 
-{@render children()}
+<div class="page" class:page--hidden={!preloaderDone}>
+	{@render children()}
+</div>
+
+<Preloader onDone={() => (preloaderDone = true)} />
 
 <Toast />
 
 <Footer />
+
+<style>
+	.page {
+		transition: opacity 0.6s ease;
+	}
+
+	.page--hidden {
+		opacity: 0;
+		visibility: hidden;
+		pointer-events: none;
+	}
+</style>

@@ -132,7 +132,7 @@
 
 		<div class="ml-auto flex items-center gap-3">
 			{#if outOfStock > 0}
-				<Badge variant="destructive" class="hidden sm:inline-flex">{outOfStock} out of stock</Badge>
+				<Badge variant="destructive" class="hidden sm:inline-flex">{outOfStock} stock out</Badge>
 			{/if}
 			<Avatar class="size-8 border">
 				<AvatarFallback>{initials}</AvatarFallback>

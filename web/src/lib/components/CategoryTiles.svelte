@@ -291,8 +291,13 @@
 	}
 
 	.tile-front--more {
-		background-color: var(--color-primary);
+		background-color: var(--color-surface);
 		border: 2px dashed var(--color-secondary);
+	}
+
+	.tile-front--more .tile-text {
+		color: var(--color-secondary);
+		text-shadow: none;
 	}
 
 	.tile-back {

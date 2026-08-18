@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Field from '$lib/components/Field.svelte';
+	import SimilarProducts from '$lib/components/SimilarProducts.svelte';
 	import { toast } from '$lib/toast.svelte';
 	import { API_BASE } from '$lib/config';
 
@@ -105,11 +106,12 @@
 	</div>
 </main>
 
+<SimilarProducts />
+
 <style>
 	.auth {
 		display: flex;
 		justify-content: space-between;
-		padding-bottom: var(--spacing-xl);
 	}
 
 	.auth__desc {

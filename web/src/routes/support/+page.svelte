@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Field from '$lib/components/Field.svelte';
+	import SimilarProducts from '$lib/components/SimilarProducts.svelte';
 	import { toast } from '$lib/toast.svelte';
 
 	let name = $state('');
@@ -57,11 +58,12 @@
 	</div>
 </main>
 
+<SimilarProducts />
+
 <style>
 	.support {
 		display: flex;
 		gap: var(--spacing-xl);
-		padding-bottom: var(--spacing-xl);
 	}
 
 	.support__image {

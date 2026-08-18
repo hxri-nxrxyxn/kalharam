@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SimilarProducts from '$lib/components/SimilarProducts.svelte';
 </script>
 
 <svelte:head>
@@ -26,10 +27,11 @@
 	</div>
 </main>
 
+<SimilarProducts />
+
 <style>
 	.faq {
 		display: flex;
-		padding-bottom: var(--spacing-xl);
 	}
 
 	.faq__content {

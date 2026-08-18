@@ -19,7 +19,7 @@
 		<div class="listing__info-count">
 			<img src="/assets/stroke-2px-24px/star.svg" alt="" aria-hidden="true" width="18" height="18" />
 			{#if product.stock === 0}
-				<h3 class="listing__info-count--out">Out of Stock</h3>
+				<h3 class="listing__info-count--out">Stock Out</h3>
 			{:else}
 				<h3>{product.stock}</h3>
 			{/if}

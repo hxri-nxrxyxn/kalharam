@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SimilarProducts from '$lib/components/SimilarProducts.svelte';
 </script>
 
 <svelte:head>
@@ -23,10 +24,11 @@
 	</div>
 </main>
 
+<SimilarProducts />
+
 <style>
 	.privacy {
 		display: flex;
-		padding-bottom: var(--spacing-xl);
 	}
 
 	.privacy__content {
