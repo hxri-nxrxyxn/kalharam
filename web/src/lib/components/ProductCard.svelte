@@ -33,14 +33,16 @@
 				<h3>{product.stock}</h3>
 			{/if}
 		</div>
-		<div class="listing__info-maxprice">
-			<p>MRP</p>
-			<h3>{product.mrp}</h3>
-		</div>
-		<div class="listing__info-saleprice">
-			<img src="/assets/stroke-2px-24px/rupee.svg" alt="" aria-hidden="true" width="18" height="18" />
-			<h3>{product.salePrice}</h3>
-		</div>
+		{#if product.stock > 0}
+			<div class="listing__info-maxprice">
+				<p>MRP</p>
+				<h3>{product.mrp}</h3>
+			</div>
+			<div class="listing__info-saleprice">
+				<img src="/assets/stroke-2px-24px/rupee.svg" alt="" aria-hidden="true" width="18" height="18" />
+				<h3>{product.salePrice}</h3>
+			</div>
+		{/if}
 	</div>
 </a>
 
