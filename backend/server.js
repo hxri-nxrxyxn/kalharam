@@ -137,10 +137,14 @@ function cleanOrphanImages() {
 			LEFT JOIN product_gallery pg ON i.uid = pg.imageId
 			LEFT JOIN categories c ON i.uid = c.imageId
 			LEFT JOIN layout_tiles lt ON i.uid = lt.imageId
+			LEFT JOIN banners bd ON i.uid = bd.desktopImageId
+			LEFT JOIN banners bm ON i.uid = bm.mobileImageId
 			WHERE p.id IS NULL 
 			  AND pg.productId IS NULL 
 			  AND c.id IS NULL 
 			  AND lt.id IS NULL
+			  AND bd.id IS NULL
+			  AND bm.id IS NULL
 		`).all();
 		
 		const delStmt = db.prepare('DELETE FROM images WHERE uid = ?');
@@ -221,6 +225,24 @@ function relocateProductImages(product) {
 }
 
 // --- Public Endpoints (for Web) ---
+
+app.get('/api/banners', (req, res) => {
+	try {
+		const banners = db.prepare(`
+			SELECT b.id, b.title, b.desktopImageId, b.mobileImageId, b.linkUrl, b.displayOrder, b.isActive,
+			       d.high_res_url as desktopImage, d.thumb_url as desktopThumb,
+			       m.high_res_url as mobileImage, m.thumb_url as mobileThumb
+			FROM banners b
+			LEFT JOIN images d ON b.desktopImageId = d.uid
+			LEFT JOIN images m ON b.mobileImageId = m.uid
+			WHERE b.isActive = 1
+			ORDER BY b.displayOrder ASC, b.id ASC
+		`).all();
+		res.json(banners);
+	} catch (err) {
+		res.status(500).json({ error: err.message });
+	}
+});
 
 app.get('/api/tiles', (req, res) => {
 	try {
@@ -601,6 +623,109 @@ app.get('/api/admin/products', (req, res) => {
 	}
 });
 
+app.get('/api/admin/banners', (req, res) => {
+	try {
+		const banners = db.prepare(`
+			SELECT b.id, b.title, b.desktopImageId, b.mobileImageId, b.linkUrl, b.displayOrder, b.isActive, b.createdAt,
+			       d.high_res_url as desktopImage, d.thumb_url as desktopThumb,
+			       m.high_res_url as mobileImage, m.thumb_url as mobileThumb
+			FROM banners b
+			LEFT JOIN images d ON b.desktopImageId = d.uid
+			LEFT JOIN images m ON b.mobileImageId = m.uid
+			ORDER BY b.displayOrder ASC, b.id ASC
+		`).all();
+		res.json(banners);
+	} catch (err) {
+		res.status(500).json({ error: err.message });
+	}
+});
+
+app.post('/api/admin/banners', (req, res) => {
+	try {
+		const { title, desktopImageId, mobileImageId, linkUrl, displayOrder, isActive } = req.body;
+		if (!desktopImageId) {
+			return res.status(400).json({ error: 'Desktop banner image is required' });
+		}
+		const stmt = db.prepare(`
+			INSERT INTO banners (title, desktopImageId, mobileImageId, linkUrl, displayOrder, isActive)
+			VALUES (?, ?, ?, ?, ?, ?)
+		`);
+		const result = stmt.run(
+			title || '',
+			desktopImageId,
+			mobileImageId || null,
+			linkUrl || '',
+			displayOrder !== undefined ? Number(displayOrder) : 0,
+			isActive !== undefined ? (isActive ? 1 : 0) : 1
+		);
+		relocateImage(desktopImageId, 'banners', `banner-${result.lastInsertRowid}-desktop`);
+		if (mobileImageId) {
+			relocateImage(mobileImageId, 'banners', `banner-${result.lastInsertRowid}-mobile`);
+		}
+		res.json({ id: result.lastInsertRowid, message: 'Banner created successfully' });
+	} catch (err) {
+		res.status(500).json({ error: err.message });
+	}
+});
+
+app.put('/api/admin/banners/:id', (req, res) => {
+	try {
+		const { id } = req.params;
+		const { title, desktopImageId, mobileImageId, linkUrl, displayOrder, isActive } = req.body;
+		if (!desktopImageId) {
+			return res.status(400).json({ error: 'Desktop banner image is required' });
+		}
+		const oldBanner = db.prepare('SELECT desktopImageId, mobileImageId FROM banners WHERE id = ?').get(id);
+		if (!oldBanner) {
+			return res.status(404).json({ error: 'Banner not found' });
+		}
+
+		db.prepare(`
+			UPDATE banners 
+			SET title = ?, desktopImageId = ?, mobileImageId = ?, linkUrl = ?, displayOrder = ?, isActive = ?
+			WHERE id = ?
+		`).run(
+			title || '',
+			desktopImageId,
+			mobileImageId || null,
+			linkUrl || '',
+			displayOrder !== undefined ? Number(displayOrder) : 0,
+			isActive !== undefined ? (isActive ? 1 : 0) : 1,
+			id
+		);
+
+		relocateImage(desktopImageId, 'banners', `banner-${id}-desktop`);
+		if (mobileImageId) {
+			relocateImage(mobileImageId, 'banners', `banner-${id}-mobile`);
+		}
+
+		cleanOrphanImages();
+		removeEmptyDirectories(UPLOADS_ROOT);
+
+		res.json({ message: 'Banner updated successfully' });
+	} catch (err) {
+		res.status(500).json({ error: err.message });
+	}
+});
+
+app.delete('/api/admin/banners/:id', (req, res) => {
+	try {
+		const { id } = req.params;
+		const banner = db.prepare('SELECT desktopImageId, mobileImageId FROM banners WHERE id = ?').get(id);
+		if (!banner) {
+			return res.status(404).json({ error: 'Banner not found' });
+		}
+		db.prepare('DELETE FROM banners WHERE id = ?').run(id);
+
+		cleanOrphanImages();
+		removeEmptyDirectories(UPLOADS_ROOT);
+
+		res.json({ message: 'Banner deleted successfully' });
+	} catch (err) {
+		res.status(500).json({ error: err.message });
+	}
+});
+
 app.get('/api/admin/tiles', (req, res) => {
 	try {
 		const tiles = db.prepare(`
@@ -840,9 +965,10 @@ app.delete('/api/admin/images/:uid', (req, res) => {
 		const prodCount = db.prepare('SELECT COUNT(*) as count FROM products WHERE imageId = ?').get(uid).count;
 		const galCount = db.prepare('SELECT COUNT(*) as count FROM product_gallery WHERE imageId = ?').get(uid).count;
 		const tileCount = db.prepare('SELECT COUNT(*) as count FROM layout_tiles WHERE imageId = ?').get(uid).count;
+		const bannerCount = db.prepare('SELECT COUNT(*) as count FROM banners WHERE desktopImageId = ? OR mobileImageId = ?').get(uid, uid).count;
 
-		if (prodCount > 0 || galCount > 0 || tileCount > 0) {
-			return res.status(400).json({ error: 'Cannot delete image that is currently in use by products or tiles.' });
+		if (prodCount > 0 || galCount > 0 || tileCount > 0 || bannerCount > 0) {
+			return res.status(400).json({ error: 'Cannot delete image that is currently in use by products, tiles, or banners.' });
 		}
 
 		const img = db.prepare('SELECT uid, high_res_url, thumb_url, alt_text, type FROM images WHERE uid = ?').get(uid);

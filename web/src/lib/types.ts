@@ -45,3 +45,17 @@ export interface CartItem {
 	price: number;
 	quantity: number;
 }
+
+export interface BannerItem {
+	id: number;
+	title?: string;
+	desktopImageId: string;
+	mobileImageId?: string | null;
+	linkUrl?: string | null;
+	displayOrder: number;
+	isActive: number | boolean;
+	desktopImage: string;
+	desktopThumb?: string;
+	mobileImage?: string | null;
+	mobileThumb?: string | null;
+}

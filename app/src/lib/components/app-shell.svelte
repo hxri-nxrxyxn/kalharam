@@ -20,6 +20,7 @@
 
 	import LayoutTemplateIcon from "@lucide/svelte/icons/layout-template";
 	import TagsIcon from "@lucide/svelte/icons/tags";
+	import ImageIcon from "@lucide/svelte/icons/image";
 
 	const nav = [
 		{ href: "/", label: "Dashboard", icon: LayoutDashboardIcon },
@@ -27,6 +28,7 @@
 		{ href: "/products", label: "Products & Upload", icon: PackageIcon },
 		{ href: "/inventory", label: "Inventory", icon: BoxesIcon },
 		{ href: "/orders", label: "Orders", icon: ShoppingCartIcon },
+		{ href: "/banners", label: "Banners", icon: ImageIcon },
 		{ href: "/layouts", label: "Layouts", icon: LayoutTemplateIcon }
 	];
 

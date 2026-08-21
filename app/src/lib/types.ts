@@ -84,3 +84,18 @@ export interface ActiveSession {
 	/** unique id of the device/tab owning this session (used for multi-device sync) */
 	deviceId?: string;
 }
+
+export interface Banner {
+	id: number;
+	title: string;
+	desktopImageId: string;
+	mobileImageId?: string | null;
+	linkUrl?: string;
+	displayOrder: number;
+	isActive: number;
+	createdAt?: string;
+	desktopImage?: string;
+	desktopThumb?: string;
+	mobileImage?: string | null;
+	mobileThumb?: string | null;
+}

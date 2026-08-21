@@ -100,6 +100,19 @@ db.exec(`
 		role TEXT DEFAULT 'user',
 		createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
 	);
+
+	CREATE TABLE IF NOT EXISTS banners (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		title TEXT,
+		desktopImageId TEXT NOT NULL,
+		mobileImageId TEXT,
+		linkUrl TEXT,
+		displayOrder INTEGER DEFAULT 0,
+		isActive INTEGER DEFAULT 1,
+		createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+		FOREIGN KEY(desktopImageId) REFERENCES images(uid),
+		FOREIGN KEY(mobileImageId) REFERENCES images(uid)
+	);
 `);
 
 // Migration logic removed
@@ -112,6 +125,20 @@ function seedData() {
 		for (let i = 1; i <= 18; i++) {
 			insertTile.run(i, `Tile ${i}`);
 		}
+	}
+
+	const bannerCount = db.prepare('SELECT COUNT(*) as count FROM banners').get();
+	if (bannerCount.count === 0) {
+		// Ensure default images exist in images table
+		const insertImg = db.prepare('INSERT OR IGNORE INTO images (uid, high_res_url, thumb_url, alt_text, type) VALUES (?, ?, ?, ?, ?)');
+		insertImg.run('img_banner_1_desktop', '/assets/types/banner-1.webp', '/assets/types/banner-1.webp', 'Festive Silk Collection', 'banner');
+		insertImg.run('img_banner_1_mobile', '/assets/types/mobile-banner-1.webp', '/assets/types/mobile-banner-1.webp', 'Festive Silk Collection Mobile', 'banner');
+		insertImg.run('img_banner_2_desktop', '/assets/types/banner-2.webp', '/assets/types/banner-2.webp', 'Exclusive Handloom Sarees', 'banner');
+		insertImg.run('img_banner_2_mobile', '/assets/types/mobile-banner-2.webp', '/assets/types/mobile-banner-2.webp', 'Exclusive Handloom Sarees Mobile', 'banner');
+
+		const insertBanner = db.prepare('INSERT INTO banners (title, desktopImageId, mobileImageId, linkUrl, displayOrder, isActive) VALUES (?, ?, ?, ?, ?, ?)');
+		insertBanner.run('Festive Silk Collection', 'img_banner_1_desktop', 'img_banner_1_mobile', '', 1, 1);
+		insertBanner.run('Exclusive Handloom Sarees', 'img_banner_2_desktop', 'img_banner_2_mobile', '', 2, 1);
 	}
 
 	const catCount = db.prepare('SELECT COUNT(*) as count FROM categories').get();

@@ -1,7 +1,18 @@
-import type { Category, Product, FilterOptions } from './types';
+import type { Category, Product, FilterOptions, BannerItem } from './types';
 import { API_BASE, BACKEND_URL } from './config';
 
 export { API_BASE, BACKEND_URL };
+
+export async function getBanners(fetchFn: typeof fetch = fetch): Promise<BannerItem[]> {
+	try {
+		const res = await fetchFn(`${API_BASE}/banners`, { cache: 'no-store' });
+		if (!res.ok) throw new Error('Failed to fetch banners');
+		return await res.json();
+	} catch (error) {
+		console.error('Error fetching banners:', error);
+		return [];
+	}
+}
 
 export async function getCategories(fetchFn: typeof fetch = fetch): Promise<Category[]> {
 	try {
