@@ -63,6 +63,7 @@ app.use('/api', (req, res, next) => {
 });
 
 app.use('/assets/uploads', express.static(path.join(__dirname, '../web/static/assets/uploads')));
+app.use('/assets', express.static(path.join(__dirname, '../web/static/assets')));
 
 const upload = multer({ storage: multer.memoryStorage() });
 
