@@ -1,4 +1,4 @@
-package com.kalharam.admin;
+package com.laddu.kalharam;
 
 import com.getcapacitor.BridgeActivity;
 

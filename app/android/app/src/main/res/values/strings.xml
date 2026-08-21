@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">KalharamAdmin</string>
-    <string name="title_activity_main">KalharamAdmin</string>
-    <string name="package_name">com.kalharam.admin</string>
-    <string name="custom_url_scheme">com.kalharam.admin</string>
+    <string name="app_name">Kalharam Admin</string>
+    <string name="title_activity_main">Kalharam Admin</string>
+    <string name="package_name">com.laddu.kalharam</string>
+    <string name="custom_url_scheme">com.laddu.kalharam</string>
 </resources>

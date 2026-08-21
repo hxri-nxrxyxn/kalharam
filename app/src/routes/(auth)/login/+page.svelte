@@ -7,7 +7,7 @@
 	import { Separator } from "$lib/components/ui/separator";
 	import { toast } from "svelte-sonner";
 	import { signIn, loadBackendData } from "$lib/stores/app.svelte";
-	import { BACKEND_URL } from "$lib/config";
+	import { API_BASE } from "$lib/config";
 	import GemIcon from "@lucide/svelte/icons/gem";
 	import MonitorSmartphoneIcon from "@lucide/svelte/icons/monitor-smartphone";
 
@@ -22,7 +22,7 @@
 		}
 		busy = true;
 		try {
-			const res = await fetch(`${BACKEND_URL}/api/auth/login`, {
+			const res = await fetch(`${API_BASE}/auth/login`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ email, password })
