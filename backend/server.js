@@ -188,16 +188,19 @@ function cleanOrphanImages() {
 			const highresDisk = path.join(__dirname, '../web/static', img.high_res_url);
 			const thumbDisk = path.join(__dirname, '../web/static', img.thumb_url);
 			
-			// If file exists, check its age. We keep recent uploads (e.g. < 1 hr) so we 
-			// don't delete images mid-form-submission.
-			if (fs.existsSync(highresDisk)) {
+			// Only protect recent staging uploads (e.g. < 1 hr) that may be part of an in-progress form
+			if (img.high_res_url.includes('/_staging/') && fs.existsSync(highresDisk)) {
 				const stats = fs.statSync(highresDisk);
 				const ageHours = (Date.now() - stats.mtimeMs) / (1000 * 60 * 60);
 				if (ageHours < 1) continue; 
-				fs.unlinkSync(highresDisk);
 			}
-			if (fs.existsSync(thumbDisk)) {
-				fs.unlinkSync(thumbDisk);
+
+			// Delete uploaded files from filesystem (protect static repo assets in /assets/types/)
+			if (img.high_res_url.startsWith('/assets/uploads/') && fs.existsSync(highresDisk)) {
+				try { fs.unlinkSync(highresDisk); } catch (e) {}
+			}
+			if (img.thumb_url && img.thumb_url.startsWith('/assets/uploads/') && fs.existsSync(thumbDisk)) {
+				try { fs.unlinkSync(thumbDisk); } catch (e) {}
 			}
 			
 			// Execute delete after disk cleanup
@@ -751,6 +754,39 @@ app.delete('/api/admin/banners/:id', (req, res) => {
 			return res.status(404).json({ error: 'Banner not found' });
 		}
 		db.prepare('DELETE FROM banners WHERE id = ?').run(id);
+
+		// Explicitly clean up banner images if not used by any other banner or entity
+		const imageUids = [banner.desktopImageId, banner.mobileImageId].filter(Boolean);
+		for (const uid of imageUids) {
+			const inUse = db.prepare(`
+				SELECT (
+					(SELECT COUNT(*) FROM banners WHERE desktopImageId = ? OR mobileImageId = ?) +
+					(SELECT COUNT(*) FROM products WHERE imageId = ?) +
+					(SELECT COUNT(*) FROM product_gallery WHERE imageId = ?) +
+					(SELECT COUNT(*) FROM categories WHERE imageId = ?) +
+					(SELECT COUNT(*) FROM layout_tiles WHERE imageId = ?)
+				) as count
+			`).get(uid, uid, uid, uid, uid, uid).count;
+
+			if (inUse === 0) {
+				const img = db.prepare('SELECT uid, high_res_url, thumb_url FROM images WHERE uid = ?').get(uid);
+				if (img) {
+					db.prepare('DELETE FROM images WHERE uid = ?').run(uid);
+					if (img.high_res_url.startsWith('/assets/uploads/')) {
+						const highresDisk = path.join(__dirname, '../web/static', img.high_res_url);
+						if (fs.existsSync(highresDisk)) {
+							try { fs.unlinkSync(highresDisk); } catch (e) {}
+						}
+					}
+					if (img.thumb_url && img.thumb_url.startsWith('/assets/uploads/')) {
+						const thumbDisk = path.join(__dirname, '../web/static', img.thumb_url);
+						if (fs.existsSync(thumbDisk)) {
+							try { fs.unlinkSync(thumbDisk); } catch (e) {}
+						}
+					}
+				}
+			}
+		}
 
 		cleanOrphanImages();
 		removeEmptyDirectories(UPLOADS_ROOT);
