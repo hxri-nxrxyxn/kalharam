@@ -4,6 +4,7 @@
 	import * as Table from "$lib/components/ui/table";
 	import * as Dialog from "$lib/components/ui/dialog";
 	import * as AlertDialog from "$lib/components/ui/alert-dialog";
+	import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
 	import { Input } from "$lib/components/ui/input";
 	import { Label } from "$lib/components/ui/label";
 	import { Button } from "$lib/components/ui/button";
@@ -16,8 +17,12 @@
 	import SmartphoneIcon from "@lucide/svelte/icons/smartphone";
 	import MonitorIcon from "@lucide/svelte/icons/monitor";
 	import ExternalLinkIcon from "@lucide/svelte/icons/external-link";
+	import ChevronDownIcon from "@lucide/svelte/icons/chevron-down";
+	import CheckIcon from "@lucide/svelte/icons/check";
+	import FolderIcon from "@lucide/svelte/icons/folder";
+	import LinkIcon from "@lucide/svelte/icons/link";
 	import { API_BASE, apiFetch, imageUrl } from "$lib/config";
-	import { auth } from "$lib/stores/app.svelte";
+	import { auth, categoriesState, refreshCategories } from "$lib/stores/app.svelte";
 	import type { Banner } from "$lib/types";
 
 	let banners = $state<Banner[]>([]);
@@ -35,6 +40,12 @@
 	let formIsActive = $state(true);
 	let formDesktopImageId = $state("");
 	let formMobileImageId = $state("");
+
+	// Destination Link helper states
+	let destinationType = $state<"none" | "category" | "custom">("none");
+	let selectedCategoryId = $state<string>("");
+	let customUrl = $state<string>("");
+	let linkDropdownOpen = $state(false);
 
 	// Upload states
 	let fileInputRef: HTMLInputElement | null = $state(null);
@@ -59,7 +70,8 @@
 		try {
 			const [bannersRes, imgRes] = await Promise.all([
 				apiFetch(`${API_BASE}/admin/banners`),
-				apiFetch(`${API_BASE}/admin/images`)
+				apiFetch(`${API_BASE}/admin/images`),
+				refreshCategories()
 			]);
 			if (bannersRes.ok) banners = await bannersRes.json();
 			if (imgRes.ok) allImages = await imgRes.json();
@@ -88,6 +100,10 @@
 	function openAddModal() {
 		formTitle = "";
 		formLinkUrl = "";
+		destinationType = "none";
+		selectedCategoryId = "";
+		customUrl = "";
+		linkDropdownOpen = false;
 		formDisplayOrder = (banners.length > 0 ? Math.max(...banners.map((b) => b.displayOrder || 0)) + 1 : 1);
 		formIsActive = true;
 		formDesktopImageId = "";
@@ -104,7 +120,51 @@
 		formIsActive = b.isActive === 1;
 		formDesktopImageId = b.desktopImageId || "";
 		formMobileImageId = b.mobileImageId || "";
+		linkDropdownOpen = false;
+
+		if (!b.linkUrl) {
+			destinationType = "none";
+			selectedCategoryId = "";
+			customUrl = "";
+		} else if (b.linkUrl.startsWith("/category/")) {
+			destinationType = "category";
+			selectedCategoryId = b.linkUrl.replace("/category/", "").split("/")[0].split("?")[0];
+			customUrl = "";
+		} else {
+			destinationType = "custom";
+			selectedCategoryId = "";
+			customUrl = b.linkUrl;
+		}
+
 		showAddModal = true;
+	}
+
+	function selectNoLink() {
+		destinationType = "none";
+		selectedCategoryId = "";
+		customUrl = "";
+		formLinkUrl = "";
+		linkDropdownOpen = false;
+	}
+
+	function selectCategory(catId: string) {
+		destinationType = "category";
+		selectedCategoryId = catId;
+		customUrl = "";
+		formLinkUrl = `/category/${catId}`;
+		linkDropdownOpen = false;
+	}
+
+	function selectCustom() {
+		destinationType = "custom";
+		selectedCategoryId = "";
+		formLinkUrl = customUrl;
+		linkDropdownOpen = false;
+	}
+
+	function handleCustomUrlInput(val: string) {
+		customUrl = val;
+		formLinkUrl = val;
 	}
 
 	function triggerUpload(mode: "desktop" | "mobile") {
@@ -323,15 +383,26 @@
 								<div class="flex flex-col">
 									<span class="font-medium text-foreground">{b.title || "Untitled Banner"}</span>
 									{#if b.linkUrl}
-										<a
-											href={b.linkUrl}
-											target="_blank"
-											rel="noopener noreferrer"
-											class="text-xs text-muted-foreground hover:text-primary inline-flex items-center gap-1 mt-0.5"
-										>
-											{b.linkUrl}
-											<ExternalLinkIcon class="size-3" />
-										</a>
+										{#if b.linkUrl.startsWith('/category/')}
+											{@const catId = b.linkUrl.replace('/category/', '').split('/')[0].split('?')[0]}
+											{@const cat = categoriesState.find((c) => c.id === catId)}
+											<div class="flex items-center gap-1.5 mt-0.5">
+												<Badge variant="outline" class="text-[10px] py-0 px-1.5 font-normal bg-primary/5 text-primary border-primary/20">
+													Category: {cat?.name || catId}
+												</Badge>
+												<span class="text-[11px] text-muted-foreground font-mono">{b.linkUrl}</span>
+											</div>
+										{:else}
+											<a
+												href={b.linkUrl}
+												target="_blank"
+												rel="noopener noreferrer"
+												class="text-xs text-muted-foreground hover:text-primary inline-flex items-center gap-1 mt-0.5"
+											>
+												{b.linkUrl}
+												<ExternalLinkIcon class="size-3" />
+											</a>
+										{/if}
 									{:else}
 										<span class="text-xs text-muted-foreground italic">No link assigned</span>
 									{/if}
@@ -479,15 +550,106 @@
 
 		<div class="grid gap-5 py-4">
 			<div class="grid gap-2">
-				<Label for="banner-title">Banner Title</Label>
-				<Input id="banner-title" bind:value={formTitle} placeholder="e.g. Summer Silk Collection" />
-				<p class="text-xs text-muted-foreground">Optional label for your reference and accessibility.</p>
+				<Label for="banner-title">Banner Title / Alt Text</Label>
+				<Input id="banner-title" bind:value={formTitle} placeholder="e.g. Festive Silk Collection" />
+				<p class="text-xs text-muted-foreground">Used as the accessible alternative text (alt text / aria-label) for screen readers and SEO.</p>
 			</div>
 
 			<div class="grid gap-2">
-				<Label for="banner-link">Destination Link</Label>
-				<Input id="banner-link" bind:value={formLinkUrl} placeholder="e.g. /category/mul-cotton or /product/p1" />
-				<p class="text-xs text-muted-foreground">URL or page path opened when customer clicks the banner.</p>
+				<Label for="banner-destination">Destination Link</Label>
+				<DropdownMenu.Root bind:open={linkDropdownOpen}>
+					<DropdownMenu.Trigger>
+						{#snippet child({ props })}
+							<Button
+								variant="outline"
+								id="banner-destination"
+								{...props}
+								class="w-full justify-between font-normal h-10 px-3 text-left"
+							>
+								<span class="flex items-center gap-2 truncate">
+									{#if destinationType === "category"}
+										{@const cat = categoriesState.find((c) => c.id === selectedCategoryId)}
+										<FolderIcon class="size-4 text-primary shrink-0" />
+										<span class="truncate">
+											Category: <span class="font-medium text-foreground">{cat?.name || selectedCategoryId}</span>
+										</span>
+									{:else if destinationType === "custom"}
+										<LinkIcon class="size-4 text-muted-foreground shrink-0" />
+										<span class="truncate font-mono text-xs">{customUrl || "Custom URL..."}</span>
+									{:else}
+										<span class="text-muted-foreground">No link (Non-clickable banner)</span>
+									{/if}
+								</span>
+								<ChevronDownIcon class="size-4 opacity-60 shrink-0 ml-2" />
+							</Button>
+						{/snippet}
+					</DropdownMenu.Trigger>
+					<DropdownMenu.Content align="start" class="w-[var(--radix-dropdown-menu-trigger-width)] max-h-72 overflow-y-auto">
+						<DropdownMenu.Item onSelect={selectNoLink} class="flex items-center justify-between cursor-pointer">
+							<div class="flex items-center gap-2">
+								{#if destinationType === "none"}
+									<CheckIcon class="size-4 text-primary" />
+								{:else}
+									<span class="size-4"></span>
+								{/if}
+								<span>No link (Non-clickable)</span>
+							</div>
+						</DropdownMenu.Item>
+
+						<DropdownMenu.Separator />
+						<DropdownMenu.Group>
+							<DropdownMenu.GroupHeading class="text-xs font-semibold text-muted-foreground px-2 py-1">
+								Shop Categories
+							</DropdownMenu.GroupHeading>
+							{#if categoriesState.length === 0}
+								<div class="px-2 py-2 text-xs text-muted-foreground italic">No categories found</div>
+							{:else}
+								{#each categoriesState as cat}
+									<DropdownMenu.Item onSelect={() => selectCategory(cat.id)} class="flex items-center justify-between cursor-pointer">
+										<div class="flex items-center gap-2">
+											{#if destinationType === "category" && selectedCategoryId === cat.id}
+												<CheckIcon class="size-4 text-primary" />
+											{:else}
+												<span class="size-4"></span>
+											{/if}
+											<span class="font-medium">{cat.name}</span>
+										</div>
+										<span class="text-[11px] font-mono text-muted-foreground">/category/{cat.id}</span>
+									</DropdownMenu.Item>
+								{/each}
+							{/if}
+						</DropdownMenu.Group>
+
+						<DropdownMenu.Separator />
+						<DropdownMenu.Item onSelect={selectCustom} class="flex items-center gap-2 cursor-pointer">
+							{#if destinationType === "custom"}
+								<CheckIcon class="size-4 text-primary" />
+							{:else}
+								<span class="size-4"></span>
+							{/if}
+							<span>Custom URL / Specific page...</span>
+						</DropdownMenu.Item>
+					</DropdownMenu.Content>
+				</DropdownMenu.Root>
+
+				{#if destinationType === "custom"}
+					<div class="grid gap-1.5 pt-1">
+						<Input
+							id="banner-custom-url"
+							bind:value={customUrl}
+							oninput={(e) => handleCustomUrlInput((e.target as HTMLInputElement).value)}
+							placeholder="e.g. /product/prod-123 or https://..."
+							class="font-mono text-xs"
+						/>
+						<p class="text-xs text-muted-foreground">Type a custom internal path or external URL.</p>
+					</div>
+				{:else if destinationType === "category" && selectedCategoryId}
+					<p class="text-xs text-muted-foreground flex items-center gap-1.5">
+						Target URL: <code class="bg-muted px-1.5 py-0.5 rounded text-[11px] font-mono text-foreground">/category/{selectedCategoryId}</code>
+					</p>
+				{:else}
+					<p class="text-xs text-muted-foreground">Select a category to automatically link customer clicks to that category page.</p>
+				{/if}
 			</div>
 
 			<div class="grid grid-cols-2 gap-4">

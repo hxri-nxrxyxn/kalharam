@@ -25,7 +25,7 @@ export async function getCategories(fetchFn: typeof fetch = fetch): Promise<Cate
 	}
 }
 
-export async function getActualCategories(fetchFn: typeof fetch = fetch): Promise<{id: string, name: string}[]> {
+export async function getActualCategories(fetchFn: typeof fetch = fetch): Promise<{id: string, name: string, image?: string}[]> {
 	try {
 		const res = await fetchFn(`${API_BASE}/categories`, { cache: 'no-store' });
 		if (!res.ok) throw new Error('Failed to fetch categories');

@@ -5,7 +5,7 @@
 	import CategoryTiles from '$lib/components/CategoryTiles.svelte';
 	import Filters from '$lib/components/Filters.svelte';
 	import ProductGrid from '$lib/components/ProductGrid.svelte';
-	import { filterProducts, getCategories, getProducts } from '$lib/data';
+	import { filterProducts, getCategories, getActualCategories, getProducts } from '$lib/data';
 	import type { Category, Product } from '$lib/types';
 
 	interface Props {
@@ -26,30 +26,44 @@
 	let maxPrice = $state('');
 
 	let categories = $state<Category[]>([]);
+	let rawCategories = $state<{ id: string; name: string }[]>([]);
 	let rawProducts = $state<Product[]>([]);
 
 	// Bumped when the tab regains focus so open tabs pick up admin edits
 	let refreshKey = $state(0);
 
-	// Default to the first tile when nothing specific matches (e.g. the home page)
-	let activeCategoryId = $derived(
-		categories.some((c) => c.id === currentCategoryId)
-			? currentCategoryId
-			: (categories[0]?.id ?? '')
+	// Find if currentCategoryId matches an actual category
+	let matchingActualCategory = $derived(
+		rawCategories.find((c) => c.id === currentCategoryId)
 	);
+
+	// Find the tile that matches the id or contains this category
+	let activeTile = $derived(
+		categories.find((c) => c.id === currentCategoryId) ||
+		(matchingActualCategory ? categories.find((c) => c.categoryIds && c.categoryIds.includes(matchingActualCategory.id)) : undefined) ||
+		categories[0]
+	);
+
+	let activeTileId = $derived(activeTile?.id ?? '');
 
 	// Fetch categories globally for the catalog tiles
 	$effect(() => {
 		void refreshKey;
-		getCategories().then(res => {
-			categories = res;
+		Promise.all([getCategories(), getActualCategories()]).then(([tilesRes, catsRes]) => {
+			categories = tilesRes;
+			rawCategories = catsRes;
 		});
 	});
 
 	// Reactively fetch products when category changes
 	$effect(() => {
 		void refreshKey;
-		getProducts({ tileId: activeCategoryId }).then(res => {
+		const isDirectCategory = matchingActualCategory !== undefined;
+		const fetchOptions = isDirectCategory
+			? { categoryId: currentCategoryId }
+			: { tileId: activeTileId };
+
+		getProducts(fetchOptions).then(res => {
 			rawProducts = res;
 		});
 	});
@@ -64,9 +78,19 @@
 		return () => document.removeEventListener('visibilitychange', handleVisibility);
 	});
 
-	let currentCategory = $derived(
-		categories.find((c) => c.id === activeCategoryId) || { id: '', name: 'Loading...', image: '' }
-	);
+	let currentCategory = $derived.by(() => {
+		if (matchingActualCategory) {
+			return {
+				id: matchingActualCategory.id,
+				name: matchingActualCategory.name,
+				image: activeTile?.image || ''
+			};
+		}
+		if (activeTile) {
+			return activeTile;
+		}
+		return { id: '', name: 'Loading...', image: '' };
+	});
 
 	let filteredProducts = $derived(
 		filterProducts(rawProducts, { searchQuery, sortBy, minPrice, maxPrice })
@@ -89,7 +113,7 @@
 		<Banner />
 		<CategoryTiles
 			{categories}
-			selectedCategoryId={currentCategory.id}
+			selectedCategoryId={activeTileId}
 		/>
 	</header>
 
@@ -105,7 +129,7 @@
 					{sortBy}
 					{minPrice}
 					{maxPrice}
-					categoryId={currentCategory.id}
+					categoryId={activeTileId}
 					onApply={handleApplyFilters}
 				/>
 			</div>

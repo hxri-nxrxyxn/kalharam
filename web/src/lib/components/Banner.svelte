@@ -50,11 +50,20 @@
 		};
 		mql.addEventListener('change', onMediaChange);
 
-		getBanners().then((items) => {
-			if (items && items.length > 0) {
-				dynamicBanners = items;
-			}
-		});
+		const fetchBanners = () => {
+			getBanners().then((items) => {
+				if (items && items.length > 0) {
+					dynamicBanners = items;
+				}
+			});
+		};
+
+		fetchBanners();
+
+		const handleVisibility = () => {
+			if (document.visibilityState === 'visible') fetchBanners();
+		};
+		document.addEventListener('visibilitychange', handleVisibility);
 
 		const interval = setInterval(() => {
 			if (activeBanners.length > 1) {
@@ -64,6 +73,7 @@
 
 		return () => {
 			mql.removeEventListener('change', onMediaChange);
+			document.removeEventListener('visibilitychange', handleVisibility);
 			clearInterval(interval);
 		};
 	});
@@ -79,16 +89,19 @@
 <div class="banner-slider">
 	{#each activeBanners as banner, index (banner.id)}
 		{@const bgUrl = getBannerImage(banner, isMobile)}
-		{#if banner.linkUrl}
+		{@const link = banner.linkUrl?.trim()}
+		{#if link}
 			<a
-				href={banner.linkUrl}
-				class={['slide', index === currentIndex && 'active']}
+				href={link}
+				class="slide"
+				class:active={index === currentIndex}
 				style:background-image="url('{bgUrl}')"
 				aria-label={banner.title || `Banner ${index + 1}`}
 			></a>
 		{:else}
 			<div
-				class={['slide', index === currentIndex && 'active']}
+				class="slide"
+				class:active={index === currentIndex}
 				style:background-image="url('{bgUrl}')"
 				role="img"
 				aria-label={banner.title || `Banner ${index + 1}`}
@@ -123,11 +136,17 @@
 		transition: opacity 0.8s ease-in-out, transform 0.8s ease-in-out;
 		pointer-events: none;
 		text-decoration: none;
+		z-index: 1;
+	}
+
+	a.slide {
+		cursor: pointer;
 	}
 
 	.slide.active {
 		opacity: 1;
 		transform: scale(1);
 		pointer-events: auto;
+		z-index: 2;
 	}
 </style>
