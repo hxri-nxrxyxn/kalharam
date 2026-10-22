@@ -33,8 +33,9 @@
 - `src/lib/types.ts`: Central location for all TypeScript interfaces (e.g., `Product`, `Category`).
 
 ## Development Workflow
-- **Web Server**: `cd web && npm run dev`
-- **App Server**: `cd app && npm run dev`
-- **Backend Server**: `cd backend && npm run dev`
-- **Type Checking (Web/App)**: `cd <folder> && npm run check` (Runs `svelte-check`). *Note: There is no ESLint or Prettier currently configured.*
-- **Build (Web/App)**: `cd <folder> && npm run build`
+- **All Servers (Concurrent)**: `npm run dev` (Runs backend, web, and app together with colored logs and LAN IP info)
+- **Web Server**: `npm run dev:web` (or `cd web && npm run dev`)
+- **App Server**: `npm run dev:app` (or `cd app && npm run dev`)
+- **Backend Server**: `npm run dev:backend` (or `cd backend && npm run dev`)
+- **Type Checking (Web/App)**: `npm run check` (Runs `svelte-check` on both web and app)
+- **Build (Web/App)**: `npm run build` (Builds both web and app)

@@ -24,8 +24,31 @@ export const ordersState = $state<Order[]>([]);
 export const categoriesState = $state<Category[]>([]);
 export const sessionsState = $state<ActiveSession[]>([]);
 
+function decodeToken(token: string) {
+	try {
+		return JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+	} catch {
+		return null;
+	}
+}
+
+function getInitialUser(): SessionUser | null {
+	if (typeof window === 'undefined' || typeof localStorage === 'undefined') return null;
+	try {
+		const stored = localStorage.getItem('admin_token');
+		if (!stored) return null;
+		const payload = decodeToken(stored);
+		if (payload && (!payload.exp || Date.now() / 1000 < payload.exp)) {
+			return { name: payload.name ?? 'Admin', email: payload.email, role: 'admin' };
+		}
+	} catch {
+		// ignore
+	}
+	return null;
+}
+
 /** Auth state — the account is shared; any device can sign in on it. */
-export const auth = $state<{ user: SessionUser | null }>({ user: null });
+export const auth = $state<{ user: SessionUser | null }>({ user: getInitialUser() });
 
 let transport: SyncTransport | null = null;
 let syncStarted = false;

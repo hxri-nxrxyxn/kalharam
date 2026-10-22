@@ -19,9 +19,39 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const isDev = process.env.NODE_ENV !== 'production';
+
 const allowedOrigins = process.env.CORS_ORIGINS 
-	? process.env.CORS_ORIGINS.split(',') 
-	: ['http://localhost:5173', 'http://localhost:5174'];
+	? process.env.CORS_ORIGINS.split(',').map(s => s.trim()) 
+	: ['http://localhost:5173', 'http://localhost:5174', 'http://127.0.0.1:5173', 'http://127.0.0.1:5174'];
+
+function isLocalOrPrivateOrigin(origin) {
+	try {
+		const parsed = new URL(origin);
+		const hostname = parsed.hostname;
+		// localhost, 127.0.0.1, [::1], or .local mDNS
+		if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1' || hostname.endsWith('.local')) {
+			return true;
+		}
+		// Private IPv4 ranges (192.168.x.x, 10.x.x.x, 172.16.x.x - 172.31.x.x)
+		if (
+			/^192\.168\.\d{1,3}\.\d{1,3}$/.test(hostname) ||
+			/^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(hostname) ||
+			/^172\.(1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3}$/.test(hostname)
+		) {
+			return true;
+		}
+		// Capacitor / mobile local schemas
+		if (parsed.protocol === 'capacitor:' || parsed.protocol === 'ionic:' || parsed.protocol === 'file:') {
+			return true;
+		}
+	} catch {
+		if (origin.startsWith('capacitor://') || origin.startsWith('ionic://')) {
+			return true;
+		}
+	}
+	return false;
+}
 
 app.use(cors({
 	origin: function (origin, callback) {
@@ -31,11 +61,16 @@ app.use(cors({
 		// If CORS_ORIGINS is set to '*', allow all origins (e.g. for a fully public API)
 		if (allowedOrigins.includes('*')) return callback(null, true);
 
-		if (allowedOrigins.indexOf(origin) === -1) {
-			const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-			return callback(new Error(msg), false);
+		// Allow explicitly listed origins
+		if (allowedOrigins.indexOf(origin) !== -1) return callback(null, true);
+
+		// In development or when accessing from local network / Capacitor, allow automatically
+		if (isDev || isLocalOrPrivateOrigin(origin)) {
+			return callback(null, true);
 		}
-		return callback(null, true);
+
+		const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+		return callback(new Error(msg), false);
 	},
 	credentials: true
 }));

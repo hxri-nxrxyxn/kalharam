@@ -55,7 +55,7 @@
 	}
 
 	async function loadData() {
-		if (!auth.user) return;
+		if (!auth.user && (typeof localStorage === "undefined" || !localStorage.getItem("admin_token"))) return;
 		try {
 			const [bannersRes, imgRes] = await Promise.all([
 				apiFetch(`${API_BASE}/admin/banners`),
@@ -67,6 +67,12 @@
 			toast.error("Failed to load banners.");
 		}
 	}
+
+	$effect(() => {
+		if (auth.user) {
+			loadData();
+		}
+	});
 
 	onMount(() => {
 		loadData();
@@ -232,10 +238,11 @@
 		}
 	}
 
-	function getImageSrc(uid?: string | null): string {
-		if (!uid) return "";
+	function getImageSrc(uid?: string | null, fallbackUrl?: string | null): string {
+		if (!uid) return fallbackUrl ? imageUrl(fallbackUrl) : "";
 		const img = allImages.find((i) => i.uid === uid);
-		return img ? imageUrl(img.thumb_url || img.high_res_url) : "";
+		if (img) return imageUrl(img.thumb_url || img.high_res_url);
+		return fallbackUrl ? imageUrl(fallbackUrl) : "";
 	}
 
 	const activeBannersList = $derived(banners.filter((b) => b.isActive === 1));
@@ -411,8 +418,8 @@
 						{#each activeBannersList as b, i (b.id)}
 							{@const isSelected = i === previewIndex % activeBannersList.length}
 							{@const currentUrl = previewDevice === "mobile" && (b.mobileImage || b.mobileImageId)
-								? (b.mobileImage ? imageUrl(b.mobileImage) : getImageSrc(b.mobileImageId))
-								: (b.desktopImage ? imageUrl(b.desktopImage) : getImageSrc(b.desktopImageId))}
+								? (b.mobileImage ? imageUrl(b.mobileImage) : getImageSrc(b.mobileImageId, b.mobileImage))
+								: (b.desktopImage ? imageUrl(b.desktopImage) : getImageSrc(b.desktopImageId, b.desktopImage))}
 							<div
 								class={[
 									"absolute inset-0 bg-cover bg-center transition-opacity duration-700 ease-in-out",
@@ -521,7 +528,7 @@
 				<p class="text-xs text-muted-foreground">Recommended ratio: ~1920x800px or 1600x900px.</p>
 
 				{#if formDesktopImageId}
-					{@const src = getImageSrc(formDesktopImageId)}
+					{@const src = getImageSrc(formDesktopImageId, editingBanner?.desktopImage)}
 					{#if src}
 						<div class="relative w-full h-32 rounded-md border overflow-hidden bg-black/5 mt-1">
 							<img src={src} alt="Desktop banner preview" class="w-full h-full object-cover" />
@@ -557,7 +564,7 @@
 				<p class="text-xs text-muted-foreground">Recommended ratio: ~800x1200px or portrait. If omitted, desktop banner is used.</p>
 
 				{#if formMobileImageId}
-					{@const src = getImageSrc(formMobileImageId)}
+					{@const src = getImageSrc(formMobileImageId, editingBanner?.mobileImage)}
 					{#if src}
 						<div class="relative w-32 h-44 rounded-md border overflow-hidden bg-black/5 mt-1">
 							<img src={src} alt="Mobile banner preview" class="w-full h-full object-cover" />

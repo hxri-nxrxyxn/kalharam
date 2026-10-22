@@ -1,6 +1,8 @@
+import { Capacitor } from '@capacitor/core';
+
 export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL !== undefined
 	? import.meta.env.VITE_BACKEND_URL
-	: '';
+	: (typeof window !== 'undefined' && Capacitor.isNativePlatform() ? 'https://kalharam.com' : '');
 export const API_BASE = `${BACKEND_URL}/api`;
 
 export function imageUrl(url: string | null | undefined): string {

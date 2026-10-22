@@ -27,7 +27,7 @@
 	let uploadTarget = $state<Tile | null>(null);
 
 	async function loadData() {
-		if (!auth.user) return;
+		if (!auth.user && (typeof localStorage === "undefined" || !localStorage.getItem("admin_token"))) return;
 		try {
 			const tilesRes = await apiFetch(`${API_BASE}/admin/tiles`);
 			if (tilesRes.ok) tiles = await tilesRes.json();
@@ -35,6 +35,12 @@
 			toast.error("Failed to load layout data.");
 		}
 	}
+
+	$effect(() => {
+		if (auth.user) {
+			loadData();
+		}
+	});
 
 	async function handleUpload(e: Event) {
 		const files = (e.target as HTMLInputElement).files;

@@ -1,0 +1,16 @@
+{
+  "name": "kalharam-workspace",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Kalharam Monorepo - Storefront (web), Admin Console (app), and Backend API",
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:web": "npm --prefix web run dev",
+    "dev:app": "npm --prefix app run dev",
+    "build": "npm --prefix web run build && npm --prefix app run build",
+    "check": "npm --prefix web run check && npm --prefix app run check",
+    "install:all": "npm --prefix backend install && npm --prefix web install && npm --prefix app install"
+  }
+}

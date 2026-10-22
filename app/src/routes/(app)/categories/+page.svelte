@@ -56,7 +56,7 @@
 	}
 
 	async function loadData() {
-		if (!auth.user) return;
+		if (!auth.user && (typeof localStorage === "undefined" || !localStorage.getItem("admin_token"))) return;
 		try {
 			const imgRes = await apiFetch(`${API_BASE}/admin/images`);
 			if (imgRes.ok) allImages = await imgRes.json();
@@ -64,6 +64,12 @@
 			toast.error("Failed to load categories.");
 		}
 	}
+
+	$effect(() => {
+		if (auth.user) {
+			loadData();
+		}
+	});
 
 	async function handleUpload(e: Event) {
 		const file = (e.target as HTMLInputElement).files?.[0];
